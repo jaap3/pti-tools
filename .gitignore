@@ -1,0 +1,8 @@
+.DS_Store
+.vscode
+coverage/
+dist
+lib/
+node_modules/
+tsconfig.tsbuildinfo
+*.pti

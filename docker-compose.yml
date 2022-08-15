@@ -1,0 +1,10 @@
+services:
+  node:
+    build: .
+    command: sleep infinity
+    volumes:
+      - ./:/code
+    ports:
+      - "4173:4173"
+      - "5173:5173"
+      - "9229:9229"
