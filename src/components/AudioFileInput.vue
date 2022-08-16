@@ -1,35 +1,35 @@
 <script setup lang="ts">
-import { inject } from "vue";
-import type { AudioFile } from "../types";
-import { AudioContextKey } from "../types";
+  import { inject } from "vue"
+  import type { AudioFile } from "@/types"
+  import { AudioContextKey } from "@/types"
 
-const ctx: AudioContext | undefined = inject(AudioContextKey);
+  const ctx: AudioContext | undefined = inject(AudioContextKey)
 
-defineProps({
-  disabled: {
-    type: Boolean,
-    default: false,
-    required: true,
-  },
-});
+  defineProps({
+    disabled: {
+      type: Boolean,
+      default: false,
+      required: true,
+    },
+  })
 
-const emit = defineEmits<{
-  (e: "filesSelected", files: AudioFile[]): void;
-}>();
+  const emit = defineEmits<{
+    (e: "filesSelected", files: AudioFile[]): void
+  }>()
 
-async function handleInput(evt: Event) {
-  if (!ctx) return;
-  const input = evt.target as HTMLInputElement;
-  const files = Array.from(input.files ?? []);
-  const audioFiles: AudioFile[] = [];
-  for (const file of files) {
-    audioFiles.push({
-      name: file.name,
-      audio: await ctx.decodeAudioData(await file.arrayBuffer()),
-    });
+  async function handleInput(evt: Event) {
+    if (!ctx) return
+    const input = evt.target as HTMLInputElement
+    const files = Array.from(input.files ?? [])
+    const audioFiles: AudioFile[] = []
+    for (const file of files) {
+      audioFiles.push({
+        name: file.name,
+        audio: await ctx.decodeAudioData(await file.arrayBuffer()),
+      })
+    }
+    emit("filesSelected", audioFiles)
   }
-  emit("filesSelected", audioFiles);
-}
 </script>
 
 <template>
@@ -37,7 +37,7 @@ async function handleInput(evt: Event) {
     multiple
     type="file"
     accept="audio/*"
-    @input="handleInput"
     :disabled="disabled"
+    @input="handleInput"
   />
 </template>

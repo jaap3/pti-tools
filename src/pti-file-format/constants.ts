@@ -1,4 +1,4 @@
-import type { HeaderData } from "./types";
+import type { HeaderData } from "@/pti-file-format/types"
 
 export const samplePlayback = {
   ONE_SHOT: 0,
@@ -9,12 +9,12 @@ export const samplePlayback = {
   BEAT_SLICE: 5,
   WAVETABLE: 6,
   GRANULAR: 7,
-} as const;
+} as const
 
 export const automationMode = {
   ENVELOPE: 0,
   LFO: 1,
-} as const;
+} as const
 
 export const automationLfoType = {
   REV_SAW: 0,
@@ -22,28 +22,28 @@ export const automationLfoType = {
   TRIANGLE: 2,
   SQUARE: 3,
   RANDOM: 4,
-} as const;
+} as const
 
 export const granularShape = {
   SQUARE: 0,
   TRIANGLE: 1,
   GAUSS: 2,
-} as const;
+} as const
 
 export const granularLoopMode = {
   FORWARD: 0,
   BACKWARD: 1,
   PINGPONG: 2,
-} as const;
+} as const
 
 export const filterType = {
   LOW_PASS: 0,
   HIGH_PASS: 1,
   BAND_PASS: 2,
-} as const;
+} as const
 
 export const headerFieldOffset: Readonly<{
-  [key in keyof HeaderData]: number;
+  [key in keyof HeaderData]: number
 }> = {
   /* Index of values in a .pti header */
   isWavetable: 20,
@@ -162,17 +162,17 @@ export const headerFieldOffset: Readonly<{
   reverbSend: 384,
   overdrive: 385,
   bitDepth: 386,
-} as const;
+} as const
 
 const ptiMagicBytes = new Uint8Array([
   84, 73, 1, 0, 1, 5, 0, 1, 9, 9, 9, 9, 116, 1, 0, 0, 1, 0, 0, 0,
-]);
+])
 
 export const defaultPtiHeader: ArrayBuffer = (() => {
-  const header = new ArrayBuffer(392);
+  const header = new ArrayBuffer(392)
   // Copy the magic bytes
-  new Uint8Array(header).set(ptiMagicBytes);
-  const view = new DataView(header);
+  new Uint8Array(header).set(ptiMagicBytes)
+  const view = new DataView(header)
 
   const {
     wavetableWindowSize,
@@ -215,61 +215,61 @@ export const defaultPtiHeader: ArrayBuffer = (() => {
     panning,
     granularLength,
     bitDepth,
-  } = headerFieldOffset;
-  const { TRIANGLE } = automationLfoType;
+  } = headerFieldOffset
+  const { TRIANGLE } = automationLfoType
   // Set the defaults
-  view.setInt16(wavetableWindowSize, 2048, true);
-  view.setInt16(loopStart, 1, true);
-  view.setInt16(loopEnd, 65534, true);
-  view.setInt16(playbackEnd, 65535, true);
+  view.setInt16(wavetableWindowSize, 2048, true)
+  view.setInt16(loopStart, 1, true)
+  view.setInt16(loopEnd, 65534, true)
+  view.setInt16(playbackEnd, 65535, true)
   // Volume automation
-  view.setFloat32(volumeEnvelopeAmount, 1.0, true);
-  view.setFloat32(volumeEnvelopeSustain, 1.0, true);
-  view.setUint16(volumeEnvelopeRelease, 1000, true);
-  view.setUint8(volumeAutomationEnabled, 1); // Envelope
-  view.setUint8(volumeLfoType, TRIANGLE); // LFO type
-  view.setFloat32(volumeLfoAmount, 0.5, true);
+  view.setFloat32(volumeEnvelopeAmount, 1.0, true)
+  view.setFloat32(volumeEnvelopeSustain, 1.0, true)
+  view.setUint16(volumeEnvelopeRelease, 1000, true)
+  view.setUint8(volumeAutomationEnabled, 1) // Envelope
+  view.setUint8(volumeLfoType, TRIANGLE) // LFO type
+  view.setFloat32(volumeLfoAmount, 0.5, true)
   // Panning automation
-  view.setFloat32(panningEnvelopeAmount, 1.0, true);
-  view.setFloat32(panningEnvelopeSustain, 1.0, true);
-  view.setInt16(panningEnvelopeRelease, 1000, true);
-  view.setUint8(panningLfoType, TRIANGLE); // LFO type
-  view.setFloat32(panningLfoAmount, 0.5, true);
+  view.setFloat32(panningEnvelopeAmount, 1.0, true)
+  view.setFloat32(panningEnvelopeSustain, 1.0, true)
+  view.setInt16(panningEnvelopeRelease, 1000, true)
+  view.setUint8(panningLfoType, TRIANGLE) // LFO type
+  view.setFloat32(panningLfoAmount, 0.5, true)
   // Cutoff automation
-  view.setFloat32(cutoffEnvelopeAmount, 1.0, true);
-  view.setFloat32(cutoffEnvelopeSustain, 1.0, true);
-  view.setInt16(cutoffEnvelopeRelease, 1000, true);
-  view.setUint8(cutoffLfoType, TRIANGLE); // LFO type
-  view.setFloat32(cutoffLfoAmount, 0.5, true);
+  view.setFloat32(cutoffEnvelopeAmount, 1.0, true)
+  view.setFloat32(cutoffEnvelopeSustain, 1.0, true)
+  view.setInt16(cutoffEnvelopeRelease, 1000, true)
+  view.setUint8(cutoffLfoType, TRIANGLE) // LFO type
+  view.setFloat32(cutoffLfoAmount, 0.5, true)
   // Wavetable position automation
-  view.setFloat32(wavetablePositionEnvelopeAmount, 1.0, true);
-  view.setFloat32(wavetablePositionEnvelopeSustain, 1.0, true);
-  view.setInt16(wavetablePositionEnvelopeRelease, 1000, true);
-  view.setUint8(wavetablePositionLfoType, TRIANGLE);
-  view.setFloat32(wavetablePositionLfoAmount, 0.5, true);
+  view.setFloat32(wavetablePositionEnvelopeAmount, 1.0, true)
+  view.setFloat32(wavetablePositionEnvelopeSustain, 1.0, true)
+  view.setInt16(wavetablePositionEnvelopeRelease, 1000, true)
+  view.setUint8(wavetablePositionLfoType, TRIANGLE)
+  view.setFloat32(wavetablePositionLfoAmount, 0.5, true)
   // Granular position automation
-  view.setFloat32(granularPositionEnvelopeAmount, 1.0, true);
-  view.setFloat32(granularPositionEnvelopeSustain, 1.0, true);
-  view.setInt16(granularPositionEnvelopeRelease, 1000, true);
-  view.setUint8(granularPositionLfoType, TRIANGLE);
-  view.setFloat32(granularPositionLfoAmount, 0.5, true);
+  view.setFloat32(granularPositionEnvelopeAmount, 1.0, true)
+  view.setFloat32(granularPositionEnvelopeSustain, 1.0, true)
+  view.setInt16(granularPositionEnvelopeRelease, 1000, true)
+  view.setUint8(granularPositionLfoType, TRIANGLE)
+  view.setFloat32(granularPositionLfoAmount, 0.5, true)
   // Finetune automation
-  view.setFloat32(finetuneEnvelopeAmount, 1.0, true);
-  view.setFloat32(finetuneEnvelopeSustain, 1.0, true);
-  view.setInt16(finetuneEnvelopeRelease, 1000, true);
-  view.setUint8(finetuneLfoType, TRIANGLE);
-  view.setFloat32(finetuneLfoAmount, 0.5, true);
+  view.setFloat32(finetuneEnvelopeAmount, 1.0, true)
+  view.setFloat32(finetuneEnvelopeSustain, 1.0, true)
+  view.setInt16(finetuneEnvelopeRelease, 1000, true)
+  view.setUint8(finetuneLfoType, TRIANGLE)
+  view.setFloat32(finetuneLfoAmount, 0.5, true)
   // Filter
-  view.setFloat32(filterCutoff, 1.0, true);
+  view.setFloat32(filterCutoff, 1.0, true)
   // Parameters
-  view.setUint8(volume, 50);
-  view.setUint8(panning, 50);
+  view.setUint8(volume, 50)
+  view.setUint8(panning, 50)
   // Granular
-  view.setInt16(granularLength, 441, true);
+  view.setInt16(granularLength, 441, true)
   // Effects
-  view.setUint8(bitDepth, 16);
+  view.setUint8(bitDepth, 16)
 
-  return header;
-})();
+  return header
+})()
 
-export const MAX_SLICES = 48;
+export const MAX_SLICES = 48

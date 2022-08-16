@@ -1,20 +1,20 @@
-import { readFileSync } from "fs";
-import * as path from "path";
+import { readFileSync } from "fs"
+import * as path from "path"
 
-import { parseHeader, samplePlayback } from "../src/pti-file-format";
-import type { HeaderData } from "../src/pti-file-format";
+import { parseHeader, samplePlayback } from "../src/pti-file-format"
+import type { HeaderData } from "../src/pti-file-format"
 
 function readPtiFile(fileName: string): ArrayBufferLike {
-  return readFileSync(path.join(__dirname, "./pti-files/", fileName)).buffer;
+  return readFileSync(path.join(__dirname, "/pti-files/", fileName)).buffer
 }
 
 function fakeSlices(n: number): number[] {
   return Array(n)
     .fill(0)
-    .map((_, i) => Math.max(i / (n - 1) - 0.05, 0));
+    .map((_, i) => Math.max(i / (n - 1) - 0.05, 0))
 }
 
-const { BEAT_SLICE } = samplePlayback;
+const { BEAT_SLICE } = samplePlayback
 
 const expectations: [string, Partial<HeaderData>][] = [
   [
@@ -122,7 +122,7 @@ const expectations: [string, Partial<HeaderData>][] = [
       activeSlice: 14,
       // Nude slices 2-8 forwards a bit, slice 13-18 backwards a bit
       slices: fakeSlices(18).map((s, i) =>
-        i >= 2 && i < 8 ? s + 0.05 : i >= 13 ? s - 0.05 : s
+        i >= 2 && i < 8 ? s + 0.05 : i >= 13 ? s - 0.05 : s,
       ),
     },
   ],
@@ -136,7 +136,7 @@ const expectations: [string, Partial<HeaderData>][] = [
       // As if there were 30 slices, but one slice is really long compared to the others
       slices: fakeSlices(30).filter(
         (_, i) =>
-          ![4, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 22, 28].includes(i)
+          ![4, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 22, 28].includes(i),
       ),
     },
   ],
@@ -148,7 +148,7 @@ const expectations: [string, Partial<HeaderData>][] = [
       totalSlices: 16,
       activeSlice: 8,
       slices: fakeSlices(25).filter(
-        (_, i) => ![4, 5, 6, 7, 8, 12, 15, 17, 19].includes(i)
+        (_, i) => ![4, 5, 6, 7, 8, 12, 15, 17, 19].includes(i),
       ),
     },
   ],
@@ -235,25 +235,25 @@ const expectations: [string, Partial<HeaderData>][] = [
       ],
     },
   ],
-];
+]
 
 describe.each(expectations)(`parseHeader %s`, (filename, expected) => {
-  const headerData = parseHeader(readPtiFile(filename));
-  const expectedSlices = (expected.slices || [0]).map((value, i) => [i, value]);
-  delete expected.slices;
+  const headerData = parseHeader(readPtiFile(filename))
+  const expectedSlices = (expected.slices || [0]).map((value, i) => [i, value])
+  delete expected.slices
 
   test.each(
     Object.entries(expected) as {
-      [K in keyof HeaderData]: [K, HeaderData[K]];
-    }[keyof HeaderData][]
+      [K in keyof HeaderData]: [K, HeaderData[K]]
+    }[keyof HeaderData][],
   )("headerData.%s = %s", (key, value) => {
-    expect(headerData[key]).toBe(value);
-  });
+    expect(headerData[key]).toBe(value)
+  })
 
   test(`headerData.slices.length = ${expectedSlices.length}`, () =>
-    expect(headerData.slices.length).toBe(expectedSlices.length));
+    expect(headerData.slices.length).toBe(expectedSlices.length))
 
   test.each(expectedSlices)("headerData.slices[%i] = %s", (i, value) => {
-    expect(headerData.slices[i]).toBeCloseTo(value, 1);
-  });
-});
+    expect(headerData.slices[i]).toBeCloseTo(value, 1)
+  })
+})

@@ -1,8 +1,8 @@
-import type { InjectionKey } from "vue";
+import type { InjectionKey } from "vue"
 
-export const AudioContextKey = Symbol() as InjectionKey<AudioContext>;
+export const AudioContextKey = Symbol() as InjectionKey<AudioContext>
 
 export interface AudioFile {
-  name: string;
-  audio: AudioBuffer;
+  name: string
+  audio: AudioBuffer
 }

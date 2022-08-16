@@ -1,25 +1,25 @@
 <script setup lang="ts">
-import { ref } from "vue";
-import SamplePlayer from "./SamplePlayer.vue";
-import type { AudioFile } from "../types";
+  import { ref } from "vue"
+  import SamplePlayer from "@/components/SamplePlayer.vue"
+  import type { AudioFile } from "@/types"
 
-defineProps<{
-  files: AudioFile[];
-}>();
+  defineProps<{
+    files: AudioFile[]
+  }>()
 
-const emit = defineEmits<{
-  (e: "moveUp", files: AudioFile): void;
-  (e: "moveDown", files: AudioFile): void;
-  (e: "remove", files: AudioFile): void;
-}>();
+  const emit = defineEmits<{
+    (e: "moveUp", files: AudioFile): void
+    (e: "moveDown", files: AudioFile): void
+    (e: "remove", files: AudioFile): void
+  }>()
 
-const samplePlayers = ref<typeof SamplePlayer[]>([]);
+  const samplePlayers = ref<InstanceType<typeof SamplePlayer>[]>([])
 
-function handleSamplePlays() {
-  samplePlayers.value.forEach((player) => {
-    player.stop();
-  });
-}
+  function handleSamplePlays() {
+    samplePlayers.value.forEach((player) => {
+      player.stop()
+    })
+  }
 </script>
 
 <template>
@@ -28,21 +28,21 @@ function handleSamplePlays() {
       <fieldset>
         <legend>{{ file.name }}</legend>
         <SamplePlayer
-          :audio-buffer="file.audio"
           ref="samplePlayers"
+          :audio-buffer="file.audio"
           @play="handleSamplePlays"
         />
         <button
           type="button"
-          @click="emit('moveUp', file)"
           :disabled="idx === 0"
+          @click="emit('moveUp', file)"
         >
           ←
         </button>
         <button
           type="button"
-          @click="emit('moveDown', file)"
           :disabled="idx === files.length - 1"
+          @click="emit('moveDown', file)"
         >
           →
         </button>
@@ -53,15 +53,15 @@ function handleSamplePlays() {
 </template>
 
 <style scoped>
-ul {
-  display: flex;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
+  ul {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
 
-button {
-  font-family: system-ui, sans-serif;
-  font-size: 1.2rem;
-}
+  button {
+    font-family: system-ui, sans-serif;
+    font-size: 1.2rem;
+  }
 </style>
