@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { provide, ref, computed } from "vue"
+  import { provide, ref, computed, defineAsyncComponent } from "vue"
   import type { Ref, ComputedRef } from "vue"
   import type { AudioFile } from "@/types"
   import { AudioContextKey } from "@/types"
@@ -8,7 +8,8 @@
   import { MAX_SLICES, createBeatSlicedPtiFromSamples } from "@/pti-file-format"
 
   import AudioFileInput from "@/components/AudioFileInput.vue"
-  import SampleList from "@/components/SampleList.vue"
+
+  const SampleList = defineAsyncComponent(() => import("@/components/SampleList.vue"))
 
   const selectedFiles: Ref<AudioFile[]> = ref([])
   const instrumentName: Ref<string> = ref("")
@@ -83,6 +84,7 @@
         @files-selected="handleFilesSelected"
       />
       <SampleList
+        v-if="selectedFiles.length > 0"
         :files="selectedFiles"
         @move-up="moveFileUp"
         @move-down="moveFileDown"
