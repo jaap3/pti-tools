@@ -1,7 +1,7 @@
 import { readFileSync } from "fs";
 import * as path from "path";
 
-import { parseHeader, SamplePlayback } from "../src/pti-file-format";
+import { parseHeader, samplePlayback } from "../src/pti-file-format";
 import type { HeaderData } from "../src/pti-file-format";
 
 function readPtiFile(fileName: string): ArrayBufferLike {
@@ -14,12 +14,14 @@ function fakeSlices(n: number): number[] {
     .map((_, i) => Math.max(i / (n - 1) - 0.05, 0));
 }
 
+const { BEAT_SLICE } = samplePlayback;
+
 const expectations: [string, Partial<HeaderData>][] = [
   [
     "Drum Kits/80s 21p.pti",
     {
       instrumentName: "80s 21p",
-      samplePlayback: SamplePlayback.BEAT_SLICE,
+      samplePlayback: BEAT_SLICE,
       totalSlices: 21,
       activeSlice: 20,
       slices: fakeSlices(21),
@@ -29,7 +31,7 @@ const expectations: [string, Partial<HeaderData>][] = [
     "Drum Kits/Acid 33p.pti",
     {
       instrumentName: "Acid 33p",
-      samplePlayback: SamplePlayback.BEAT_SLICE,
+      samplePlayback: BEAT_SLICE,
       totalSlices: 33,
       activeSlice: 32,
       slices: fakeSlices(33),
@@ -39,7 +41,7 @@ const expectations: [string, Partial<HeaderData>][] = [
     "Drum Kits/Analog 2 20p.pti",
     {
       instrumentName: "Analog 2 20p",
-      samplePlayback: SamplePlayback.BEAT_SLICE,
+      samplePlayback: BEAT_SLICE,
       totalSlices: 20,
       activeSlice: 19,
       slices: fakeSlices(20),
@@ -49,7 +51,7 @@ const expectations: [string, Partial<HeaderData>][] = [
     "Drum Kits/Analog 3 18p.pti",
     {
       instrumentName: "Analog 3 18p",
-      samplePlayback: SamplePlayback.BEAT_SLICE,
+      samplePlayback: BEAT_SLICE,
       totalSlices: 18,
       activeSlice: 17,
       slices: fakeSlices(18),
@@ -59,7 +61,7 @@ const expectations: [string, Partial<HeaderData>][] = [
     "Drum Kits/Analog 4 19p.pti",
     {
       instrumentName: "Analog 4 19p",
-      samplePlayback: SamplePlayback.BEAT_SLICE,
+      samplePlayback: BEAT_SLICE,
       totalSlices: 19,
       activeSlice: 18,
       slices: fakeSlices(19),
@@ -69,7 +71,7 @@ const expectations: [string, Partial<HeaderData>][] = [
     "Drum Kits/Analog 20p.pti",
     {
       instrumentName: "Analog 20p",
-      samplePlayback: SamplePlayback.BEAT_SLICE,
+      samplePlayback: BEAT_SLICE,
       totalSlices: 20,
       activeSlice: 19,
       slices: fakeSlices(20),
@@ -79,7 +81,7 @@ const expectations: [string, Partial<HeaderData>][] = [
     "Drum Kits/Bells.pti",
     {
       instrumentName: "bells",
-      samplePlayback: SamplePlayback.BEAT_SLICE,
+      samplePlayback: BEAT_SLICE,
       totalSlices: 16,
       activeSlice: 0,
       slices: [
@@ -93,7 +95,7 @@ const expectations: [string, Partial<HeaderData>][] = [
     "Drum Kits/Bells2.pti",
     {
       instrumentName: "bells2",
-      samplePlayback: SamplePlayback.BEAT_SLICE,
+      samplePlayback: BEAT_SLICE,
       totalSlices: 16,
       activeSlice: 13,
       // Pretty much as if there were 21 slices, but some slices are longer
@@ -104,7 +106,7 @@ const expectations: [string, Partial<HeaderData>][] = [
     "Drum Kits/Hiphop1.pti",
     {
       instrumentName: "hh3",
-      samplePlayback: SamplePlayback.BEAT_SLICE,
+      samplePlayback: BEAT_SLICE,
       totalSlices: 16,
       activeSlice: 1,
       // Nudge slices starting with slice 8 a little bit
@@ -115,7 +117,7 @@ const expectations: [string, Partial<HeaderData>][] = [
     "Drum Kits/Hiphop2.pti",
     {
       instrumentName: "hh2",
-      samplePlayback: SamplePlayback.BEAT_SLICE,
+      samplePlayback: BEAT_SLICE,
       totalSlices: 18,
       activeSlice: 14,
       // Nude slices 2-8 forwards a bit, slice 13-18 backwards a bit
@@ -128,7 +130,7 @@ const expectations: [string, Partial<HeaderData>][] = [
     "Drum Kits/Hiphop3.pti",
     {
       instrumentName: "hh1",
-      samplePlayback: SamplePlayback.BEAT_SLICE,
+      samplePlayback: BEAT_SLICE,
       totalSlices: 17,
       activeSlice: 11,
       // As if there were 30 slices, but one slice is really long compared to the others
@@ -142,7 +144,7 @@ const expectations: [string, Partial<HeaderData>][] = [
     "Drum Kits/Hiphop4.pti",
     {
       instrumentName: "hh4",
-      samplePlayback: SamplePlayback.BEAT_SLICE,
+      samplePlayback: BEAT_SLICE,
       totalSlices: 16,
       activeSlice: 8,
       slices: fakeSlices(25).filter(
@@ -154,7 +156,7 @@ const expectations: [string, Partial<HeaderData>][] = [
     "Drum Kits/Hiphop5.pti",
     {
       instrumentName: "hh5",
-      samplePlayback: SamplePlayback.BEAT_SLICE,
+      samplePlayback: BEAT_SLICE,
       totalSlices: 16,
       activeSlice: 10,
       slices: [
@@ -181,7 +183,7 @@ const expectations: [string, Partial<HeaderData>][] = [
     "Drum Kits/Hiphop6.pti",
     {
       instrumentName: "hh6",
-      samplePlayback: SamplePlayback.BEAT_SLICE,
+      samplePlayback: BEAT_SLICE,
       totalSlices: 16,
       activeSlice: 0,
       slices: [
@@ -194,7 +196,7 @@ const expectations: [string, Partial<HeaderData>][] = [
     "Drum Kits/Hiphop7.pti",
     {
       instrumentName: "hh7",
-      samplePlayback: SamplePlayback.BEAT_SLICE,
+      samplePlayback: BEAT_SLICE,
       totalSlices: 15,
       activeSlice: 0,
       slices: fakeSlices(15),
@@ -204,7 +206,7 @@ const expectations: [string, Partial<HeaderData>][] = [
     "Drum Kits/Hiphop8.pti",
     {
       instrumentName: "hh8",
-      samplePlayback: SamplePlayback.BEAT_SLICE,
+      samplePlayback: BEAT_SLICE,
       totalSlices: 16,
       activeSlice: 0,
       slices: fakeSlices(16).map((s, i) => (i >= 4 ? s + 0.05 : s)),
@@ -214,7 +216,7 @@ const expectations: [string, Partial<HeaderData>][] = [
     "Drum Kits/Hiphop9.pti",
     {
       instrumentName: "hh9",
-      samplePlayback: SamplePlayback.BEAT_SLICE,
+      samplePlayback: BEAT_SLICE,
       totalSlices: 16,
       activeSlice: 0,
       slices: fakeSlices(16),
@@ -224,7 +226,7 @@ const expectations: [string, Partial<HeaderData>][] = [
     "Drum Kits/Perc1.pti",
     {
       instrumentName: "perc1",
-      samplePlayback: SamplePlayback.BEAT_SLICE,
+      samplePlayback: BEAT_SLICE,
       totalSlices: 14,
       activeSlice: 0,
       slices: [
