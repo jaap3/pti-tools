@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { provide, ref } from "vue";
-import type { Ref } from "vue";
+import { provide, ref, computed } from "vue";
+import type { Ref, ComputedRef } from "vue";
 import type { AudioFile } from "./types";
 import { AudioContextKey } from "./types";
 
@@ -11,6 +11,13 @@ import AudioFileInput from "./components/AudioFileInput.vue";
 import SampleList from "./components/SampleList.vue";
 
 const selectedFiles: Ref<AudioFile[]> = ref([]);
+const instrumentName: Ref<string> = ref("");
+const instrumentNameInput: Ref<HTMLInputElement | null> = ref(null);
+const instrumentNameValid: ComputedRef<boolean> = computed(
+  () =>
+    instrumentName.value === "" ||
+    (instrumentNameInput.value?.reportValidity() ?? false)
+);
 
 const audioContext = new AudioContext({
   latencyHint: "interactive",
@@ -49,13 +56,13 @@ function removeFile(file: AudioFile) {
 }
 
 async function handleDownload() {
-  const audio = selectedFiles.value.map((file) => file.audio.getChannelData(0))
-  const buffer = createBeatSlicedPtiFromSamples(audio);
+  const audio = selectedFiles.value.map((file) => file.audio.getChannelData(0));
+  const buffer = createBeatSlicedPtiFromSamples(audio, instrumentName.value);
 
   const blob = new Blob([buffer], { type: "application/octet-stream" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
-  a.setAttribute("download", "output.pti");
+  a.setAttribute("download", `${instrumentName.value || "stitched"}.pti`);
   a.setAttribute("href", url);
   a.setAttribute("hidden", "");
   document.documentElement.appendChild(a);
@@ -66,19 +73,37 @@ async function handleDownload() {
 </script>
 
 <template>
-  <div @click="activateAudioContext">
-    <AudioFileInput @files-selected="handleFilesSelected" />
-    <SampleList
-      :files="selectedFiles"
-      @move-up="moveFileUp"
-      @move-down="moveFileDown"
-      @remove="removeFile"
-    />
-  </div>
-
-  <button :disabled="selectedFiles.length === 0" @click="handleDownload">
-    Download
-  </button>
+  <form>
+    <div @click="activateAudioContext">
+      <AudioFileInput @files-selected="handleFilesSelected" />
+      <SampleList
+        :files="selectedFiles"
+        @move-up="moveFileUp"
+        @move-down="moveFileDown"
+        @remove="removeFile"
+      />
+    </div>
+    <label
+      >Instrument name
+      <input
+        type="text"
+        maxlength="31"
+        v-model="instrumentName"
+        pattern="^[\x20-\x7E]+$"
+        ref="instrumentNameInput"
+    /></label>
+    <button
+      :disabled="!(instrumentNameValid && selectedFiles.length > 0)"
+      type="button"
+      @click="handleDownload"
+    >
+      Download
+    </button>
+  </form>
 </template>
 
-<style scoped></style>
+<style scoped>
+input:invalid {
+  outline: 2px solid red;
+}
+</style>

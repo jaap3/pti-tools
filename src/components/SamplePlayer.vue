@@ -36,5 +36,5 @@ defineExpose({
 </script>
 
 <template>
-  <button @click="play">▶️</button>
+  <button type="button" @click="play">▶️</button>
 </template>

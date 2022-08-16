@@ -32,14 +32,21 @@ function handleSamplePlays() {
           ref="samplePlayers"
           @play="handleSamplePlays"
         />
-        <button @click="emit('moveUp', file)" :disabled="idx === 0">←</button>
         <button
+          type="button"
+          @click="emit('moveUp', file)"
+          :disabled="idx === 0"
+        >
+          ←
+        </button>
+        <button
+          type="button"
           @click="emit('moveDown', file)"
           :disabled="idx === files.length - 1"
         >
           →
         </button>
-        <button @click.once="emit('remove', file)">␡</button>
+        <button type="button" @click.once="emit('remove', file)">␡</button>
       </fieldset>
     </li>
   </ul>

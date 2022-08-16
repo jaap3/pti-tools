@@ -93,24 +93,40 @@ export function parseHeader(header: ArrayBufferLike): HeaderData {
 }
 
 const asciiDecoder: TextDecoder = new TextDecoder("ascii");
+const asciiEncoder: TextEncoder = new TextEncoder();
 
-export function createBeatSlicedPtiFromSamples(audio: Float32Array[]) {
+export function createBeatSlicedPtiFromSamples(
+  audio: Float32Array[],
+  instrumentName: string
+) {
   const mergedAudio = mergeFloat32Arrays(audio);
   const totalLength = mergedAudio.length;
 
   const buffer = getPtiFile(mergedAudio);
 
+  // Write instrument name to header
+  asciiEncoder.encodeInto(
+    (instrumentName || "stitched").substring(0, 31).padEnd(31, "\x00"),
+    new Uint8Array(buffer, headerFieldOffset.instrumentName, 31)
+  );
+
   const view = new DataView(buffer);
+  // Set sample playback to beat sliced
   view.setUint8(headerFieldOffset.samplePlayback, samplePlayback.BEAT_SLICE);
   view.setUint8(headerFieldOffset.totalSlices, audio.length);
 
-  let offset = 0;
+  let offset = 0; // Slice offset
   for (const [idx, slice] of audio.entries()) {
     view.setUint16(
+      // Slice 1 is 280, slice 2 is 282, slice 3 is 284, etc.
       headerFieldOffset.slices + idx * 2,
+      // Slice offsets are relative to the length of the audio,
+      // i.e. slice 1 is at 0%, slice 2 is at 25%, etc.
       (offset / totalLength) * 65535,
       true
     );
+    // the next slice starts immediatly after the current slice
+    // (plus any preceeding slices)
     offset += slice.length;
   }
   return buffer;
