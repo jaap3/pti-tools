@@ -5,7 +5,7 @@ import type { AudioFile } from "./types";
 import { AudioContextKey } from "./types";
 
 import { sumChannels } from "./audio-tools";
-import { createBeatSlicedPtiFromSamples } from "./pti-file-format";
+import { MAX_SLICES, createBeatSlicedPtiFromSamples } from "./pti-file-format";
 
 import AudioFileInput from "./components/AudioFileInput.vue";
 import SampleList from "./components/SampleList.vue";
@@ -34,6 +34,7 @@ const activateAudioContext = () => {
 
 function handleFilesSelected(files: AudioFile[]) {
   for (const file of files) {
+    if (selectedFiles.value.length >= MAX_SLICES) break;
     file.audio = sumChannels(file.audio, audioContext);
     selectedFiles.value.push(file);
   }
@@ -75,7 +76,10 @@ async function handleDownload() {
 <template>
   <form>
     <div @click="activateAudioContext">
-      <AudioFileInput @files-selected="handleFilesSelected" />
+      <AudioFileInput
+        @files-selected="handleFilesSelected"
+        :disabled="selectedFiles.length >= MAX_SLICES"
+      />
       <SampleList
         :files="selectedFiles"
         @move-up="moveFileUp"

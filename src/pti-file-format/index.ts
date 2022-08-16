@@ -8,6 +8,7 @@ import type {
   FilterType,
 } from "./types";
 import {
+  MAX_SLICES,
   defaultPtiHeader,
   samplePlayback,
   granularShape,
@@ -113,10 +114,16 @@ export function createBeatSlicedPtiFromSamples(
   const view = new DataView(buffer);
   // Set sample playback to beat sliced
   view.setUint8(headerFieldOffset.samplePlayback, samplePlayback.BEAT_SLICE);
-  view.setUint8(headerFieldOffset.totalSlices, audio.length);
+  // Set the amount of slices to the total number of entries in the audio array
+  // (or 48, whichever is smaller).
+  view.setUint8(
+    headerFieldOffset.totalSlices,
+    Math.min(audio.length, MAX_SLICES)
+  );
 
   let offset = 0; // Slice offset
   for (const [idx, slice] of audio.entries()) {
+    if (idx >= MAX_SLICES) break; // Stop if we have written all possible slices
     view.setUint16(
       // Slice 1 is 280, slice 2 is 282, slice 3 is 284, etc.
       headerFieldOffset.slices + idx * 2,
@@ -146,4 +153,4 @@ export function getPtiFile(data: Float32Array) {
   return buffer;
 }
 
-export { HeaderData, samplePlayback };
+export { HeaderData, samplePlayback, MAX_SLICES };

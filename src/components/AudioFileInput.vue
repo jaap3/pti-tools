@@ -5,6 +5,14 @@ import { AudioContextKey } from "../types";
 
 const ctx: AudioContext | undefined = inject(AudioContextKey);
 
+defineProps({
+  disabled: {
+    type: Boolean,
+    default: false,
+    required: true,
+  },
+});
+
 const emit = defineEmits<{
   (e: "filesSelected", files: AudioFile[]): void;
 }>();
@@ -25,5 +33,11 @@ async function handleInput(evt: Event) {
 </script>
 
 <template>
-  <input multiple type="file" accept="audio/*" @input="handleInput" />
+  <input
+    multiple
+    type="file"
+    accept="audio/*"
+    @input="handleInput"
+    :disabled="disabled"
+  />
 </template>

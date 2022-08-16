@@ -216,7 +216,7 @@ export const defaultPtiHeader: ArrayBuffer = (() => {
     granularLength,
     bitDepth,
   } = headerFieldOffset;
-  const { TRIANGLE } = automationLfoType
+  const { TRIANGLE } = automationLfoType;
   // Set the defaults
   view.setInt16(wavetableWindowSize, 2048, true);
   view.setInt16(loopStart, 1, true);
@@ -271,3 +271,5 @@ export const defaultPtiHeader: ArrayBuffer = (() => {
 
   return header;
 })();
+
+export const MAX_SLICES = 48;
