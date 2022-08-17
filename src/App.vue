@@ -1,24 +1,18 @@
 <script setup lang="ts">
-  import { provide, ref, computed, defineAsyncComponent } from "vue"
-  import type { Ref, ComputedRef } from "vue"
+  import { provide, ref, defineAsyncComponent } from "vue"
+  import type { Ref } from "vue"
   import type { AudioFile } from "@/types"
   import { AudioContextKey } from "@/types"
 
   import { sumChannels } from "@/audio-tools"
-  import { MAX_SLICES, createBeatSlicedPtiFromSamples } from "@/pti-file-format"
+  import { MAX_SLICES } from "@/pti-file-format"
 
   import AudioFileInput from "@/components/AudioFileInput.vue"
 
   const SampleList = defineAsyncComponent(() => import("@/components/SampleList.vue"))
+  const DownloadPti = defineAsyncComponent(() => import("@/components/DownloadPti.vue"))
 
   const selectedFiles: Ref<AudioFile[]> = ref([])
-  const instrumentName: Ref<string> = ref("")
-  const instrumentNameInput: Ref<HTMLInputElement | null> = ref(null)
-  const instrumentNameValid: ComputedRef<boolean> = computed(
-    () =>
-      instrumentName.value === "" ||
-      (instrumentNameInput.value?.reportValidity() ?? false),
-  )
 
   const audioContext = new AudioContext({
     latencyHint: "interactive",
@@ -56,58 +50,26 @@
   function removeFile(file: AudioFile) {
     selectedFiles.value.splice(selectedFiles.value.indexOf(file), 1)
   }
-
-  async function handleDownload() {
-    const audio = selectedFiles.value.map((file) =>
-      file.audio.getChannelData(0),
-    )
-    const buffer = createBeatSlicedPtiFromSamples(audio, instrumentName.value)
-
-    const blob = new Blob([buffer], { type: "application/octet-stream" })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement("a")
-    a.setAttribute("download", `${instrumentName.value || "stitched"}.pti`)
-    a.setAttribute("href", url)
-    a.setAttribute("hidden", "")
-    document.documentElement.appendChild(a)
-    a.click()
-    URL.revokeObjectURL(url)
-    document.documentElement.removeChild(a)
-  }
 </script>
 
 <template>
-  <main>
+  <main @click="activateAudioContext">
     <form>
-      <div @click="activateAudioContext">
-        <AudioFileInput
-          :disabled="selectedFiles.length >= MAX_SLICES"
-          @files-selected="handleFilesSelected"
-        />
-        <SampleList
-          v-if="selectedFiles.length > 0"
-          :files="selectedFiles"
-          @move-up="moveFileUp"
-          @move-down="moveFileDown"
-          @remove="removeFile"
-        />
-      </div>
-      <label
-        >Instrument name
-        <input
-          ref="instrumentNameInput"
-          v-model="instrumentName"
-          type="text"
-          maxlength="31"
-          pattern="^[\x20-\x7E]+$"
-      /></label>
-      <button
-        :disabled="!(instrumentNameValid && selectedFiles.length > 0)"
-        type="button"
-        @click="handleDownload"
-      >
-        Download
-      </button>
+      <AudioFileInput
+        :disabled="selectedFiles.length >= MAX_SLICES"
+        @files-selected="handleFilesSelected"
+      />
+      <SampleList
+        v-if="selectedFiles.length > 0"
+        :files="selectedFiles"
+        @move-up="moveFileUp"
+        @move-down="moveFileDown"
+        @remove="removeFile"
+      />
+      <DownloadPti
+        v-if="selectedFiles.length > 0"
+        :files="selectedFiles"
+      />
     </form>
   </main>
 </template>
@@ -142,13 +104,11 @@
     background-color: #101010;
   }
 
-  button {
+  button:not(:disabled) {
     cursor: pointer;
   }
-</style>
 
-<style scoped>
-  input:invalid {
-    outline: 2px solid tomato;
+  button:disabled {
+    color: #777;
   }
 </style>
