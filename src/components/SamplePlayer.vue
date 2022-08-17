@@ -36,5 +36,5 @@
 </script>
 
 <template>
-  <button type="button" @click="play">▶️</button>
+  <button type="button" @click="play"><span class="material-icons">play_arrow</span></button>
 </template>

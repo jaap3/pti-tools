@@ -20,33 +20,41 @@
       player.stop()
     })
   }
+
+  function displayName(fileName: string) {
+    return fileName.replace(/\.[^.]+$/, "")
+  }
 </script>
 
 <template>
   <ul>
     <li v-for="(file, idx) in files" :key="file.name">
       <fieldset>
-        <legend>{{ file.name }}</legend>
-        <SamplePlayer
-          ref="samplePlayers"
-          :audio-buffer="file.audio"
-          @play="handleSamplePlays"
-        />
-        <button
-          type="button"
-          :disabled="idx === 0"
-          @click="emit('moveUp', file)"
-        >
-          ←
-        </button>
-        <button
-          type="button"
-          :disabled="idx === files.length - 1"
-          @click="emit('moveDown', file)"
-        >
-          →
-        </button>
-        <button type="button" @click.once="emit('remove', file)">␡</button>
+        <legend>{{ displayName(file.name) }}</legend>
+        <div class="controls">
+          <SamplePlayer
+            ref="samplePlayers"
+            :audio-buffer="file.audio"
+            @play="handleSamplePlays"
+          />
+          <button
+            type="button"
+            :disabled="idx === 0"
+            @click="emit('moveUp', file)"
+          >
+            <span class="material-icons">arrow_back</span>
+          </button>
+          <button
+            type="button"
+            :disabled="idx === files.length - 1"
+            @click="emit('moveDown', file)"
+          >
+            <span class="material-icons">arrow_forward</span>
+          </button>
+          <button type="button" class="delete" @click.once="emit('remove', file)">
+            <span class="material-icons">delete</span>
+          </button>
+        </div>
       </fieldset>
     </li>
   </ul>
@@ -55,13 +63,44 @@
 <style scoped>
   ul {
     display: flex;
+    flex-wrap: wrap;
     list-style: none;
     margin: 0;
     padding: 0;
   }
 
+  fieldset {
+    margin: 0 2px 8px;
+    padding: 8px;
+  }
+
+  legend {
+    display: block;
+    width: 100%;
+    padding: 0 8px;
+    background-color: #fff;
+    color: #000;
+    font-weight: 400;
+    text-align: center;
+    max-width: 144px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
   button {
-    font-family: system-ui, sans-serif;
     font-size: 1.2rem;
+    width: 40px;
+    height: 40px;
+  }
+
+  .delete {
+    background-color: tomato;
   }
 </style>

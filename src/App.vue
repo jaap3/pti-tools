@@ -77,41 +77,78 @@
 </script>
 
 <template>
-  <form>
-    <div @click="activateAudioContext">
-      <AudioFileInput
-        :disabled="selectedFiles.length >= MAX_SLICES"
-        @files-selected="handleFilesSelected"
-      />
-      <SampleList
-        v-if="selectedFiles.length > 0"
-        :files="selectedFiles"
-        @move-up="moveFileUp"
-        @move-down="moveFileDown"
-        @remove="removeFile"
-      />
-    </div>
-    <label
-      >Instrument name
-      <input
-        ref="instrumentNameInput"
-        v-model="instrumentName"
-        type="text"
-        maxlength="31"
-        pattern="^[\x20-\x7E]+$"
-    /></label>
-    <button
-      :disabled="!(instrumentNameValid && selectedFiles.length > 0)"
-      type="button"
-      @click="handleDownload"
-    >
-      Download
-    </button>
-  </form>
+  <main>
+    <form>
+      <div @click="activateAudioContext">
+        <AudioFileInput
+          :disabled="selectedFiles.length >= MAX_SLICES"
+          @files-selected="handleFilesSelected"
+        />
+        <SampleList
+          v-if="selectedFiles.length > 0"
+          :files="selectedFiles"
+          @move-up="moveFileUp"
+          @move-down="moveFileDown"
+          @remove="removeFile"
+        />
+      </div>
+      <label
+        >Instrument name
+        <input
+          ref="instrumentNameInput"
+          v-model="instrumentName"
+          type="text"
+          maxlength="31"
+          pattern="^[\x20-\x7E]+$"
+      /></label>
+      <button
+        :disabled="!(instrumentNameValid && selectedFiles.length > 0)"
+        type="button"
+        @click="handleDownload"
+      >
+        Download
+      </button>
+    </form>
+  </main>
 </template>
+
+<style>
+  @import url(sanitize.css);
+  @import url(sanitize.css/typography.css);
+  @import url(sanitize.css/forms.css);
+  @import url(material-icons/iconfont/filled.css);
+
+  body {
+    background: #121212;
+    color: #fff;
+    font-weight: lighter;
+    height: 100%;
+  }
+
+  main {
+    display: flex;
+    flex-direction: column;
+    max-width: 960px;
+    height: 100%;
+    margin: 0 auto;
+    padding: 0 16px;
+  }
+
+  input[type=text],
+  input[type=number],
+  button,
+  select {
+    border: 1px solid #777;
+    background-color: #101010;
+  }
+
+  button {
+    cursor: pointer;
+  }
+</style>
 
 <style scoped>
   input:invalid {
-    outline: 2px solid red;
+    outline: 2px solid tomato;
   }
 </style>
