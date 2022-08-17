@@ -37,21 +37,21 @@
           <SamplePlayer
             ref="samplePlayers"
             :file="file"
-            @play="handleSamplePlays" class="play"
+            class="play" @play="handleSamplePlays"
           />
           <button
             type="button"
             :disabled="idx === 0"
-            @click="emit('moveUp', file)"
             :title="`Move ${file.name} up one position`"
+            @click="emit('moveUp', file)"
           >
             <span class="material-icons">arrow_back</span>
           </button>
           <button
             type="button"
             :disabled="idx === files.length - 1"
-            @click="emit('moveDown', file)"
             :title="`Move ${file.name} down one position`"
+            @click="emit('moveDown', file)"
           >
             <span class="material-icons">arrow_forward</span>
           </button>
