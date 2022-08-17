@@ -34,13 +34,14 @@
         <div class="controls">
           <SamplePlayer
             ref="samplePlayers"
-            :audio-buffer="file.audio"
+            :file="file"
             @play="handleSamplePlays"
           />
           <button
             type="button"
             :disabled="idx === 0"
             @click="emit('moveUp', file)"
+            :title="`Move ${file.name} up one position`"
           >
             <span class="material-icons">arrow_back</span>
           </button>
@@ -48,6 +49,7 @@
             type="button"
             :disabled="idx === files.length - 1"
             @click="emit('moveDown', file)"
+            :title="`Move ${file.name} down one position`"
           >
             <span class="material-icons">arrow_forward</span>
           </button>

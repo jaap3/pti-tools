@@ -1,11 +1,11 @@
 <script setup lang="ts">
   import { inject } from "vue"
-  import { AudioContextKey } from "@/types"
+  import { AudioContextKey, AudioFile } from "@/types"
 
   const ctx: AudioContext | undefined = inject(AudioContextKey)
 
   const props = defineProps<{
-    audioBuffer: AudioBuffer
+    file: AudioFile
   }>()
 
   const emit = defineEmits<{
@@ -17,7 +17,7 @@
   function play() {
     if (!ctx) return
     emit("play")
-    const { audioBuffer: buffer } = props
+    const { audio: buffer } = props.file
     source = new AudioBufferSourceNode(ctx, { buffer })
     source.connect(ctx.destination)
     source.start(0)
@@ -36,5 +36,5 @@
 </script>
 
 <template>
-  <button type="button" @click="play"><span class="material-icons">play_arrow</span></button>
+  <button type="button" @click="play" :title="`Play ${file.name}`"><span class="material-icons">play_arrow</span></button>
 </template>
