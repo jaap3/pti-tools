@@ -1,6 +1,7 @@
 <script setup lang="ts">
   import { ref } from "vue"
   import SamplePlayer from "@/components/SamplePlayer.vue"
+  import SampleDisplay from "@/components/SampleDisplay.vue"
   import type { AudioFile } from "@/types"
 
   defineProps<{
@@ -31,11 +32,12 @@
     <li v-for="(file, idx) in files" :key="file.name">
       <fieldset>
         <legend>{{ displayName(file.name) }}</legend>
+        <SampleDisplay :file="file" />
         <div class="controls">
           <SamplePlayer
             ref="samplePlayers"
             :file="file"
-            @play="handleSamplePlays"
+            @play="handleSamplePlays" class="play"
           />
           <button
             type="button"
@@ -71,9 +73,18 @@
     padding: 0;
   }
 
+  li {
+    margin: 8px 0;
+  }
+
+  li:nth-child(3n+2) {
+    margin: 8px 8px;
+  }
+
   fieldset {
-    margin: 0 2px 8px;
-    padding: 8px;
+    width: 300px;
+    padding: 8px 0;
+    overflow: hidden;
   }
 
   legend {
@@ -84,7 +95,7 @@
     color: #000;
     font-weight: 400;
     text-align: center;
-    max-width: 144px;
+    max-width: 256px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -92,17 +103,26 @@
 
   .controls {
     display: flex;
+    margin-top: 8px;
     justify-content: center;
     align-items: center;
   }
 
   button {
     font-size: 1.2rem;
+    margin: 0 8px;
     width: 40px;
     height: 40px;
   }
 
+  .play {
+    margin-left: 8px;
+    margin-right: auto;
+  }
+
   .delete {
     background-color: tomato;
+    margin-left: auto;
+    margin-right: 8px;
   }
 </style>

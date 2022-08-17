@@ -62,8 +62,10 @@
 <style scoped>
 fieldset {
   display: flex;
+  padding: 8px 0;
   align-items: center;
   justify-content: center;
+  margin: 16px 0;
 }
 
 input:invalid {
