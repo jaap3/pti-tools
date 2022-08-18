@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import { ref } from "vue"
   import SamplePlayer from "@/components/SamplePlayer.vue"
-  import SampleDisplay from "@/components/SampleDisplay.vue"
+  import SampleWaveform from "@/components/SampleWaveform.vue"
   import type { AudioFile } from "@/types"
 
   defineProps<{
@@ -32,7 +32,8 @@
     <li v-for="(file, idx) in files" :key="file.name">
       <fieldset>
         <legend>{{ displayName(file.name) }}</legend>
-        <SampleDisplay :file="file" />
+        duration: {{ file.audio.duration }}
+        <SampleWaveform :file="file" />
         <div class="controls">
           <SamplePlayer
             ref="samplePlayers"
