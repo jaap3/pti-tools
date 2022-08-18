@@ -80,12 +80,14 @@
   @import url(sanitize.css/typography.css);
   @import url(sanitize.css/forms.css);
   @import url(material-icons/iconfont/filled.css);
+  @import url(@fontsource/manrope/latin-300.css);
 
   body {
     background: #0A0A0A;
     color: #FFFEFE;
     font-weight: lighter;
     height: 100%;
+    font-family: 'Manrope', sans-serif;
   }
 
   main {

@@ -12,6 +12,7 @@
     "test": "jest --coverage"
   },
   "dependencies": {
+    "@fontsource/manrope": "^4.5.11",
     "material-icons": "^1.11.10",
     "sanitize.css": "^13.0.0",
     "vue": "^3.2.37"
