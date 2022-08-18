@@ -54,7 +54,7 @@
     display: block;
     position: relative;
     width: 100%;
-    outline: 1px dashed #cfcfcf;
+    outline: 1px dashed #FFFEFE;
     background: #0a0a0a;
     border-radius: 2rem;
     padding: 2rem;
@@ -64,7 +64,7 @@
 
   label:focus,
   label:focus-within {
-    outline: 1px solid #651f1f;
+    outline: 1px solid #731414;
   }
 
   input {

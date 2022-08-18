@@ -82,8 +82,8 @@
   @import url(material-icons/iconfont/filled.css);
 
   body {
-    background: #121212;
-    color: #fff;
+    background: #0A0A0A;
+    color: #FFFEFE;
     font-weight: lighter;
     height: 100%;
   }
@@ -101,8 +101,8 @@
   input[type="number"],
   button,
   select {
-    border: 1px solid #777;
-    background-color: #101010;
+    border: 1px solid #767677;
+    background-color: #0A0A0A;
   }
 
   button:not(:disabled) {
@@ -110,6 +110,6 @@
   }
 
   button:disabled {
-    color: #777;
+    color: #767677;
   }
 </style>
