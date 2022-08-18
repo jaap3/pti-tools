@@ -36,5 +36,7 @@
 </script>
 
 <template>
-  <button type="button" :title="`Play ${file.name}`" @click="play"><span class="material-icons">play_arrow</span></button>
+  <button type="button" :title="`Play ${file.name}`" @click="play">
+    <span class="material-icons">play_arrow</span>
+  </button>
 </template>

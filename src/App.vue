@@ -9,8 +9,12 @@
 
   import AudioFileInput from "@/components/AudioFileInput.vue"
 
-  const SampleList = defineAsyncComponent(() => import("@/components/SampleList.vue"))
-  const DownloadPti = defineAsyncComponent(() => import("@/components/DownloadPti.vue"))
+  const SampleList = defineAsyncComponent(
+    () => import("@/components/SampleList.vue"),
+  )
+  const DownloadPti = defineAsyncComponent(
+    () => import("@/components/DownloadPti.vue"),
+  )
 
   const selectedFiles: Ref<AudioFile[]> = ref([])
 
@@ -66,10 +70,7 @@
         @move-down="moveFileDown"
         @remove="removeFile"
       />
-      <DownloadPti
-        v-if="selectedFiles.length > 0"
-        :files="selectedFiles"
-      />
+      <DownloadPti v-if="selectedFiles.length > 0" :files="selectedFiles" />
     </form>
   </main>
 </template>
@@ -96,8 +97,8 @@
     padding: 0 16px;
   }
 
-  input[type=text],
-  input[type=number],
+  input[type="text"],
+  input[type="number"],
   button,
   select {
     border: 1px solid #777;

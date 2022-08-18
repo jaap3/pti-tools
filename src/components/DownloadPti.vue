@@ -12,16 +12,16 @@
       instrumentName.value === "" ||
       (instrumentNameInput.value?.reportValidity() ?? false),
   )
-  const fileName: ComputedRef<string> = computed(() => `${instrumentName.value || "stitched"}.pti`)
+  const fileName: ComputedRef<string> = computed(
+    () => `${instrumentName.value || "stitched"}.pti`,
+  )
 
   const props = defineProps<{
     files: AudioFile[]
   }>()
 
   async function handleDownload() {
-    const audio = props.files.map((file) =>
-      file.audio.getChannelData(0),
-    )
+    const audio = props.files.map((file) => file.audio.getChannelData(0))
     const buffer = createBeatSlicedPtiFromSamples(audio, instrumentName.value)
 
     const blob = new Blob([buffer], { type: "application/octet-stream" })
@@ -54,27 +54,27 @@
       type="button"
       @click="handleDownload"
     >
-        <span class="material-icons">download</span>
+      <span class="material-icons">download</span>
     </button>
   </fieldset>
 </template>
 
 <style scoped>
-fieldset {
-  display: flex;
-  padding: 8px 0;
-  align-items: center;
-  justify-content: center;
-  margin: 16px 0;
-}
+  fieldset {
+    display: flex;
+    padding: 8px 0;
+    align-items: center;
+    justify-content: center;
+    margin: 16px 0;
+  }
 
-input:invalid {
-  outline: 2px solid tomato;
-}
+  input:invalid {
+    outline: 2px solid tomato;
+  }
 
-button {
-  width: 40px;
-  height: 34px;
-  margin-left: 8px;
-}
+  button {
+    width: 40px;
+    height: 34px;
+    margin-left: 8px;
+  }
 </style>
