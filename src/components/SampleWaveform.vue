@@ -66,7 +66,7 @@
       } else {
         y =
           (buffer[Math.floor((i / samplesToDraw) * bufferLength)] || 0) * yScale
-        if (y !== prevY) {
+        if (y !== prevY || i === samplesToDraw) {
           x = (i / samplesToDraw) * width
           if (skipped) ctx.lineTo(x, prevY)
           ctx.lineTo(x, (prevY = y))
