@@ -5,7 +5,7 @@
   import SamplePlayer from "@/components/SamplePlayer.vue"
   import SampleWaveform from "@/components/SampleWaveform.vue"
 
-  defineProps<{
+  const props = defineProps<{
     file: AudioFile
     canMoveUp: boolean
     canMoveDown: boolean
@@ -33,6 +33,11 @@
 
   function stop() {
     samplePlayer.value?.stop()
+  }
+
+  function handleRemove() {
+    stop()
+    emit("remove", props.file)
   }
 
   defineExpose({
@@ -69,7 +74,7 @@
       >
         <span class="material-icons">arrow_forward</span>
       </button>
-      <button type="button" class="delete" @click.once="emit('remove', file)"
+      <button type="button" class="delete" @click.once="handleRemove"
         :title="`Remove ${file.name} from the list of sample`">
         <span class="material-icons">delete</span>
       </button>
