@@ -3,6 +3,8 @@
   import type { AudioFile } from "@/types"
   import { AudioContextKey } from "@/types"
 
+  const sizeThreshold = 1024 * 1024 * 10;
+  const durationThreshold = 45;
   const ctx: AudioContext | undefined = inject(AudioContextKey)
 
   defineProps({
@@ -23,9 +25,18 @@
     const files = Array.from(input.files ?? [])
     const audioFiles: AudioFile[] = []
     for (const file of files) {
+      if (file.size > sizeThreshold) {
+        console.log(`${file.name} is too large.`)
+        continue
+      }
+      const audio = await ctx.decodeAudioData(await file.arrayBuffer())
+      if (audio.duration > durationThreshold) {
+        console.log(`${file.name} is too long.`)
+        continue
+      }
       audioFiles.push({
         name: file.name,
-        audio: await ctx.decodeAudioData(await file.arrayBuffer()),
+        audio,
       })
     }
     emit("filesSelected", audioFiles)
