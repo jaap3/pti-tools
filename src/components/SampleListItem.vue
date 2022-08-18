@@ -120,14 +120,14 @@
     background: #121212;
   }
 
-  button {
-    font-size: 1.2rem;
+  ::v-deep button {
     margin: 0 8px;
     width: 40px;
     height: 40px;
+    line-height: 1;
   }
 
-  .play {
+  ::v-deep .play {
     margin-left: 0;
     margin-right: auto;
   }
