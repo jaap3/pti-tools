@@ -85,7 +85,7 @@
 <style scoped>
   fieldset {
     width: 300px;
-    padding: 8px 0;
+    padding: 8px 0 0;
     overflow: hidden;
   }
 
@@ -114,8 +114,10 @@
   .controls {
     display: flex;
     margin-top: 8px;
+    padding: 8px;
     justify-content: center;
     align-items: center;
+    background: #121212;
   }
 
   button {
@@ -126,13 +128,13 @@
   }
 
   .play {
-    margin-left: 8px;
+    margin-left: 0;
     margin-right: auto;
   }
 
   .delete {
     background-color: tomato;
     margin-left: auto;
-    margin-right: 8px;
+    margin-right: 0;
   }
 </style>
