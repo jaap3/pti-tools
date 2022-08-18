@@ -100,10 +100,6 @@
     align-items: center;
   }
 
-  label {
-    text-align: bottom;
-  }
-
   button {
     width: 40px;
     height: 34px;
