@@ -35,6 +35,13 @@
     samplePlayer.value?.stop()
   }
 
+  function togglePlayback() {
+    const { value: player } = samplePlayer
+    if (!player) return
+    const { isPlaying, play, stop } = player
+    isPlaying ? stop() : play()
+  }
+
   function handleRemove() {
     stop()
     emit("remove", props.file)
@@ -50,7 +57,7 @@
       <span class="name">{{ shortenString(displayName(file.name), 26) }}</span>
       <time :datetime="file.audio.duration.toFixed(3)">{{ displayDuration(file.audio.duration) }}</time>
     </legend>
-    <SampleWaveform :file="file" />
+    <SampleWaveform :file="file" @click="togglePlayback"/>
     <div class="controls" title="">
       <SamplePlayer
         ref="samplePlayer"
