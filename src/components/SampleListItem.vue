@@ -24,7 +24,9 @@
     const { length } = str
     if (length <= maxLength) return str
     const halfLength = Math.floor(maxLength / 2)
-    return str.substring(0, halfLength) + "…" + str.substring(length - halfLength)
+    return (
+      str.substring(0, halfLength) + "…" + str.substring(length - halfLength)
+    )
   }
 
   function displayName(fileName: string) {
@@ -52,12 +54,18 @@
   })
 </script>
 <template>
-  <fieldset :title="`${displayName(file.name)} - ${displayDuration(file.audio.duration)}`">
+  <fieldset
+    :title="`${displayName(file.name)} - ${displayDuration(
+      file.audio.duration,
+    )}`"
+  >
     <legend>
       <span class="name">{{ shortenString(displayName(file.name), 26) }}</span>
-      <time :datetime="file.audio.duration.toFixed(3)">{{ displayDuration(file.audio.duration) }}</time>
+      <time :datetime="file.audio.duration.toFixed(3)">{{
+        displayDuration(file.audio.duration)
+      }}</time>
     </legend>
-    <SampleWaveform :file="file" @click="togglePlayback"/>
+    <SampleWaveform :file="file" @click="togglePlayback" />
     <div class="controls" title="">
       <SamplePlayer
         ref="samplePlayer"
@@ -81,8 +89,12 @@
       >
         <span class="material-icons">arrow_forward</span>
       </button>
-      <button type="button" class="delete" @click.once="handleRemove"
-        :title="`Remove ${file.name} from the list of sample`">
+      <button
+        type="button"
+        class="delete"
+        :title="`Remove ${file.name} from the list of sample`"
+        @click.once="handleRemove"
+      >
         <span class="material-icons">delete</span>
       </button>
     </div>

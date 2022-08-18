@@ -41,10 +41,22 @@
 </script>
 
 <template>
-  <button :class="$attrs['class']" type="button" :title="`Play ${file.name}`" @click="play" v-if="!isPlaying">
+  <button
+    v-if="!isPlaying"
+    :class="$attrs['class']"
+    type="button"
+    :title="`Play ${file.name}`"
+    @click="play"
+  >
     <span class="material-icons">play_arrow</span>
   </button>
-  <button :class="$attrs['class']" type="button" :title="`Stop playing ${file.name}`" @click="stop" v-if="isPlaying">
+  <button
+    v-if="isPlaying"
+    :class="$attrs['class']"
+    type="button"
+    :title="`Stop playing ${file.name}`"
+    @click="stop"
+  >
     <span class="material-icons">stop</span>
   </button>
 </template>

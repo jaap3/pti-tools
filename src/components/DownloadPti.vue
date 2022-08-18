@@ -21,7 +21,6 @@
   )
   const totalSlices: ComputedRef<number> = computed(() => props.files.length)
 
-
   const props = defineProps<{
     files: AudioFile[]
   }>()
@@ -45,8 +44,13 @@
 
 <template>
   <fieldset>
-    <span><label>Slices: <output :value="totalSlices"/></label></span>
-    <span><label>Duration: <output :value="displayDuration(totalDuration)"/></label></span>
+    <span
+      ><label>Slices: <output :value="totalSlices" /></label
+    ></span>
+    <span
+      ><label
+        >Duration: <output :value="displayDuration(totalDuration)" /></label
+    ></span>
     <span>
       <label
         >Instrument name:

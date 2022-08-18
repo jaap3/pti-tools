@@ -54,7 +54,7 @@
     display: block;
     position: relative;
     width: 100%;
-    outline: 1px dashed #FFFEFE;
+    outline: 1px dashed #fffefe;
     background: #0a0a0a;
     border-radius: 2rem;
     padding: 2rem;

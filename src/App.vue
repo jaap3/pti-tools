@@ -83,11 +83,11 @@
   @import url(@fontsource/manrope/latin-300.css);
 
   body {
-    background: #0A0A0A;
-    color: #FFFEFE;
+    background: #0a0a0a;
+    color: #fffefe;
     font-weight: lighter;
     height: 100%;
-    font-family: 'Manrope', sans-serif;
+    font-family: "Manrope", sans-serif;
   }
 
   main {
@@ -104,7 +104,7 @@
   button,
   select {
     border: 1px solid #767677;
-    background-color: #0A0A0A;
+    background-color: #0a0a0a;
   }
 
   button:not(:disabled) {
