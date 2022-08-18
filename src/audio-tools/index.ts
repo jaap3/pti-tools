@@ -67,3 +67,9 @@ export function getWavFile(data: Float32Array) {
   new Int16Array(buffer, headerLength).set(float32ToInt16(data))
   return new Blob([buffer], { type: "audio/wav" })
 }
+
+export function displayDuration(duration: number) {
+  return duration < 1
+    ? `${(duration * 1000).toFixed()}ms`
+    : `${duration.toFixed(3)}s`
+}

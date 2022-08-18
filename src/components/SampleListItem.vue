@@ -1,6 +1,7 @@
 <script setup lang="ts">
   import { ref } from "vue"
   import type { AudioFile } from "@/types"
+  import { displayDuration } from "@/audio-tools"
   import SamplePlayer from "@/components/SamplePlayer.vue"
   import SampleWaveform from "@/components/SampleWaveform.vue"
 
@@ -19,6 +20,13 @@
 
   const samplePlayer = ref<InstanceType<typeof SamplePlayer> | null>(null)
 
+  function shortenString(str: string, maxLength: number) {
+    const { length } = str
+    if (length <= maxLength) return str
+    const halfLength = Math.floor(maxLength / 2)
+    return str.substring(0, halfLength) + "…" + str.substring(length - halfLength)
+  }
+
   function displayName(fileName: string) {
     return fileName.replace(/\.[^.]+$/, "")
   }
@@ -32,12 +40,13 @@
   })
 </script>
 <template>
-  <fieldset>
+  <fieldset :title="`${displayName(file.name)} - ${displayDuration(file.audio.duration)}`">
     <legend>
-      {{ displayName(file.name) }}
+      <span class="name">{{ shortenString(displayName(file.name), 26) }}</span>
+      <time :datetime="file.audio.duration.toFixed(3)">{{ displayDuration(file.audio.duration) }}</time>
     </legend>
     <SampleWaveform :file="file" />
-    <div class="controls">
+    <div class="controls" title="">
       <SamplePlayer
         ref="samplePlayer"
         :file="file"
@@ -60,7 +69,8 @@
       >
         <span class="material-icons">arrow_forward</span>
       </button>
-      <button type="button" class="delete" @click.once="emit('remove', file)">
+      <button type="button" class="delete" @click.once="emit('remove', file)"
+        :title="`Remove ${file.name} from the list of sample`">
         <span class="material-icons">delete</span>
       </button>
     </div>
@@ -75,17 +85,25 @@
   }
 
   legend {
-    display: block;
+    display: flex;
     width: 100%;
-    padding: 0 8px;
+    margin: 0 auto;
+    padding: 0 4px;
     background-color: #fff;
     color: #000;
     font-weight: 400;
-    text-align: center;
-    max-width: 256px;
+    max-width: 284px;
+  }
+
+  legend span {
+    margin-right: auto;
     overflow: hidden;
-    text-overflow: ellipsis;
     white-space: nowrap;
+    margin-right: 4px;
+  }
+
+  legend time {
+    margin-left: auto;
   }
 
   .controls {
