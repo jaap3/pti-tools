@@ -23,7 +23,7 @@
 </script>
 
 <template>
-  <ul>
+  <ol>
     <li v-for="(file, idx) in files" :key="file.name">
       <SampleListItem
         ref="sampleListItems"
@@ -36,11 +36,11 @@
         @remove="(file) => emit('remove', file)"
       />
     </li>
-  </ul>
+  </ol>
 </template>
 
 <style scoped>
-  ul {
+  ol {
     display: flex;
     flex-wrap: wrap;
     list-style: none;
