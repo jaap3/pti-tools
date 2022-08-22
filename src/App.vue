@@ -5,7 +5,7 @@
   import { AudioContextKey } from "@/types"
 
   import { sumChannels } from "@/audio-tools"
-  import { MAX_SLICES } from "@/pti-file-format"
+
 
   import ShowMessages from "@/components/messages/ShowMessages.vue"
   import AudioFileInput from "@/components/AudioFileInput.vue"
@@ -22,6 +22,8 @@
   )
 
   const selectedFiles: Ref<AudioFile[]> = ref([])
+
+  const MAX_SLICES = 48;
 
   const maxSlicesReached = computed(
     () => selectedFiles.value.length >= MAX_SLICES,
