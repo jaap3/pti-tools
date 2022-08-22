@@ -2,7 +2,12 @@
   import { inject } from "vue"
   import type { AudioFile } from "@/types"
   import { AudioContextKey } from "@/types"
+  import { useMessages } from "@/stores/messages"
 
+  const messagesStore = useMessages()
+
+  const sizeThreshold = 1024 * 1024 * 10
+  const durationThreshold = 45
   const ctx: AudioContext | undefined = inject(AudioContextKey)
 
   defineProps({
@@ -17,15 +22,34 @@
     (e: "filesSelected", files: AudioFile[]): void
   }>()
 
+  function displayBytes(bytes: number): string {
+    return `${(bytes / (1024 * 1024)).toFixed(1)}MB`
+  }
+
   async function handleInput(evt: Event) {
     if (!ctx) return
     const input = evt.target as HTMLInputElement
     const files = Array.from(input.files ?? [])
     const audioFiles: AudioFile[] = []
     for (const file of files) {
+      if (file.size > sizeThreshold) {
+        messagesStore.addMessage(
+          `"${file.name}" is too large (>${displayBytes(sizeThreshold)}).`,
+          "warning",
+        )
+        continue
+      }
+      const audio = await ctx.decodeAudioData(await file.arrayBuffer())
+      if (audio.duration > durationThreshold) {
+        messagesStore.addMessage(
+          `"${file.name}" is too long (>${durationThreshold}s).`,
+          "warning",
+        )
+        continue
+      }
       audioFiles.push({
         name: file.name,
-        audio: await ctx.decodeAudioData(await file.arrayBuffer()),
+        audio,
       })
     }
     emit("filesSelected", audioFiles)

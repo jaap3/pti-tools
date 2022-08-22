@@ -7,6 +7,7 @@
   import { sumChannels } from "@/audio-tools"
   import { MAX_SLICES } from "@/pti-file-format"
 
+  import ShowMessages from "@/components/messages/ShowMessages.vue"
   import AudioFileInput from "@/components/AudioFileInput.vue"
 
   const SampleList = defineAsyncComponent(
@@ -58,6 +59,7 @@
 
 <template>
   <main @click="activateAudioContext">
+    <ShowMessages />
     <form>
       <AudioFileInput
         :disabled="selectedFiles.length >= MAX_SLICES"
@@ -81,6 +83,7 @@
   @import url(sanitize.css/forms.css);
   @import url(material-icons/iconfont/filled.css);
   @import url(@fontsource/manrope/latin-300.css);
+  @import url(@fontsource/manrope/latin-400.css);
 
   body {
     background: #0a0a0a;
