@@ -36,6 +36,7 @@
         messagesStore.addMessage(
           `"${file.name}" is too large (>${displayBytes(sizeThreshold)}).`,
           "warning",
+          { timeout: 8500 },
         )
         continue
       }
@@ -44,6 +45,7 @@
         messagesStore.addMessage(
           `"${file.name}" is too long (>${durationThreshold}s).`,
           "warning",
+          { timeout: 8500 },
         )
         continue
       }

@@ -67,6 +67,7 @@
         messagesStore.addMessage(
           `"${file.name}" not loaded, max. ${MAX_SLICES} slices reached.`,
           "warning",
+          { timeout: 8500 },
         )
         break
       }
