@@ -27,6 +27,12 @@
     () => selectedFiles.value.length >= MAX_SLICES,
   )
 
+  const totalDuration = computed(() =>
+    selectedFiles.value.reduce((sum, file) => sum + file.audio.duration, 0),
+  )
+
+  const durationExceeded = computed(() => totalDuration.value > 45)
+
   const audioContext = new AudioContext({
     latencyHint: "interactive",
     sampleRate: 44100,
@@ -44,9 +50,13 @@
         timeout: 950,
       })
     } else {
-      messagesStore.addMessage("Audio context closed, please reload.", "error", {
-        id: "audio-context-state",
-      })
+      messagesStore.addMessage(
+        "Audio context closed, please reload.",
+        "error",
+        {
+          id: "audio-context-state",
+        },
+      )
     }
   }
 
@@ -71,26 +81,50 @@
         )
         break
       }
+      if (totalDuration.value + file.audio.duration > 50) {
+        messagesStore.addMessage(
+          `"${file.name}" not loaded, total duration > 45.`,
+          "warning",
+          { timeout: 8500 },
+        )
+        break
+      }
       file.audio = sumChannels(file.audio, audioContext)
       selectedFiles.value = [...selectedFiles.value, file]
     }
   }
 
-  watch(maxSlicesReached, (newValue) => {
-    messagesStore.removeMessage("file-loader-status")
-    if (newValue) {
-      messagesStore.addMessage(
-        `Max. slices reached (${MAX_SLICES}): Remove a file to enable the file loader.`,
-        "info",
-        { id: "file-loader-status" },
-      )
-    } else {
-      messagesStore.addMessage(`File loader enabled.`, "success", {
-        id: "file-loader-status",
-        timeout: 950,
-      })
-    }
-  })
+  watch(
+    maxSlicesReached,
+    (newValue) => {
+      messagesStore.removeMessage("max-slices-reached")
+      if (newValue) {
+        messagesStore.addMessage(
+          `Max. slices reached (${MAX_SLICES}): Remove a file to enable the file loader.`,
+          "info",
+          { id: "max-slices-reached" },
+        )
+      }
+    },
+    { immediate: true },
+  )
+
+  watch(
+    durationExceeded,
+    (newValue) => {
+      messagesStore.removeMessage("duration-exceeded")
+      if (newValue) {
+        messagesStore.addMessage(
+          `Total duration exceeds 45s (${totalDuration.value.toFixed(
+            3,
+          )}s): Remove a file to enable the file loader.`,
+          "info",
+          { id: "duration-exceeded" },
+        )
+      }
+    },
+    { immediate: true },
+  )
 
   watch(selectedFiles, (newValue) => {
     if (newValue.length) {
@@ -120,7 +154,7 @@
     <ShowMessages />
     <form>
       <AudioFileInput
-        :disabled="maxSlicesReached"
+        :disabled="maxSlicesReached || totalDuration > 45"
         @files-selected="handleFilesSelected"
       />
       <SampleList

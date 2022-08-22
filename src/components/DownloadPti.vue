@@ -49,7 +49,10 @@
     ></span>
     <span
       ><label
-        >Duration: <output :value="displayDuration(totalDuration)" /></label
+        >Duration:
+        <output
+          :class="{ error: totalDuration > 45 }"
+          :value="displayDuration(totalDuration)" /></label
     ></span>
     <span>
       <label
@@ -64,7 +67,7 @@
     </span>
     <span>
       <button
-        :disabled="!instrumentNameValid"
+        :disabled="!instrumentNameValid || totalDuration > 45"
         :title="`Download ${fileName}`"
         type="button"
         @click="handleDownload"
@@ -102,6 +105,10 @@
     display: flex;
     padding: 8px;
     align-items: center;
+  }
+
+  output.error {
+    color: #731414;
   }
 
   button {
