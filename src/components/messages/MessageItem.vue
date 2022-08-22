@@ -1,12 +1,21 @@
 <script setup lang="ts">
   import { onMounted } from "vue"
-  import { Message } from "@/types"
+  import type { Message } from "@/stores/messages"
 
-  defineProps<{ message: Message }>()
+  const props = defineProps<{ message: Message }>()
 
   const emit = defineEmits<{
     (e: "remove"): void
   }>()
+
+  onMounted(() => {
+    const { timeout } = props.message
+    if (timeout ?? -1 > 0) {
+      setTimeout(() => {
+        emit("remove")
+      }, timeout)
+    }
+  })
 </script>
 
 <template>
