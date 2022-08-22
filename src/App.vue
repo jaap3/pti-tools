@@ -61,9 +61,15 @@
     for (const file of files) {
       if (selectedFiles.value.length >= MAX_SLICES) break
       file.audio = sumChannels(file.audio, audioContext)
-      selectedFiles.value.push(file)
+      selectedFiles.value = [...selectedFiles.value, file]
     }
   }
+
+  watch(selectedFiles, (newValue) => {
+    if (newValue.length) {
+      activateAudioContext()
+    }
+  })
 
   function moveFileUp(file: AudioFile) {
     const idx = selectedFiles.value.indexOf(file)
