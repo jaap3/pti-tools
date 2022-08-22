@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { provide, ref, defineAsyncComponent } from "vue"
+  import { provide, ref, defineAsyncComponent, computed, watch } from "vue"
   import type { Ref } from "vue"
   import type { AudioFile } from "@/types"
   import { AudioContextKey } from "@/types"
@@ -22,6 +22,10 @@
   )
 
   const selectedFiles: Ref<AudioFile[]> = ref([])
+
+  const maxSlicesReached = computed(
+    () => selectedFiles.value.length >= MAX_SLICES,
+  )
 
   const audioContext = new AudioContext({
     latencyHint: "interactive",
@@ -59,11 +63,33 @@
 
   function handleFilesSelected(files: AudioFile[]) {
     for (const file of files) {
-      if (selectedFiles.value.length >= MAX_SLICES) break
+      if (maxSlicesReached.value) {
+        messagesStore.addMessage(
+          `"${file.name}" not loaded, max. ${MAX_SLICES} slices reached.`,
+          "warning",
+        )
+        break
+      }
       file.audio = sumChannels(file.audio, audioContext)
       selectedFiles.value = [...selectedFiles.value, file]
     }
   }
+
+  watch(maxSlicesReached, (newValue) => {
+    messagesStore.removeMessage("file-loader-status")
+    if (newValue) {
+      messagesStore.addMessage(
+        `Max. slices reached (${MAX_SLICES}): Remove a file to enable the file loader.`,
+        "info",
+        { id: "file-loader-status" },
+      )
+    } else {
+      messagesStore.addMessage(`File loader enabled.`, "success", {
+        id: "file-loader-status",
+        timeout: 950,
+      })
+    }
+  })
 
   watch(selectedFiles, (newValue) => {
     if (newValue.length) {
@@ -93,7 +119,7 @@
     <ShowMessages />
     <form>
       <AudioFileInput
-        :disabled="selectedFiles.length >= MAX_SLICES"
+        :disabled="maxSlicesReached"
         @files-selected="handleFilesSelected"
       />
       <SampleList
