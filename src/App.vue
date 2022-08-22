@@ -6,7 +6,6 @@
 
   import { sumChannels } from "@/audio-tools"
 
-
   import ShowMessages from "@/components/messages/ShowMessages.vue"
   import AudioFileInput from "@/components/AudioFileInput.vue"
 
@@ -23,7 +22,7 @@
 
   const selectedFiles: Ref<AudioFile[]> = ref([])
 
-  const MAX_SLICES = 48;
+  const MAX_SLICES = 48
 
   const maxSlicesReached = computed(
     () => selectedFiles.value.length >= MAX_SLICES,
