@@ -44,15 +44,28 @@
     display: flex;
     flex-wrap: wrap;
     list-style: none;
-    margin: 0;
+    margin: 0 auto;
     padding: 0;
+    max-width: 300px;
   }
 
   li {
     margin: 8px 0;
   }
 
-  li:nth-child(3n + 2) {
-    margin: 8px 8px;
+  @media only screen and (min-width: 655px) {
+    ol {
+      max-width: 608px;
+    }
+  }
+
+  @media only screen and (min-width: 976px) {
+    ol {
+      max-width: 960px;
+    }
+
+    li:nth-child(3n + 2) {
+      margin: 8px 8px;
+    }
   }
 </style>

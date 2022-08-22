@@ -66,14 +66,17 @@
       /></label>
     </span>
     <span>
-      <button
-        :disabled="!instrumentNameValid || totalDuration > 45"
-        :title="`Download ${fileName}`"
-        type="button"
-        @click="handleDownload"
-      >
-        <span class="material-icons">download</span>
-      </button>
+      <label>
+        <span class="downloadLabel">Download: </span>
+        <button
+          :disabled="!instrumentNameValid || totalDuration > 45"
+          :title="`Download ${fileName}`"
+          type="button"
+          @click="handleDownload"
+        >
+          <span class="material-icons">download</span>
+        </button>
+      </label>
     </span>
   </fieldset>
 </template>
@@ -81,30 +84,26 @@
 <style scoped>
   fieldset {
     display: flex;
+    align-items: stretch;
+    flex-wrap: wrap;
     padding: 0;
-    align-items: center;
-    justify-content: center;
     margin: 16px 0;
     padding-top: 4px;
     background: #121212;
     color: #fefefe;
     border: 0;
-    align-items: stretch;
-    height: 48px;
-  }
-
-  input:invalid {
-    outline: 2px solid #731414;
-  }
-
-  fieldset > span:not(:last-of-type) {
-    border-right: 1px solid #767677;
+    align-items: center;
   }
 
   fieldset > span {
     display: flex;
+    flex-basis: 100%;
     padding: 8px;
     align-items: center;
+  }
+
+  input:invalid {
+    outline: 2px solid #731414;
   }
 
   output.error {
@@ -114,5 +113,24 @@
   button {
     width: 40px;
     height: 34px;
+    vertical-align: middle;
+  }
+
+  @media only screen and (min-width: 748px) {
+    fieldset {
+      justify-content: center;
+    }
+
+    fieldset > span {
+      flex-basis: auto;
+    }
+
+    .downloadLabel {
+      display: none;
+    }
+
+    fieldset > span:not(:last-of-type) {
+      border-right: 1px solid #767677;
+    }
   }
 </style>
