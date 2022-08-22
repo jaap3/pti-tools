@@ -75,6 +75,22 @@
     }
   }
 
+  watch(maxSlicesReached, (newValue) => {
+    messagesStore.removeMessage("file-loader-status")
+    if (newValue) {
+      messagesStore.addMessage(
+        `Max. slices reached (${MAX_SLICES}): Remove a file to enable the file loader.`,
+        "info",
+        { id: "file-loader-status" },
+      )
+    } else {
+      messagesStore.addMessage(`File loader enabled.`, "success", {
+        id: "file-loader-status",
+        timeout: 950,
+      })
+    }
+  })
+
   watch(selectedFiles, (newValue) => {
     if (newValue.length) {
       activateAudioContext()
