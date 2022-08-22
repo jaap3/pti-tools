@@ -10,6 +10,10 @@
   import ShowMessages from "@/components/messages/ShowMessages.vue"
   import AudioFileInput from "@/components/AudioFileInput.vue"
 
+  import { useMessages } from "@/stores/messages"
+
+  const messagesStore = useMessages()
+
   const SampleList = defineAsyncComponent(
     () => import("@/components/SampleList.vue"),
   )
@@ -23,6 +27,27 @@
     latencyHint: "interactive",
     sampleRate: 44100,
   })
+
+  function handleAudioContextStateChange() {
+    messagesStore.removeMessage("audio-context-state")
+    if (audioContext.state === "suspended") {
+      messagesStore.addMessage("Load a file to enable audio.", "info", {
+        id: "audio-context-state",
+      })
+    } else if (audioContext.state === "running") {
+      messagesStore.addMessage("Audio enabled.", "success", {
+        id: "audio-context-state",
+        timeout: 950,
+      })
+    } else {
+      messagesStore.addMessage("Audio context closed, please reload.", "error", {
+        id: "audio-context-state",
+      })
+    }
+  }
+
+  audioContext.addEventListener("statechange", handleAudioContextStateChange)
+  handleAudioContextStateChange()
 
   provide(AudioContextKey, audioContext)
 
