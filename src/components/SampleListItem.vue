@@ -139,14 +139,14 @@
     background: #121212;
   }
 
-  ::v-deep button {
+  :deep(button) {
     margin: 0 8px;
     width: 40px;
     height: 40px;
     line-height: 1;
   }
 
-  ::v-deep .play {
+  :deep(.play) {
     margin-left: 0;
     margin-right: auto;
   }
