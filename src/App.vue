@@ -1,8 +1,8 @@
 <script setup lang="ts">
-  import { provide, ref, defineAsyncComponent, computed, watch } from "vue"
+  import { inject, ref, defineAsyncComponent, computed, watch } from "vue"
   import type { Ref } from "vue"
   import type { AudioFile } from "@/types"
-  import { AudioContextKey } from "@/types"
+  import { AudioContextKey } from "@/constants"
 
   import { sumChannels } from "@/audio-tools"
 
@@ -11,6 +11,7 @@
 
   import { useMessages } from "@/stores/messages"
 
+  const audioContext: AudioContext | undefined = inject(AudioContextKey)
   const messagesStore = useMessages()
 
   const SampleList = defineAsyncComponent(
@@ -34,18 +35,13 @@
 
   const durationExceeded = computed(() => totalDuration.value > 45)
 
-  const audioContext = new AudioContext({
-    latencyHint: "interactive",
-    sampleRate: 44100,
-  })
-
   function handleAudioContextStateChange() {
     messagesStore.removeMessage("audio-context-state")
-    if (audioContext.state === "suspended") {
+    if (audioContext?.state === "suspended") {
       messagesStore.addMessage("Load a file to enable audio.", "info", {
         id: "audio-context-state",
       })
-    } else if (audioContext.state === "running") {
+    } else if (audioContext?.state === "running") {
       messagesStore.addMessage("Audio enabled.", "success", {
         id: "audio-context-state",
         timeout: 950,
@@ -61,18 +57,17 @@
     }
   }
 
-  audioContext.addEventListener("statechange", handleAudioContextStateChange)
+  audioContext?.addEventListener("statechange", handleAudioContextStateChange)
   handleAudioContextStateChange()
 
-  provide(AudioContextKey, audioContext)
-
   const activateAudioContext = () => {
-    if (audioContext.state === "suspended") {
-      audioContext.resume()
+    if (audioContext?.state === "suspended") {
+      audioContext?.resume()
     }
   }
 
   function handleFilesSelected(files: AudioFile[]) {
+    if (audioContext === undefined) return
     for (const file of files) {
       if (maxSlicesReached.value) {
         messagesStore.addMessage(

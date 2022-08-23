@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import { inject } from "vue"
   import type { AudioFile } from "@/types"
-  import { AudioContextKey } from "@/types"
+  import { AudioContextKey } from "@/constants"
   import { useMessages } from "@/stores/messages"
 
   const messagesStore = useMessages()
