@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import { inject, ref } from "vue"
-  import type { AudioFile } from "@/types"
+  import type { AudioFile } from "@/stores/audiofiles"
   import { AudioContextKey } from "@/constants"
 
   const ctx: AudioContext | undefined = inject(AudioContextKey)
