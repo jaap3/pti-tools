@@ -23,7 +23,7 @@
     isPlaying.value = true
     const { audio: buffer } = props.file
     source = new AudioBufferSourceNode(ctx, { buffer })
-    source.addEventListener("ended", () => isPlaying.value = false)
+    source.addEventListener("ended", () => (isPlaying.value = false))
     source.connect(ctx.destination)
     source.start(0)
   }

@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import { ref } from "vue"
-  import type { AudioFile } from "@/types"
+  import type { AudioFile } from "@/stores/audiofiles"
   import { displayDuration } from "@/audio-tools"
   import SamplePlayer from "@/components/SamplePlayer.vue"
   import SampleWaveform from "@/components/SampleWaveform.vue"
