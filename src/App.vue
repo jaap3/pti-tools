@@ -1,39 +1,16 @@
 <script setup lang="ts">
-  import { inject, ref, defineAsyncComponent, computed, watch } from "vue"
-  import type { Ref } from "vue"
-  import type { AudioFile } from "@/types"
+  import { inject } from "vue"
   import { AudioContextKey } from "@/constants"
-
-  import { sumChannels } from "@/audio-tools"
 
   import ShowMessages from "@/components/messages/ShowMessages.vue"
   import AudioFileInput from "@/components/AudioFileInput.vue"
+  import SampleList from "@/components/SampleList.vue"
+  import DownloadPti from "@/components/DownloadPti.vue"
 
   import { useMessages } from "@/stores/messages"
 
   const audioContext: AudioContext | undefined = inject(AudioContextKey)
   const messagesStore = useMessages()
-
-  const SampleList = defineAsyncComponent(
-    () => import("@/components/SampleList.vue"),
-  )
-  const DownloadPti = defineAsyncComponent(
-    () => import("@/components/DownloadPti.vue"),
-  )
-
-  const selectedFiles: Ref<AudioFile[]> = ref([])
-
-  const MAX_SLICES = 48
-
-  const maxSlicesReached = computed(
-    () => selectedFiles.value.length >= MAX_SLICES,
-  )
-
-  const totalDuration = computed(() =>
-    selectedFiles.value.reduce((sum, file) => sum + file.audio.duration, 0),
-  )
-
-  const durationExceeded = computed(() => totalDuration.value > 45)
 
   function handleAudioContextStateChange() {
     messagesStore.removeMessage("audio-context-state")
@@ -65,102 +42,15 @@
       audioContext?.resume()
     }
   }
-
-  function handleFilesSelected(files: AudioFile[]) {
-    if (audioContext === undefined) return
-    for (const file of files) {
-      if (maxSlicesReached.value) {
-        messagesStore.addMessage(
-          `"${file.name}" not loaded, max. ${MAX_SLICES} slices reached.`,
-          "warning",
-          { timeout: 8500 },
-        )
-        break
-      }
-      if (totalDuration.value + file.audio.duration > 50) {
-        messagesStore.addMessage(
-          `"${file.name}" not loaded, total duration > 45.`,
-          "warning",
-          { timeout: 8500 },
-        )
-        break
-      }
-      file.audio = sumChannels(file.audio, audioContext)
-      selectedFiles.value = [...selectedFiles.value, file]
-    }
-  }
-
-  watch(
-    maxSlicesReached,
-    (newValue) => {
-      messagesStore.removeMessage("max-slices-reached")
-      if (newValue) {
-        messagesStore.addMessage(
-          `Max. slices reached (${MAX_SLICES}): Remove a file to enable the file loader.`,
-          "info",
-          { id: "max-slices-reached" },
-        )
-      }
-    },
-    { immediate: true },
-  )
-
-  watch(
-    durationExceeded,
-    (newValue) => {
-      messagesStore.removeMessage("duration-exceeded")
-      if (newValue) {
-        messagesStore.addMessage(
-          `Total duration exceeds 45s (${totalDuration.value.toFixed(
-            3,
-          )}s): Remove a file to enable the file loader.`,
-          "info",
-          { id: "duration-exceeded" },
-        )
-      }
-    },
-    { immediate: true },
-  )
-
-  watch(selectedFiles, (newValue) => {
-    if (newValue.length) {
-      activateAudioContext()
-    }
-  })
-
-  function moveFileUp(file: AudioFile) {
-    const idx = selectedFiles.value.indexOf(file)
-    selectedFiles.value.splice(idx, 1)
-    selectedFiles.value.splice(idx - 1, 0, file)
-  }
-
-  function moveFileDown(file: AudioFile) {
-    const idx = selectedFiles.value.indexOf(file)
-    selectedFiles.value.splice(idx, 1)
-    selectedFiles.value.splice(idx + 1, 0, file)
-  }
-
-  function removeFile(file: AudioFile) {
-    selectedFiles.value.splice(selectedFiles.value.indexOf(file), 1)
-  }
 </script>
 
 <template>
   <main @click="activateAudioContext">
     <ShowMessages />
     <form>
-      <AudioFileInput
-        :disabled="maxSlicesReached || totalDuration > 45"
-        @files-selected="handleFilesSelected"
-      />
-      <SampleList
-        v-if="selectedFiles.length > 0"
-        :files="selectedFiles"
-        @move-up="moveFileUp"
-        @move-down="moveFileDown"
-        @remove="removeFile"
-      />
-      <DownloadPti v-if="selectedFiles.length > 0" :files="selectedFiles" />
+      <AudioFileInput />
+      <SampleList />
+      <DownloadPti />
     </form>
   </main>
 </template>

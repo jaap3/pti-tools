@@ -1,10 +1,15 @@
 <script setup lang="ts">
   import type { Ref, ComputedRef } from "vue"
-  import type { AudioFile } from "@/types"
+  import { storeToRefs } from "pinia"
 
   import { ref, computed } from "vue"
   import { displayDuration } from "@/audio-tools"
   import { createBeatSlicedPtiFromSamples } from "@/pti-file-format"
+  import { useAudioFiles } from "@/stores/audiofiles"
+
+  const audioFilesStore = useAudioFiles()
+  const { audioFiles, totalDuration, durationExceeded } =
+    storeToRefs(audioFilesStore)
 
   const instrumentName: Ref<string> = ref("")
   const instrumentNameInput: Ref<HTMLInputElement | null> = ref(null)
@@ -16,17 +21,11 @@
   const fileName: ComputedRef<string> = computed(
     () => `${instrumentName.value || "stitched"}.pti`,
   )
-  const totalDuration: ComputedRef<number> = computed(() =>
-    props.files.reduce((sum, file) => sum + file.audio.duration, 0),
-  )
-  const totalSlices: ComputedRef<number> = computed(() => props.files.length)
-
-  const props = defineProps<{
-    files: AudioFile[]
-  }>()
 
   async function handleDownload() {
-    const audio = props.files.map((file) => file.audio.getChannelData(0))
+    const audio = audioFilesStore.audioFiles.map((file) =>
+      file.audio.getChannelData(0),
+    )
     const buffer = createBeatSlicedPtiFromSamples(audio, instrumentName.value)
 
     const blob = new Blob([buffer], { type: "application/octet-stream" })
@@ -43,15 +42,15 @@
 </script>
 
 <template>
-  <fieldset>
+  <fieldset v-if="audioFiles.length">
     <span
-      ><label>Slices: <output :value="totalSlices" /></label
+      ><label>Slices: <output :value="audioFiles.length" /></label
     ></span>
     <span
       ><label
         >Duration:
         <output
-          :class="{ error: totalDuration > 45 }"
+          :class="{ error: durationExceeded }"
           :value="displayDuration(totalDuration)" /></label
     ></span>
     <span>
@@ -69,7 +68,7 @@
       <label>
         <span class="downloadLabel">Download: </span>
         <button
-          :disabled="!instrumentNameValid || totalDuration > 45"
+          :disabled="!instrumentNameValid || durationExceeded"
           :title="`Download ${fileName}`"
           type="button"
           @click="handleDownload"

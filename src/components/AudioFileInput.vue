@@ -1,60 +1,70 @@
 <script setup lang="ts">
-  import { inject } from "vue"
-  import type { AudioFile } from "@/types"
-  import { AudioContextKey } from "@/constants"
+  import { watch } from "vue"
+  import { storeToRefs } from "pinia"
   import { useMessages } from "@/stores/messages"
+  import { useAudioFiles } from "@/stores/audiofiles"
 
   const messagesStore = useMessages()
+  const audioFilesStore = useAudioFiles()
 
-  const sizeThreshold = 1024 * 1024 * 10
-  const durationThreshold = 45
-  const ctx: AudioContext | undefined = inject(AudioContextKey)
+  const sizeThreshold = 1024 * 1024 * 10 // 10MB
 
-  defineProps({
-    disabled: {
-      type: Boolean,
-      default: false,
-      required: true,
+  const { maxFiles, maxDuration } = audioFilesStore
+  const { maxFilessReached, totalDuration, durationExceeded } =
+    storeToRefs(audioFilesStore)
+
+  watch(
+    maxFilessReached,
+    (newValue) => {
+      messagesStore.removeMessage("max-slices-reached")
+      if (newValue) {
+        messagesStore.addMessage(
+          `Max. files reached (${maxFiles}): Remove a file to enable the file loader.`,
+          "info",
+          { id: "max-slices-reached" },
+        )
+      }
     },
-  })
+    { immediate: true },
+  )
 
-  const emit = defineEmits<{
-    (e: "filesSelected", files: AudioFile[]): void
-  }>()
+  watch(
+    durationExceeded,
+    (newValue) => {
+      messagesStore.removeMessage("duration-exceeded")
+      if (newValue) {
+        messagesStore.addMessage(
+          `Total duration exceeds ${maxDuration} (${totalDuration.value.toFixed(
+            3,
+          )}s): Remove a file to enable the file loader.`,
+          "info",
+          { id: "duration-exceeded" },
+        )
+      }
+    },
+    { immediate: true },
+  )
 
   function displayBytes(bytes: number): string {
     return `${(bytes / (1024 * 1024)).toFixed(1)}MB`
   }
 
   async function handleInput(evt: Event) {
-    if (!ctx) return
     const input = evt.target as HTMLInputElement
     const files = Array.from(input.files ?? [])
-    const audioFiles: AudioFile[] = []
     for (const file of files) {
       if (file.size > sizeThreshold) {
         messagesStore.addMessage(
-          `"${file.name}" is too large (>${displayBytes(sizeThreshold)}).`,
+          `Rejected "${file.name}", too large (>${displayBytes(
+            sizeThreshold,
+          )}).`,
           "warning",
           { timeout: 8500 },
         )
         continue
       }
-      const audio = await ctx.decodeAudioData(await file.arrayBuffer())
-      if (audio.duration > durationThreshold) {
-        messagesStore.addMessage(
-          `"${file.name}" is too long (>${durationThreshold}s).`,
-          "warning",
-          { timeout: 8500 },
-        )
-        continue
-      }
-      audioFiles.push({
-        name: file.name,
-        audio,
-      })
+      audioFilesStore.addFile(file.name, await file.arrayBuffer())
     }
-    emit("filesSelected", audioFiles)
   }
 </script>
 
@@ -69,7 +79,7 @@
       multiple
       type="file"
       accept="audio/*"
-      :disabled="disabled"
+      :disabled="maxFilessReached || durationExceeded"
       @input="handleInput"
     />
   </label>

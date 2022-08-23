@@ -1,18 +1,9 @@
 <script setup lang="ts">
   import { ref } from "vue"
-  import type { AudioFile } from "@/types"
   import SampleListItem from "@/components/SampleListItem.vue"
+  import { useAudioFiles } from "@/stores/audiofiles"
 
-  defineProps<{
-    files: AudioFile[]
-  }>()
-
-  const emit = defineEmits<{
-    (e: "moveUp", files: AudioFile): void
-    (e: "moveDown", files: AudioFile): void
-    (e: "remove", files: AudioFile): void
-  }>()
-
+  const audioFilesStore = useAudioFiles()
   const sampleListItems = ref<InstanceType<typeof SampleListItem>[]>([])
 
   function handleSamplePlays() {
@@ -24,16 +15,16 @@
 
 <template>
   <ol>
-    <li v-for="(file, idx) in files" :key="file.name">
+    <li v-for="(file, idx) in audioFilesStore.audioFiles" :key="file.name">
       <SampleListItem
         ref="sampleListItems"
         :file="file"
         :can-move-up="idx > 0"
-        :can-move-down="idx < files.length - 1"
+        :can-move-down="idx < audioFilesStore.audioFiles.length - 1"
         @play="handleSamplePlays"
-        @move-down="(file) => emit('moveDown', file)"
-        @move-up="(file) => emit('moveUp', file)"
-        @remove="(file) => emit('remove', file)"
+        @move-down="audioFilesStore.moveFileDown"
+        @move-up="audioFilesStore.moveFileUp"
+        @remove="audioFilesStore.removeFile"
       />
     </li>
   </ol>
