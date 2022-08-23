@@ -18,7 +18,7 @@
     />
     <meta
       property="og:image"
-      content="<%= path.join(BASE_URL, './images/screenshot.png') %>"
+      content="<%= /https?:\/\//i.test(BASE_URL) ? new URL('./images/screenshot.png', BASE_URL).toString() : path.join(BASE_URL, './images/screenshot.png') %>"
     />
     <title>
       Stitch &amp; Slice - Stich audio files into beat sliced .pti instruments
