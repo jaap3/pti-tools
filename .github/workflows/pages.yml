@@ -61,7 +61,7 @@ jobs:
       - name: Install dependencies
         run: ${{ steps.detect-package-manager.outputs.manager }} ${{ steps.detect-package-manager.outputs.command }}
       - name: Static HTML export
-        run: ${{ steps.detect-package-manager.outputs.manager }} run build -- --base=/pti-tools/
+        run: ${{ steps.detect-package-manager.outputs.manager }} run build -- --base=https://jaap3.github.io/pti-tools/
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
