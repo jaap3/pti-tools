@@ -1,6 +1,6 @@
 <script setup lang="ts">
-  import { ref } from "vue"
-  import type { AudioFile } from "@/stores/audiofiles"
+  import { ref, watch } from "vue"
+  import type { AudioFile, TrimOption } from "@/stores/audiofiles"
   import { displayDuration } from "@/audio-tools"
   import SamplePlayer from "@/components/SamplePlayer.vue"
   import SampleWaveform from "@/components/SampleWaveform.vue"
@@ -15,10 +15,12 @@
     (e: "moveUp", files: AudioFile): void
     (e: "moveDown", files: AudioFile): void
     (e: "remove", files: AudioFile): void
+    (e: "trim", file: AudioFile, option: TrimOption): void
     (e: "play"): void
   }>()
 
   const samplePlayer = ref<InstanceType<typeof SamplePlayer> | null>(null)
+  const trim = ref(false)
 
   function shortenString(str: string, maxLength: number) {
     const { length } = str
@@ -48,6 +50,10 @@
     stop()
     emit("remove", props.file)
   }
+
+  watch(trim, (newValue) => {
+    emit("trim", props.file, newValue ? "both" : "none")
+  })
 
   defineExpose({
     stop,
@@ -98,6 +104,9 @@
         <span class="material-icons">delete</span>
       </button>
     </div>
+    <div class="controls">
+      <label>Trim silence: <input v-model="trim" type="checkbox" /></label>
+    </div>
   </fieldset>
 </template>
 
@@ -132,7 +141,6 @@
 
   .controls {
     display: flex;
-    margin-top: 8px;
     padding: 8px;
     justify-content: center;
     align-items: center;

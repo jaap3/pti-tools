@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import type { AudioFile } from "@/types"
-  import { onMounted, ref } from "vue"
+  import { onMounted, ref, watch } from "vue"
 
   const canvas = ref<HTMLCanvasElement | null>(null)
 
@@ -83,6 +83,10 @@
   }
 
   onMounted(() => {
+    drawInstrument()
+  })
+
+  watch(props.file, () => {
     drawInstrument()
   })
 </script>

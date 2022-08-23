@@ -25,6 +25,7 @@
         @move-down="audioFilesStore.moveFileDown"
         @move-up="audioFilesStore.moveFileUp"
         @remove="audioFilesStore.removeFile"
+        @trim="(file, option) => audioFilesStore.trimFile(file, option)"
       />
     </li>
   </ol>

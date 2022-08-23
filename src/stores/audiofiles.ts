@@ -2,12 +2,15 @@ import { computed, inject, ref } from "vue"
 import { defineStore, acceptHMRUpdate } from "pinia"
 import { AudioContextKey } from "@/constants"
 import { useMessages } from "@/stores/messages"
-import { sumChannels } from "@/audio-tools"
+import { sumChannels, trimSilence } from "@/audio-tools"
 
 export interface AudioFile {
   name: string
+  originalAudio: AudioBuffer
   audio: AudioBuffer
 }
+
+export type TrimOption = "none" | "start" | "end" | "both"
 
 const maxFiles = 48
 const maxDuration = 45 // seconds
@@ -49,7 +52,12 @@ export const useAudioFiles = defineStore("audiofiles", () => {
       return
     }
 
-    audioFiles.value.push({ name, audio: sumChannels(audio, ctx) })
+    const monoAudio = sumChannels(audio, ctx)
+    audioFiles.value.push({
+      name,
+      audio: monoAudio,
+      originalAudio: monoAudio,
+    })
   }
 
   function moveFileUp(file: AudioFile) {
@@ -68,6 +76,26 @@ export const useAudioFiles = defineStore("audiofiles", () => {
     audioFiles.value.splice(audioFiles.value.indexOf(file), 1)
   }
 
+  function trimFile(file: AudioFile, option: TrimOption) {
+    if (ctx === undefined) return
+
+    const audio = file.originalAudio
+    switch (option) {
+      case "none":
+        file.audio = audio
+        break
+      case "start":
+        file.audio = trimSilence(audio, ctx, true, false)
+        break
+      case "end":
+        file.audio = trimSilence(audio, ctx, false, true)
+        break
+      case "both":
+        file.audio = trimSilence(audio, ctx)
+        break
+    }
+  }
+
   const maxFilessReached = computed(() => audioFiles.value.length >= maxFiles)
 
   const totalDuration = computed(() =>
@@ -82,6 +110,7 @@ export const useAudioFiles = defineStore("audiofiles", () => {
     moveFileUp,
     moveFileDown,
     removeFile,
+    trimFile,
     maxFiles,
     maxFilessReached,
     totalDuration,
