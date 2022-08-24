@@ -1,6 +1,5 @@
-import { computed, inject, ref } from "vue"
+import { computed, ref } from "vue"
 import { defineStore, acceptHMRUpdate } from "pinia"
-import { AudioContextKey } from "@/constants"
 import { useMessages } from "@/stores/messages"
 import { sumChannels, trimSilence } from "@/audio-tools"
 
@@ -16,7 +15,10 @@ const maxFiles = 48
 const maxDuration = 45 // seconds
 
 export const useAudioFiles = defineStore("audiofiles", () => {
-  const ctx = inject(AudioContextKey)
+  const ctx = new AudioContext({
+    latencyHint: "interactive",
+    sampleRate: 44100,
+  })
 
   const messagesStore = useMessages()
   const audioFiles = ref<AudioFile[]>([])
@@ -24,8 +26,6 @@ export const useAudioFiles = defineStore("audiofiles", () => {
   let source: AudioBufferSourceNode | null = null
 
   async function addFile(name: string, file: ArrayBuffer) {
-    if (ctx === undefined) return
-
     if (maxFilessReached.value) {
       messagesStore.addMessage(
         `Rejected "${name}", max. ${maxFiles} slices reached.`,
@@ -99,7 +99,6 @@ export const useAudioFiles = defineStore("audiofiles", () => {
   }
 
   function getAudioBufferSourceNode(file: AudioFile) {
-    if (ctx === undefined) return
     stopPlayback()
     const { audio: buffer } = file
     source = new AudioBufferSourceNode(ctx, { buffer })
@@ -121,6 +120,7 @@ export const useAudioFiles = defineStore("audiofiles", () => {
   const durationExceeded = computed(() => totalDuration.value > maxDuration)
 
   return {
+    audioContext: ctx,
     audioFiles,
     addFile,
     moveFileUp,

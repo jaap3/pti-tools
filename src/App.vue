@@ -1,16 +1,16 @@
 <script setup lang="ts">
-  import { inject } from "vue"
-  import { AudioContextKey } from "@/constants"
 
   import ShowMessages from "@/components/messages/ShowMessages.vue"
   import AudioFileInput from "@/components/AudioFileInput.vue"
   import SampleList from "@/components/SampleList.vue"
   import DownloadPti from "@/components/DownloadPti.vue"
 
+  import { useAudioFiles } from "@/stores/audiofiles"
   import { useMessages } from "@/stores/messages"
 
-  const audioContext: AudioContext | undefined = inject(AudioContextKey)
+  const audioFilesStore = useAudioFiles()
   const messagesStore = useMessages()
+  const audioContext = audioFilesStore.audioContext
 
   function handleAudioContextStateChange() {
     messagesStore.removeMessage("audio-context-state")
