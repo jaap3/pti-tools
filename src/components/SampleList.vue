@@ -1,5 +1,6 @@
 <script setup lang="ts">
   import { ref } from "vue"
+  import draggable from "vuedraggable"
   import SampleListItem from "@/components/SampleListItem.vue"
   import { useAudioFiles } from "@/stores/audiofiles"
 
@@ -8,16 +9,26 @@
 </script>
 
 <template>
-  <ol>
-    <li v-for="(file, idx) in audioFilesStore.audioFiles" :key="file.name">
-      <SampleListItem
-        ref="sampleListItems"
-        :file="file"
-        :can-move-up="idx > 0"
-        :can-move-down="idx < audioFilesStore.audioFiles.length - 1"
-      />
-    </li>
-  </ol>
+  <draggable
+    :list="audioFilesStore.audioFiles"
+    tag="ol"
+    item-key="name"
+    handle="legend"
+    :swap-threshold="0.5"
+    :animation="300"
+    ghost-class="ghost"
+  >
+    <template #item="{ element, index }">
+      <li>
+        <SampleListItem
+          ref="sampleListItems"
+          :file="element"
+          :can-move-up="index > 0"
+          :can-move-down="index < audioFilesStore.audioFiles.length - 1"
+        />
+      </li>
+    </template>
+  </draggable>
 </template>
 
 <style scoped>
@@ -32,6 +43,14 @@
 
   li {
     margin: 8px 0;
+  }
+
+  li :deep(legend) {
+    cursor: move;
+  }
+
+  .ghost {
+    opacity: 0.5;
   }
 
   @media only screen and (min-width: 655px) {

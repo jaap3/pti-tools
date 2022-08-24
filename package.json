@@ -16,7 +16,8 @@
     "material-icons": "^1.11.10",
     "pinia": "^2.0.19",
     "sanitize.css": "^13.0.0",
-    "vue": "^3.2.37"
+    "vue": "^3.2.37",
+    "vuedraggable": "^4.1.0"
   },
   "devDependencies": {
     "@tsconfig/strictest": "^1.0.1",
