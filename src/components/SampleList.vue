@@ -1,11 +1,9 @@
 <script setup lang="ts">
-  import { ref } from "vue"
   import draggable from "vuedraggable"
   import SampleListItem from "@/components/SampleListItem.vue"
   import { useAudioFiles } from "@/stores/audiofiles"
 
   const audioFilesStore = useAudioFiles()
-  const sampleListItems = ref<InstanceType<typeof SampleListItem>[]>([])
 </script>
 
 <template>
@@ -21,7 +19,6 @@
     <template #item="{ element, index }">
       <li>
         <SampleListItem
-          ref="sampleListItems"
           :file="element"
           :can-move-up="index > 0"
           :can-move-down="index < audioFilesStore.audioFiles.length - 1"
