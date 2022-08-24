@@ -1,12 +1,14 @@
 <script setup lang="ts">
+  import { defineAsyncComponent } from "vue"
 
   import ShowMessages from "@/components/messages/ShowMessages.vue"
   import AudioFileInput from "@/components/AudioFileInput.vue"
-  import SampleList from "@/components/SampleList.vue"
-  import DownloadPti from "@/components/DownloadPti.vue"
 
   import { useAudioFiles } from "@/stores/audiofiles"
   import { useMessages } from "@/stores/messages"
+
+  const SampleList = defineAsyncComponent(() => import("@/components/SampleList.vue"))
+  const DownloadPti = defineAsyncComponent(() => import("@/components/DownloadPti.vue"))
 
   const audioFilesStore = useAudioFiles()
   const messagesStore = useMessages()
@@ -49,8 +51,8 @@
     <ShowMessages />
     <form>
       <AudioFileInput />
-      <SampleList />
-      <DownloadPti />
+      <SampleList v-if="audioFilesStore.audioFiles.length"/>
+      <DownloadPti v-if="audioFilesStore.audioFiles.length" />
     </form>
   </main>
 </template>

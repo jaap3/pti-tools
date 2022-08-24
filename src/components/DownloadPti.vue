@@ -42,7 +42,7 @@
 </script>
 
 <template>
-  <fieldset v-if="audioFiles.length">
+  <fieldset>
     <span
       ><label>Slices: <output :value="audioFiles.length" /></label
     ></span>
