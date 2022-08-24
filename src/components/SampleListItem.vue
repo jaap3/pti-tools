@@ -1,6 +1,7 @@
 <script setup lang="ts">
   import { ref, watch } from "vue"
-  import type { AudioFile, TrimOption } from "@/stores/audiofiles"
+  import type { AudioFile } from "@/stores/audiofiles"
+  import { useAudioFiles } from "@/stores/audiofiles"
   import { displayDuration } from "@/audio-tools"
   import SamplePlayer from "@/components/SamplePlayer.vue"
   import SampleWaveform from "@/components/SampleWaveform.vue"
@@ -11,14 +12,7 @@
     canMoveDown: boolean
   }>()
 
-  const emit = defineEmits<{
-    (e: "moveUp", files: AudioFile): void
-    (e: "moveDown", files: AudioFile): void
-    (e: "remove", files: AudioFile): void
-    (e: "trim", file: AudioFile, option: TrimOption): void
-    (e: "play"): void
-  }>()
-
+  const audioFilesStore = useAudioFiles()
   const samplePlayer = ref<InstanceType<typeof SamplePlayer> | null>(null)
   const trim = ref(false)
 
@@ -48,15 +42,11 @@
 
   function handleRemove() {
     stop()
-    emit("remove", props.file)
+    audioFilesStore.removeFile(props.file)
   }
 
   watch(trim, (newValue) => {
-    emit("trim", props.file, newValue ? "both" : "none")
-  })
-
-  defineExpose({
-    stop,
+    audioFilesStore.trimFile(props.file, newValue ? "both" : "none")
   })
 </script>
 <template>
@@ -73,17 +63,12 @@
     </legend>
     <SampleWaveform :file="file" @click="togglePlayback" />
     <div class="controls" title="">
-      <SamplePlayer
-        ref="samplePlayer"
-        :file="file"
-        class="play"
-        @play="() => emit('play')"
-      />
+      <SamplePlayer ref="samplePlayer" :file="file" class="play" />
       <button
         type="button"
         :disabled="!canMoveUp"
         :title="`Move ${file.name} up one position`"
-        @click="emit('moveUp', file)"
+        @click="audioFilesStore.moveFileUp(file)"
       >
         <span class="material-icons">arrow_back</span>
       </button>
@@ -91,7 +76,7 @@
         type="button"
         :disabled="!canMoveDown"
         :title="`Move ${file.name} down one position`"
-        @click="emit('moveDown', file)"
+        @click="audioFilesStore.moveFileDown(file)"
       >
         <span class="material-icons">arrow_forward</span>
       </button>

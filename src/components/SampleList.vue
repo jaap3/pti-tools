@@ -5,12 +5,6 @@
 
   const audioFilesStore = useAudioFiles()
   const sampleListItems = ref<InstanceType<typeof SampleListItem>[]>([])
-
-  function handleSamplePlays() {
-    sampleListItems.value.forEach((item) => {
-      item.stop()
-    })
-  }
 </script>
 
 <template>
@@ -21,11 +15,6 @@
         :file="file"
         :can-move-up="idx > 0"
         :can-move-down="idx < audioFilesStore.audioFiles.length - 1"
-        @play="handleSamplePlays"
-        @move-down="audioFilesStore.moveFileDown"
-        @move-up="audioFilesStore.moveFileUp"
-        @remove="audioFilesStore.removeFile"
-        @trim="(file, option) => audioFilesStore.trimFile(file, option)"
       />
     </li>
   </ol>

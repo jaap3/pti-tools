@@ -1,37 +1,29 @@
 <script setup lang="ts">
   import { inject, ref } from "vue"
   import type { AudioFile } from "@/stores/audiofiles"
+  import { useAudioFiles } from "@/stores/audiofiles"
   import { AudioContextKey } from "@/constants"
 
+  const audioFilesStore = useAudioFiles()
   const ctx: AudioContext | undefined = inject(AudioContextKey)
 
   const props = defineProps<{
     file: AudioFile
   }>()
 
-  const emit = defineEmits<{
-    (e: "play"): void
-  }>()
-
   const isPlaying = ref<boolean>(false)
-
-  let source: AudioBufferSourceNode | null = null
 
   function play() {
     if (!ctx) return
-    emit("play")
     isPlaying.value = true
-    const { audio: buffer } = props.file
-    source = new AudioBufferSourceNode(ctx, { buffer })
-    source.addEventListener("ended", () => (isPlaying.value = false))
-    source.connect(ctx.destination)
-    source.start(0)
+    const source = audioFilesStore.getAudioBufferSourceNode(props.file)
+    source?.addEventListener("ended", () => (isPlaying.value = false))
+    source?.connect(ctx.destination)
+    source?.start(0)
   }
 
   function stop() {
-    source?.stop()
-    source?.disconnect()
-    source = null
+    audioFilesStore.stopPlayback()
     isPlaying.value = false
   }
 

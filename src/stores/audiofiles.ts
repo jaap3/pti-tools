@@ -21,6 +21,8 @@ export const useAudioFiles = defineStore("audiofiles", () => {
   const messagesStore = useMessages()
   const audioFiles = ref<AudioFile[]>([])
 
+  let source: AudioBufferSourceNode | null = null
+
   async function addFile(name: string, file: ArrayBuffer) {
     if (ctx === undefined) return
 
@@ -96,6 +98,20 @@ export const useAudioFiles = defineStore("audiofiles", () => {
     }
   }
 
+  function getAudioBufferSourceNode(file: AudioFile) {
+    if (ctx === undefined) return
+    stopPlayback()
+    const { audio: buffer } = file
+    source = new AudioBufferSourceNode(ctx, { buffer })
+    return source
+  }
+
+  function stopPlayback() {
+    source?.stop()
+    source?.disconnect()
+    source = null
+  }
+
   const maxFilessReached = computed(() => audioFiles.value.length >= maxFiles)
 
   const totalDuration = computed(() =>
@@ -111,6 +127,8 @@ export const useAudioFiles = defineStore("audiofiles", () => {
     moveFileDown,
     removeFile,
     trimFile,
+    getAudioBufferSourceNode,
+    stopPlayback,
     maxFiles,
     maxFilessReached,
     totalDuration,
