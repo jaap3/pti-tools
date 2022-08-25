@@ -9,9 +9,10 @@ Written in Vue 3 and TypeScript.
 
 ## Development
 
-Use Docker Compose to run the development environment.
+Use [Docker Compose](https://www.docker.com/products/docker-desktop/) to run the development environment.
 
 ```bash
+docker-compose build
 docker-compose up
 ```
 
