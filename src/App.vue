@@ -49,7 +49,7 @@
 <template>
   <main @click="activateAudioContext">
     <ShowMessages />
-    <form>
+    <form @submit.prevent>
       <AudioFileInput />
       <SampleList v-if="audioFilesStore.audioFiles.length"/>
       <DownloadPti v-if="audioFilesStore.audioFiles.length" />
