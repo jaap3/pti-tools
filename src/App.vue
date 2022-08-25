@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { defineAsyncComponent } from "vue"
+  import { defineAsyncComponent, computed } from "vue"
 
   import ShowMessages from "@/components/messages/ShowMessages.vue"
   import AudioFileInput from "@/components/audiofiles/AudioFileInput.vue"
@@ -44,6 +44,13 @@
       audioContext?.resume()
     }
   }
+
+  const fileSelected = computed(() => {
+    if (!fileSelected.value && audioFilesStore.audioFiles.length === 0) {
+      return false
+    }
+    return true
+  })
 </script>
 
 <template>
@@ -51,8 +58,8 @@
     <ShowMessages />
     <form @submit.prevent>
       <AudioFileInput />
-      <SampleList v-if="audioFilesStore.audioFiles.length"/>
-      <DownloadPti v-if="audioFilesStore.audioFiles.length" />
+      <SampleList v-if="fileSelected" />
+      <DownloadPti v-if="fileSelected" />
     </form>
   </main>
 </template>
