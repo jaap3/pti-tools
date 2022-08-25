@@ -2,12 +2,12 @@
   import { defineAsyncComponent } from "vue"
 
   import ShowMessages from "@/components/messages/ShowMessages.vue"
-  import AudioFileInput from "@/components/AudioFileInput.vue"
+  import AudioFileInput from "@/components/audiofiles/AudioFileInput.vue"
 
   import { useAudioFiles } from "@/stores/audiofiles"
   import { useMessages } from "@/stores/messages"
 
-  const SampleList = defineAsyncComponent(() => import("@/components/SampleList.vue"))
+  const SampleList = defineAsyncComponent(() => import("@/components/audiofiles/SampleList.vue"))
   const DownloadPti = defineAsyncComponent(() => import("@/components/DownloadPti.vue"))
 
   const audioFilesStore = useAudioFiles()

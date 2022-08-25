@@ -3,8 +3,8 @@
   import type { AudioFile } from "@/stores/audiofiles"
   import { useAudioFiles } from "@/stores/audiofiles"
   import { displayDuration } from "@/audio-tools"
-  import SamplePlayer from "@/components/SamplePlayer.vue"
-  import SampleWaveform from "@/components/SampleWaveform.vue"
+  import SamplePlayer from "@/components/audiofiles/SamplePlayer.vue"
+  import SampleWaveform from "@/components/audiofiles/SampleWaveform.vue"
 
   const props = defineProps<{
     file: AudioFile

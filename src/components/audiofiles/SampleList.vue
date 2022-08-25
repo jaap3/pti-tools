@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import draggable from "vuedraggable"
-  import SampleListItem from "@/components/SampleListItem.vue"
+  import SampleListItem from "@/components/audiofiles/SampleListItem.vue"
   import { useAudioFiles } from "@/stores/audiofiles"
 
   const audioFilesStore = useAudioFiles()
