@@ -35,19 +35,29 @@ export const useAudioFiles = defineStore("audiofiles", () => {
       return
     }
 
-    const audio = await ctx.decodeAudioData(file)
-    if (audio.duration > maxDuration) {
+    if (durationExceeded.value) {
       messagesStore.addMessage(
-        `Rejected "${name}", too long (>${maxDuration}s).`,
+        `Rejected "${name}", total duration > ${maxDuration}.`,
         "warning",
         { timeout: 8500 },
       )
       return
     }
 
-    if (totalDuration.value > 45) {
+    let audio: AudioBuffer
+    try {
+      audio = await ctx.decodeAudioData(file)
+    } catch (e) {
       messagesStore.addMessage(
-        `Rejected "${name}", total duration > ${maxDuration}.`,
+        `Rejected "${name}", invalid audio file.`,
+        "error",
+        { timeout: 8500 },
+      )
+      return
+    }
+    if (audio.duration > maxDuration) {
+      messagesStore.addMessage(
+        `Rejected "${name}", too long (>${maxDuration}s).`,
         "warning",
         { timeout: 8500 },
       )
