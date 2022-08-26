@@ -25,26 +25,26 @@ the browser at `http://localhost:5173/`.
 
 Contributions are welcome!
 
-* Fork the repository and make a pull request.
-* Create an issue to report a bug or suggest a feature.
+- Fork the repository and make a pull request.
+- Create an issue to report a bug or suggest a feature.
 
 ## Reporting bugs
 
 Make sure to include the following information when reporting bugs:
 
-* Steps to reproduce the bug
-* Expected behavior
-* Actual behavior
-* The version and name of the browser/operating system in use
-* Screenshots/screencapture if applicable/possible
+- Steps to reproduce the bug
+- Expected behavior
+- Actual behavior
+- The version and name of the browser/operating system in use
+- Screenshots/screencapture if applicable/possible
 
 ## Suggesting features
 
 Make sure to include the following information when suggesting features:
 
-* Description of the feature
-* Expected behavior
-* UI design/mockup (if applicable)
+- Description of the feature
+- Expected behavior
+- UI design/mockup (if applicable)
 
 ## Making a pull request
 

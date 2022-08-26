@@ -7,8 +7,8 @@ labels: bug
 
 Make sure to include the following information:
 
-* Steps to reproduce the bug
-* Expected behavior
-* Actual behavior
-* The version and name of the browser/operating system in use
-* Screenshots/screencapture if applicable/possible
+- Steps to reproduce the bug
+- Expected behavior
+- Actual behavior
+- The version and name of the browser/operating system in use
+- Screenshots/screencapture if applicable/possible

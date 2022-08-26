@@ -7,6 +7,6 @@ labels: enhancement
 
 Make sure to include the following information:
 
-* Description of the feature
-* Expected behavior
-* UI design/mockup (if applicable)
+- Description of the feature
+- Expected behavior
+- UI design/mockup (if applicable)
