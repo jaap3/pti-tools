@@ -1,4 +1,7 @@
-import { float32ToInt16, mergeFloat32Arrays } from "@/audio-tools"
+import {
+  float32ToInt16,
+  mergeFloat32Arrays,
+} from "@/audio-tools/typedarray-tools"
 
 import {
   MAX_SLICES,
@@ -65,5 +68,3 @@ export function getPtiFile(data: Float32Array) {
   new Int16Array(buffer, defaultPtiHeader.byteLength).set(float32ToInt16(data))
   return buffer
 }
-
-export { samplePlayback }

@@ -3,7 +3,7 @@
   import { storeToRefs } from "pinia"
 
   import { ref, computed } from "vue"
-  import { displayDuration } from "@/audio-tools"
+  import { displayDuration } from "@/audio-tools/numberformat"
   import { createBeatSlicedPtiFromSamples } from "@/pti-file-format"
   import { useAudioFiles } from "@/stores/audiofiles"
 

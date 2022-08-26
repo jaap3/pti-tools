@@ -2,7 +2,7 @@
   import { ref, watch } from "vue"
   import type { AudioFile } from "@/stores/audiofiles"
   import { useAudioFiles } from "@/stores/audiofiles"
-  import { displayDuration } from "@/audio-tools"
+  import { displayDuration } from "@/audio-tools/numberformat"
   import SamplePlayer from "@/components/audiofiles/SamplePlayer.vue"
   import SampleWaveform from "@/components/audiofiles/SampleWaveform.vue"
 
