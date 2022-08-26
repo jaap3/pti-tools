@@ -1,6 +1,7 @@
 <script setup lang="ts">
   import { defineAsyncComponent, computed } from "vue"
 
+  import GithubButton from "vue-github-button"
   import ShowMessages from "@/components/messages/ShowMessages.vue"
   import AudioFileInput from "@/components/audiofiles/AudioFileInput.vue"
 
@@ -62,6 +63,40 @@
       <DownloadPti v-if="fileSelected" />
     </form>
   </main>
+  <footer>
+    <div class="repo">
+      <github-button
+        href="https://github.com/jaap3/pti-tools"
+        data-size="large"
+        aria-label="View source"
+        >View source</github-button
+      >
+      <github-button
+        href="https://github.com/jaap3/pti-tools/issues"
+        data-icon="octicon-issue-opened"
+        data-size="large"
+        aria-label="Report an issue"
+        >Report issue</github-button
+      >
+    </div>
+    <div v-if="fileSelected" class="appreciate">
+      <github-button
+        href="https://github.com/jaap3/pti-tools"
+        data-icon="octicon-star"
+        data-size="large"
+        data-show-count="true"
+        aria-label="Star jaap3/pti-tools on GitHub"
+        >Star</github-button
+      >
+      <github-button
+        href="https://github.com/sponsors/jaap3"
+        data-icon="octicon-heart"
+        data-size="large"
+        aria-label="Sponsor @jaap3 on GitHub"
+        >Sponsor</github-button
+      >
+    </div>
+  </footer>
 </template>
 
 <style>
@@ -72,17 +107,29 @@
   @import url(@fontsource/manrope/latin-300.css);
   @import url(@fontsource/manrope/latin-400.css);
 
+  html,
+  body {
+    height: 100%;
+  }
+
   body {
     background: #0a0a0a;
     color: #fffefe;
     font-weight: lighter;
-    height: 100%;
     font-family: "Manrope", sans-serif;
   }
 
-  main {
+  #app {
     display: flex;
     flex-direction: column;
+    min-height: 100%;
+  }
+
+  main {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
     max-width: 960px;
     height: 100%;
     margin: 0 auto;
@@ -103,5 +150,18 @@
 
   button:disabled {
     color: #767677;
+  }
+
+  footer {
+    display: flex;
+    padding: 16px;
+  }
+
+  footer > div > *:not(:last-child) {
+    margin-right: 16px;
+  }
+
+  footer .appreciate {
+    margin-left: auto;
   }
 </style>
