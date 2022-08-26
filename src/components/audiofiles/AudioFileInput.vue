@@ -10,7 +10,8 @@
   const sizeThreshold = 1024 * 1024 * 10 // 10MB
 
   const { maxFiles, maxDuration } = audioFilesStore
-  const { maxFilessReached, durationExceeded } = storeToRefs(audioFilesStore)
+  const { maxFilessReached, totalDuration, durationExceeded } =
+    storeToRefs(audioFilesStore)
 
   const fileLoaderDisabled = computed(
     () => maxFilessReached.value || durationExceeded.value,
@@ -39,7 +40,7 @@
         messagesStore.addMessage(
           `Total duration exceeds ${maxDuration} (${totalDuration.value.toFixed(
             3,
-          )}s): Remove a file to enable the file loader.`,
+          )}s): Remove one or more files to enable the file loader.`,
           "info",
           { id: "duration-exceeded" },
         )
