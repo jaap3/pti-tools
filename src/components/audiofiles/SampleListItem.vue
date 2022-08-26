@@ -56,7 +56,7 @@
     )}`"
   >
     <legend>
-      <span class="name">{{ shortenString(displayName(file.name), 26) }}</span>
+      <span class="name">{{ shortenString(displayName(file.name), 25) }}</span>
       <time :datetime="file.audio.duration.toFixed(3)">{{
         displayDuration(file.audio.duration)
       }}</time>
