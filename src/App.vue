@@ -161,11 +161,23 @@
     padding: 16px;
   }
 
-  footer > div > *:not(:last-child) {
-    margin-right: 16px;
+  footer .appreciate {
+    text-align: right;
+    margin-left: auto;
   }
 
-  footer .appreciate {
-    margin-left: auto;
+  footer > div {
+    display: flex;
+    flex-direction: column;
+  }
+
+  @media only screen and (min-width: 490px) {
+    footer > div {
+      flex-direction: row;
+    }
+
+    footer > div > *:not(:first-child) {
+      margin-left: 16px;
+    }
   }
 </style>
