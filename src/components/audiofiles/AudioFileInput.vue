@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { watch } from "vue"
+  import { computed, watch } from "vue"
   import { storeToRefs } from "pinia"
   import { useMessages } from "@/stores/messages"
   import { useAudioFiles } from "@/stores/audiofiles"
@@ -10,8 +10,11 @@
   const sizeThreshold = 1024 * 1024 * 10 // 10MB
 
   const { maxFiles, maxDuration } = audioFilesStore
-  const { maxFilessReached, totalDuration, durationExceeded } =
-    storeToRefs(audioFilesStore)
+  const { maxFilessReached, durationExceeded } = storeToRefs(audioFilesStore)
+
+  const fileLoaderDisabled = computed(
+    () => maxFilessReached.value || durationExceeded.value,
+  )
 
   watch(
     maxFilessReached,
@@ -49,28 +52,87 @@
     return `${(bytes / (1024 * 1024)).toFixed(1)}MB`
   }
 
+  async function loadFile(file: File) {
+    if (file.size > sizeThreshold) {
+      messagesStore.addMessage(
+        `Rejected "${file.name}", too large (>${displayBytes(sizeThreshold)}).`,
+        "warning",
+        { timeout: 8500 },
+      )
+      return
+    }
+    const buffer = await file.arrayBuffer()
+    await audioFilesStore.addFile(file.name, buffer)
+  }
+
   async function handleInput(evt: Event) {
     const input = evt.target as HTMLInputElement
-    const files = Array.from(input.files ?? [])
-    for (const file of files) {
-      if (file.size > sizeThreshold) {
-        messagesStore.addMessage(
-          `Rejected "${file.name}", too large (>${displayBytes(
-            sizeThreshold,
-          )}).`,
-          "warning",
-          { timeout: 8500 },
-        )
-        continue
+    for (const file of Array.from(input.files ?? [])) {
+      if (fileLoaderDisabled.value) break
+      await loadFile(file)
+    }
+  }
+
+  function handleDragOver(evt: DragEvent) {
+    evt.preventDefault()
+    if (!evt.dataTransfer) return
+    evt.dataTransfer.dropEffect = "copy"
+  }
+
+  /* Make sure eslint knows about the FileSystem API */
+  /* global FileSystemEntry, FileSystemDirectoryEntry, FileSystemFileEntry */
+  async function collectFiles(entry: FileSystemEntry) {
+    if (fileLoaderDisabled.value) return
+    if (entry.isFile) {
+      const resolvedEntry: Promise<File> = new Promise((resolve, reject) => {
+        ;(entry as FileSystemFileEntry).file(resolve, reject)
+      })
+      await loadFile(await resolvedEntry)
+    } else if (entry.isDirectory) {
+      // Recurse into directories
+      const resolvedEntries: Promise<FileSystemEntry[]> = new Promise(
+        (resolve, reject) => {
+          const reader = (entry as FileSystemDirectoryEntry).createReader()
+          reader.readEntries(resolve, reject)
+        },
+      )
+      const entries = Array.from(await resolvedEntries).sort((a, b) => {
+        // Files first, then directories
+        if (a.isFile && !b.isFile) return -1
+        if (b.isFile && !a.isFile) return 1
+        // Sort alphabetically
+        const aName = a.name.toLowerCase()
+        const bName = b.name.toLowerCase()
+        if (aName < bName) return -1
+        if (aName > bName) return 1
+        return 0
+      })
+      for (const entry of entries) {
+        if (fileLoaderDisabled.value) break
+        await collectFiles(entry)
       }
-      audioFilesStore.addFile(file.name, await file.arrayBuffer())
+    }
+  }
+
+  async function handleDrop(evt: DragEvent) {
+    evt.preventDefault()
+    if (fileLoaderDisabled.value) return
+    if (!evt.dataTransfer) return
+    const items = evt.dataTransfer.items
+    for (const item of Array.from(items)) {
+      if (fileLoaderDisabled.value) break
+      if (item.kind === "file") {
+        // Even though it's prefixed with "webkit" most browsers support it.
+        const entry = item.webkitGetAsEntry()
+        if (entry) await collectFiles(entry)
+      }
     }
   }
 </script>
 
 <template>
-  <label>
-    Choose or drop an audio file
+  <label @dragover="handleDragOver" @drop="handleDrop">
+    Choose / drop audio file(s) / folders
     <small
       >(<code>.wav</code>,&nbsp;<code>.mp3</code>,&nbsp;<code>.flac</code>,
       etc.)</small
@@ -79,7 +141,7 @@
       multiple
       type="file"
       accept="audio/*"
-      :disabled="maxFilessReached || durationExceeded"
+      :disabled="fileLoaderDisabled"
       @input="handleInput"
     />
   </label>
