@@ -1,100 +1,12 @@
 import { float32ToInt16, mergeFloat32Arrays } from "@/audio-tools"
 
-import type {
-  HeaderData,
-  SamplePlayback,
-  GranularLoopMode,
-  GranularShape,
-  FilterType,
-} from "@/pti-file-format/types"
 import {
   MAX_SLICES,
   defaultPtiHeader,
   samplePlayback,
-  granularShape,
-  granularLoopMode,
-  filterType,
   headerFieldOffset,
 } from "@/pti-file-format/constants"
 
-export function parseHeader(header: ArrayBufferLike): HeaderData {
-  /**
-   * Parse a .pti file header
-   */
-  const view = new DataView(header)
-  const headerData: HeaderData = {} as HeaderData
-  ;(Object.entries(headerFieldOffset) as [keyof HeaderData, number][]).forEach(
-    ([field, offset]) => {
-      switch (field) {
-        case "isWavetable":
-        case "volumeAutomationEnabled":
-        case "panningAutomationEnabled":
-        case "cutoffAutomationEnabled":
-        case "wavetablePositionAutomationEnabled":
-        case "granularPositionAutomationEnabled":
-        case "finetuneAutomationEnabled":
-        case "filterEnabled":
-          headerData[field] = view.getUint8(offset) === 1
-          break
-        case "instrumentName":
-          headerData[field] = asciiDecoder
-            .decode(new Uint8Array(header, offset, 31))
-            .replaceAll("\x00", "")
-          break
-        case "slices":
-          headerData[field] = Array(48)
-            .fill(0)
-            .map((_, i) => view.getUint16(offset + i * 2, true) / 65535)
-          break
-        case "wavetableWindowSize":
-          headerData[field] = view.getUint16(offset, true)
-          break
-        default: {
-          const value = view.getUint8(offset)
-          switch (field) {
-            case "samplePlayback":
-              headerData[field] = (
-                Object.values(samplePlayback) as number[]
-              ).includes(value)
-                ? (value as SamplePlayback)
-                : samplePlayback.ONE_SHOT
-              break
-            case "granularShape":
-              headerData[field] = (
-                Object.values(granularShape) as number[]
-              ).includes(value)
-                ? (value as GranularShape)
-                : granularShape.SQUARE
-              break
-            case "granularLoopMode":
-              headerData[field] = (
-                Object.values(granularLoopMode) as number[]
-              ).includes(value)
-                ? (value as GranularLoopMode)
-                : granularLoopMode.FORWARD
-              break
-            case "filterType":
-              headerData[field] = (
-                Object.values(filterType) as number[]
-              ).includes(value)
-                ? (value as FilterType)
-                : filterType.LOW_PASS
-              break
-            default:
-              headerData[field] = value
-              break
-          }
-        }
-      }
-    },
-  )
-
-  headerData.slices.splice(headerData.totalSlices)
-
-  return headerData
-}
-
-const asciiDecoder: TextDecoder = new TextDecoder("ascii")
 const asciiEncoder: TextEncoder = new TextEncoder()
 
 export function createBeatSlicedPtiFromSamples(
@@ -154,4 +66,4 @@ export function getPtiFile(data: Float32Array) {
   return buffer
 }
 
-export { HeaderData, samplePlayback, MAX_SLICES }
+export { samplePlayback }
