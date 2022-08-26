@@ -61,7 +61,7 @@
 
   .message-type {
     display: inline-block;
-    font-weight: bold;
+    font-weight: 400;
     margin-right: 6px;
   }
 

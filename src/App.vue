@@ -119,7 +119,7 @@
   body {
     background: #0a0a0a;
     color: #fffefe;
-    font-weight: lighter;
+    font-weight: 300;
     font-family: "Manrope", sans-serif;
   }
 
