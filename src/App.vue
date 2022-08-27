@@ -1,9 +1,9 @@
 <script setup lang="ts">
   import { defineAsyncComponent, computed } from "vue"
 
-  import GithubButton from "vue-github-button"
   import ShowMessages from "@/components/messages/ShowMessages.vue"
   import AudioFileInput from "@/components/audiofiles/AudioFileInput.vue"
+  import FooterBar from "@/components/FooterBar.vue"
 
   import { useAudioFiles } from "@/stores/audiofiles"
   import { useMessages } from "@/stores/messages"
@@ -67,40 +67,7 @@
       <DownloadPti v-if="fileSelected" />
     </form>
   </main>
-  <footer>
-    <div class="repo">
-      <github-button
-        href="https://github.com/jaap3/pti-tools"
-        data-size="large"
-        aria-label="View source"
-        >View source</github-button
-      >
-      <github-button
-        href="https://github.com/jaap3/pti-tools/issues"
-        data-icon="octicon-issue-opened"
-        data-size="large"
-        aria-label="Report an issue"
-        >Report issue</github-button
-      >
-    </div>
-    <div v-if="fileSelected" class="appreciate">
-      <github-button
-        href="https://github.com/jaap3/pti-tools"
-        data-icon="octicon-star"
-        data-size="large"
-        data-show-count="true"
-        aria-label="Star jaap3/pti-tools on GitHub"
-        >Star</github-button
-      >
-      <github-button
-        href="https://github.com/sponsors/jaap3"
-        data-icon="octicon-heart"
-        data-size="large"
-        aria-label="Sponsor @jaap3 on GitHub"
-        >Sponsor</github-button
-      >
-    </div>
-  </footer>
+  <FooterBar :show-appreciation="fileSelected" />
 </template>
 
 <style>
@@ -154,30 +121,5 @@
 
   button:disabled {
     color: #767677;
-  }
-
-  footer {
-    display: flex;
-    padding: 16px;
-  }
-
-  footer .appreciate {
-    text-align: right;
-    margin-left: auto;
-  }
-
-  footer > div {
-    display: flex;
-    flex-direction: column;
-  }
-
-  @media only screen and (min-width: 490px) {
-    footer > div {
-      flex-direction: row;
-    }
-
-    footer > div > *:not(:first-child) {
-      margin-left: 16px;
-    }
   }
 </style>
