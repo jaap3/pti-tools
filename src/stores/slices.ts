@@ -27,6 +27,7 @@ export const useSlices = defineStore("slices", () => {
 
   const messagesStore = useMessages()
   const slices = ref<Slice[]>([])
+  const editSlice = ref<Slice | null>(null)
 
   let source: AudioBufferSourceNode | null = null
 
@@ -95,6 +96,10 @@ export const useSlices = defineStore("slices", () => {
     slices.value.splice(slices.value.indexOf(slice), 1)
   }
 
+  function setEditSlice(slice: Slice) {
+    editSlice.value = slice
+  }
+
   function trimAudio(file: AudioFile, option: TrimOption) {
     if (ctx === undefined) return
 
@@ -141,10 +146,12 @@ export const useSlices = defineStore("slices", () => {
   return {
     audioContext: ctx,
     slices,
+    editSlice,
     addSlice,
     moveSliceUp,
     moveSliceDown,
     removeSlice,
+    setEditSlice,
     trimAudio,
     getAudioBufferSourceNode,
     stopPlayback,

@@ -66,6 +66,14 @@
       <SamplePlayer ref="samplePlayer" :file="slice" class="play" />
       <button
         type="button"
+        class="layers"
+        title="Layers"
+        @click="slicesStore.setEditSlice(slice)"
+      >
+        <span class="material-icons">layers</span>
+      </button>
+      <button
+        type="button"
         :disabled="!canMoveUp"
         :title="`Move ${slice.name} up one position`"
         @click="slicesStore.moveSliceUp(slice)"
@@ -83,7 +91,7 @@
       <button
         type="button"
         class="delete"
-        :title="`Remove ${slice.name} from the list of sample`"
+        :title="`Remove ${slice.name} from the list of slices`"
         @click.once="handleRemove"
       >
         <span class="material-icons">delete</span>
@@ -137,10 +145,14 @@
     width: 40px;
     height: 40px;
     line-height: 1;
+    user-select: none;
   }
 
   :deep(.play) {
     margin-left: 0;
+  }
+
+  .layers {
     margin-right: auto;
   }
 
