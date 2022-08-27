@@ -40,6 +40,7 @@
     el.focus()
     el.addEventListener("close", handleClose)
     el.showModal()
+    el.classList.add("show")
     document.documentElement.style.overflowY = "hidden"
   })
 
@@ -97,11 +98,19 @@
     margin: 0;
     border: 0;
     padding: 0;
+    transition: all 0.3s ease-in;
+    transform: scale(0.5) translateY(100%);
+    opacity: 0;
   }
 
   form {
     background: #0a0a0a;
     color: #fffefe;
     flex-grow: 1;
+  }
+
+  .show {
+    transform: scale(1) translateY(0);
+    opacity: 1;
   }
 </style>
