@@ -10,6 +10,10 @@ export interface AudioFile {
   audio: AudioBuffer
 }
 
+export interface Slice extends AudioFile {
+  layers: AudioFile[]
+}
+
 export type TrimOption = "none" | "start" | "end" | "both"
 
 const maxSlices = 48
@@ -22,7 +26,7 @@ export const useSlices = defineStore("slices", () => {
   })
 
   const messagesStore = useMessages()
-  const slices = ref<AudioFile[]>([])
+  const slices = ref<Slice[]>([])
 
   let source: AudioBufferSourceNode | null = null
 
@@ -71,23 +75,24 @@ export const useSlices = defineStore("slices", () => {
       name,
       audio: monoAudio,
       originalAudio: monoAudio,
+      layers: [],
     })
   }
 
-  function moveSliceUp(file: AudioFile) {
-    const idx = slices.value.indexOf(file)
+  function moveSliceUp(slice: Slice) {
+    const idx = slices.value.indexOf(slice)
     slices.value.splice(idx, 1)
-    slices.value.splice(idx - 1, 0, file)
+    slices.value.splice(idx - 1, 0, slice)
   }
 
-  function moveSliceDown(file: AudioFile) {
-    const idx = slices.value.indexOf(file)
+  function moveSliceDown(slice: Slice) {
+    const idx = slices.value.indexOf(slice)
     slices.value.splice(idx, 1)
-    slices.value.splice(idx + 1, 0, file)
+    slices.value.splice(idx + 1, 0, slice)
   }
 
-  function removeSlice(file: AudioFile) {
-    slices.value.splice(slices.value.indexOf(file), 1)
+  function removeSlice(slice: Slice) {
+    slices.value.splice(slices.value.indexOf(slice), 1)
   }
 
   function trimAudio(file: AudioFile, option: TrimOption) {
