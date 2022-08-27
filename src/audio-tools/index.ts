@@ -1,5 +1,6 @@
 export async function sumChannels(input: AudioBuffer) {
-  const offline = new OfflineAudioContext(1, input.length, input.sampleRate)
+  const { length, sampleRate } = input
+  const offline = new OfflineAudioContext(1, length, sampleRate)
   const source = offline.createBufferSource()
   source.buffer = input
   source.connect(offline.destination)
