@@ -4,9 +4,14 @@
 
   const canvas = ref<HTMLCanvasElement | null>(null)
 
-  const props = defineProps<{
-    file: AudioFile
-  }>()
+  const props = withDefaults(
+    defineProps<{
+      width?: number | null
+      height?: number
+      file: AudioFile
+    }>(),
+    { height: 150, width: null },
+  )
 
   function drawInstrument() {
     if (canvas.value === null) return
@@ -83,6 +88,10 @@
   }
 
   onMounted(() => {
+    const el = canvas.value
+    if (!el) return
+    el.height = props.height
+    el.width = props.width || el.clientWidth || 300
     drawInstrument()
   })
 
@@ -98,7 +107,6 @@
 <style scoped>
   canvas {
     display: block;
-    height: 150px;
     width: 100%;
     border: 1px solid #0a0a0a;
   }
