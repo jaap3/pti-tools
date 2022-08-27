@@ -1,11 +1,12 @@
 <script setup lang="ts">
   import { defineAsyncComponent, computed } from "vue"
+  import { storeToRefs } from "pinia"
 
   import ShowMessages from "@/components/messages/ShowMessages.vue"
   import AudioFileInput from "@/components/audiofiles/AudioFileInput.vue"
   import FooterBar from "@/components/FooterBar.vue"
 
-  import { useAudioFiles } from "@/stores/audiofiles"
+  import { useSlices } from "@/stores/slices"
   import { useMessages } from "@/stores/messages"
 
   const SampleList = defineAsyncComponent(
@@ -15,9 +16,11 @@
     () => import("@/components/DownloadPti.vue"),
   )
 
-  const audioFilesStore = useAudioFiles()
+  const slicesStore = useSlices()
   const messagesStore = useMessages()
-  const audioContext = audioFilesStore.audioContext
+  const audioContext = slicesStore.audioContext
+
+  const { totalSlices } = storeToRefs(slicesStore)
 
   function handleAudioContextStateChange() {
     messagesStore.removeMessage("audio-context-state")
@@ -51,7 +54,7 @@
   }
 
   const fileSelected = computed(() => {
-    if (!fileSelected.value && audioFilesStore.audioFiles.length === 0) {
+    if (!fileSelected.value && totalSlices.value === 0) {
       return false
     }
     return true

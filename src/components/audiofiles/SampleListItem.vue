@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import { ref, watch } from "vue"
-  import type { AudioFile } from "@/stores/audiofiles"
-  import { useAudioFiles } from "@/stores/audiofiles"
+  import type { AudioFile } from "@/stores/slices"
+  import { useSlices } from "@/stores/slices"
   import { displayDuration } from "@/audio-tools/numberformat"
   import SamplePlayer from "@/components/audiofiles/SamplePlayer.vue"
   import SampleWaveform from "@/components/audiofiles/SampleWaveform.vue"
@@ -12,7 +12,7 @@
     canMoveDown: boolean
   }>()
 
-  const audioFilesStore = useAudioFiles()
+  const slicesStore = useSlices()
   const samplePlayer = ref<InstanceType<typeof SamplePlayer> | null>(null)
   const trim = ref(false)
 
@@ -42,11 +42,11 @@
 
   function handleRemove() {
     stop()
-    audioFilesStore.removeFile(props.file)
+    slicesStore.removeSlice(props.file)
   }
 
   watch(trim, (newValue) => {
-    audioFilesStore.trimFile(props.file, newValue ? "both" : "none")
+    slicesStore.trimAudio(props.file, newValue ? "both" : "none")
   })
 </script>
 <template>
@@ -68,7 +68,7 @@
         type="button"
         :disabled="!canMoveUp"
         :title="`Move ${file.name} up one position`"
-        @click="audioFilesStore.moveFileUp(file)"
+        @click="slicesStore.moveSliceUp(file)"
       >
         <span class="material-icons">arrow_back</span>
       </button>
@@ -76,7 +76,7 @@
         type="button"
         :disabled="!canMoveDown"
         :title="`Move ${file.name} down one position`"
-        @click="audioFilesStore.moveFileDown(file)"
+        @click="slicesStore.moveSliceDown(file)"
       >
         <span class="material-icons">arrow_forward</span>
       </button>

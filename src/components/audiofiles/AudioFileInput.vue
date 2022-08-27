@@ -2,28 +2,28 @@
   import { computed, watch } from "vue"
   import { storeToRefs } from "pinia"
   import { useMessages } from "@/stores/messages"
-  import { useAudioFiles } from "@/stores/audiofiles"
+  import { useSlices } from "@/stores/slices"
 
   const messagesStore = useMessages()
-  const audioFilesStore = useAudioFiles()
+  const slicesStore = useSlices()
 
   const sizeThreshold = 1024 * 1024 * 10 // 10MB
 
-  const { maxFiles, maxDuration } = audioFilesStore
-  const { maxFilessReached, totalDuration, durationExceeded } =
-    storeToRefs(audioFilesStore)
+  const { maxSlices, maxDuration } = slicesStore
+  const { maxSlicesReached, totalDuration, durationExceeded } =
+    storeToRefs(slicesStore)
 
   const fileLoaderDisabled = computed(
-    () => maxFilessReached.value || durationExceeded.value,
+    () => maxSlicesReached.value || durationExceeded.value,
   )
 
   watch(
-    maxFilessReached,
+    maxSlicesReached,
     (newValue) => {
       messagesStore.removeMessage("max-slices-reached")
       if (newValue) {
         messagesStore.addMessage(
-          `Max. files reached (${maxFiles}): Remove a file to enable the file loader.`,
+          `Max. files reached (${maxSlices}): Remove a file to enable the file loader.`,
           "info",
           { id: "max-slices-reached" },
         )
@@ -63,7 +63,7 @@
       return
     }
     const buffer = await file.arrayBuffer()
-    await audioFilesStore.addFile(file.name, buffer)
+    await slicesStore.addSlice(file.name, buffer)
   }
 
   async function handleInput(evt: Event) {

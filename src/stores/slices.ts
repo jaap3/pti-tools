@@ -12,24 +12,24 @@ export interface AudioFile {
 
 export type TrimOption = "none" | "start" | "end" | "both"
 
-const maxFiles = 48
+const maxSlices = 48
 const maxDuration = 45 // seconds
 
-export const useAudioFiles = defineStore("audiofiles", () => {
+export const useSlices = defineStore("slices", () => {
   const ctx = new AudioContext({
     latencyHint: "interactive",
     sampleRate: 44100,
   })
 
   const messagesStore = useMessages()
-  const audioFiles = ref<AudioFile[]>([])
+  const slices = ref<AudioFile[]>([])
 
   let source: AudioBufferSourceNode | null = null
 
-  async function addFile(name: string, file: ArrayBuffer) {
-    if (maxFilessReached.value) {
+  async function addSlice(name: string, file: ArrayBuffer) {
+    if (maxSlicesReached.value) {
       messagesStore.addMessage(
-        `Rejected "${name}", max. ${maxFiles} slices reached.`,
+        `Rejected "${name}", max. ${maxSlices} slices reached.`,
         "warning",
         { timeout: 8500 },
       )
@@ -66,7 +66,7 @@ export const useAudioFiles = defineStore("audiofiles", () => {
     }
 
     const monoAudio = await sumChannels(audio)
-    audioFiles.value.push({
+    slices.value.push({
       id: crypto.randomUUID(),
       name,
       audio: monoAudio,
@@ -74,23 +74,23 @@ export const useAudioFiles = defineStore("audiofiles", () => {
     })
   }
 
-  function moveFileUp(file: AudioFile) {
-    const idx = audioFiles.value.indexOf(file)
-    audioFiles.value.splice(idx, 1)
-    audioFiles.value.splice(idx - 1, 0, file)
+  function moveSliceUp(file: AudioFile) {
+    const idx = slices.value.indexOf(file)
+    slices.value.splice(idx, 1)
+    slices.value.splice(idx - 1, 0, file)
   }
 
-  function moveFileDown(file: AudioFile) {
-    const idx = audioFiles.value.indexOf(file)
-    audioFiles.value.splice(idx, 1)
-    audioFiles.value.splice(idx + 1, 0, file)
+  function moveSliceDown(file: AudioFile) {
+    const idx = slices.value.indexOf(file)
+    slices.value.splice(idx, 1)
+    slices.value.splice(idx + 1, 0, file)
   }
 
-  function removeFile(file: AudioFile) {
-    audioFiles.value.splice(audioFiles.value.indexOf(file), 1)
+  function removeSlice(file: AudioFile) {
+    slices.value.splice(slices.value.indexOf(file), 1)
   }
 
-  function trimFile(file: AudioFile, option: TrimOption) {
+  function trimAudio(file: AudioFile, option: TrimOption) {
     if (ctx === undefined) return
 
     const audio = file.originalAudio
@@ -123,26 +123,29 @@ export const useAudioFiles = defineStore("audiofiles", () => {
     source = null
   }
 
-  const maxFilessReached = computed(() => audioFiles.value.length >= maxFiles)
+  const totalSlices = computed(() => slices.value.length)
+
+  const maxSlicesReached = computed(() => totalSlices.value >= maxSlices)
 
   const totalDuration = computed(() =>
-    audioFiles.value.reduce((sum, file) => sum + file.audio.duration, 0),
+    slices.value.reduce((sum, file) => sum + file.audio.duration, 0),
   )
 
   const durationExceeded = computed(() => totalDuration.value > maxDuration)
 
   return {
     audioContext: ctx,
-    audioFiles,
-    addFile,
-    moveFileUp,
-    moveFileDown,
-    removeFile,
-    trimFile,
+    slices,
+    addSlice,
+    moveSliceUp,
+    moveSliceDown,
+    removeSlice,
+    trimAudio,
     getAudioBufferSourceNode,
     stopPlayback,
-    maxFiles,
-    maxFilessReached,
+    maxSlices,
+    totalSlices,
+    maxSlicesReached,
     totalDuration,
     maxDuration,
     durationExceeded,
@@ -150,5 +153,5 @@ export const useAudioFiles = defineStore("audiofiles", () => {
 })
 
 if (import.meta.hot) {
-  import.meta.hot.accept(acceptHMRUpdate(useAudioFiles, import.meta.hot))
+  import.meta.hot.accept(acceptHMRUpdate(useSlices, import.meta.hot))
 }

@@ -1,10 +1,10 @@
 <script setup lang="ts">
   import { ref } from "vue"
-  import type { AudioFile } from "@/stores/audiofiles"
-  import { useAudioFiles } from "@/stores/audiofiles"
+  import type { AudioFile } from "@/stores/slices"
+  import { useSlices } from "@/stores/slices"
 
-  const audioFilesStore = useAudioFiles()
-  const ctx = audioFilesStore.audioContext
+  const slicesStore = useSlices()
+  const ctx = slicesStore.audioContext
 
   const props = defineProps<{
     file: AudioFile
@@ -14,14 +14,14 @@
 
   function play() {
     isPlaying.value = true
-    const source = audioFilesStore.getAudioBufferSourceNode(props.file)
+    const source = slicesStore.getAudioBufferSourceNode(props.file)
     source.addEventListener("ended", () => (isPlaying.value = false))
     source.connect(ctx.destination)
     source.start(0)
   }
 
   function stop() {
-    audioFilesStore.stopPlayback()
+    slicesStore.stopPlayback()
     isPlaying.value = false
   }
 

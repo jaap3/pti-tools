@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import type { AudioFile } from "@/stores/audiofiles"
+  import type { AudioFile } from "@/stores/slices"
   import { onMounted, ref, watch } from "vue"
 
   const canvas = ref<HTMLCanvasElement | null>(null)

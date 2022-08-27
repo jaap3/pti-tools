@@ -5,11 +5,11 @@
   import { ref, computed } from "vue"
   import { displayDuration } from "@/audio-tools/numberformat"
   import { createBeatSlicedPtiFromSamples } from "@/pti-file-format"
-  import { useAudioFiles } from "@/stores/audiofiles"
+  import { useSlices } from "@/stores/slices"
 
-  const audioFilesStore = useAudioFiles()
-  const { audioFiles, totalDuration, durationExceeded } =
-    storeToRefs(audioFilesStore)
+  const slicesStore = useSlices()
+  const { slices, totalSlices, totalDuration, durationExceeded } =
+    storeToRefs(slicesStore)
 
   const instrumentName: Ref<string> = ref("")
   const instrumentNameInput: Ref<HTMLInputElement | null> = ref(null)
@@ -23,9 +23,7 @@
   )
 
   async function handleDownload() {
-    const audio = audioFilesStore.audioFiles.map((file) =>
-      file.audio.getChannelData(0),
-    )
+    const audio = slices.value.map((slice) => slice.audio.getChannelData(0))
     const buffer = createBeatSlicedPtiFromSamples(audio, instrumentName.value)
 
     const blob = new Blob([buffer], { type: "application/octet-stream" })
@@ -42,9 +40,9 @@
 </script>
 
 <template>
-  <fieldset v-if="audioFiles.length">
+  <fieldset v-if="totalSlices > 0">
     <span
-      ><label>Slices: <output :value="audioFiles.length" /></label
+      ><label>Slices: <output :value="totalSlices" /></label
     ></span>
     <span
       ><label
