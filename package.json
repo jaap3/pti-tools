@@ -15,6 +15,7 @@
     "@fontsource/manrope": "^4.5.11",
     "material-icons": "^1.11.10",
     "pinia": "^2.0.19",
+    "randomuuid": "^1.0.1",
     "sanitize.css": "^13.0.0",
     "vue": "^3.2.37",
     "vue-github-button": "^3.0.3",
