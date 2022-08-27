@@ -1,7 +1,7 @@
 import { computed, ref } from "vue"
 import { defineStore, acceptHMRUpdate } from "pinia"
 import { useMessages } from "@/stores/messages"
-import { sumChannels, trimSilence } from "@/audio-tools"
+import { sumChannels, trimSilence, combineAudio } from "@/audio-tools"
 
 export interface AudioFile {
   id: string
@@ -115,6 +115,25 @@ export const useSlices = defineStore("slices", () => {
     editSlice.value = slice
   }
 
+  async function addLayer(slice: Slice, file: File) {
+    const name = file.name
+    if (slice.layers.length >= 3) {
+      messagesStore.addMessage(
+        `Rejected "${name}", max. 3 layers reached.`,
+        "warning",
+        { timeout: 8500 },
+      )
+      return
+    }
+    const audioFile = await loadAudio(file)
+    if (!audioFile) return
+    slice.layers.push(audioFile)
+    slice.originalAudio = await combineAudio(
+      slice.layers.map((layer) => layer.audio),
+    )
+    slice.audio = slice.originalAudio
+  }
+
   function trimAudio(file: AudioFile, option: TrimOption) {
     if (ctx === undefined) return
 
@@ -167,6 +186,7 @@ export const useSlices = defineStore("slices", () => {
     moveSliceDown,
     removeSlice,
     setEditSlice,
+    addLayer,
     trimAudio,
     getAudioBufferSourceNode,
     stopPlayback,

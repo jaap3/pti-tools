@@ -8,7 +8,7 @@
   const slicesStore = useSlices()
   const dialog = ref<HTMLDialogElement | null>(null)
 
-  defineProps<{
+  const props = defineProps<{
     slice: Slice
   }>()
 
@@ -18,6 +18,13 @@
 
   function handleClose() {
     slicesStore.editSlice = null
+  }
+
+  async function handleFileInput(evt: Event) {
+    const input = evt.target as HTMLInputElement
+    const file: File | undefined = input.files?.[0]
+    if (!file) return
+    await slicesStore.addLayer(props.slice, file)
   }
 
   onMounted(() => {
@@ -39,12 +46,17 @@
     <button type="button" @click="close">
       <span class="material-icons">close</span>
     </button>
-    <div class="sample-player">
-      <SamplePlayer :file="slice" />
+
+    <SamplePlayer :file="slice" />
+    <SampleWaveform :file="slice" />
+
+    <h2>Layers</h2>
+
+    <div v-for="file in slice.layers" :key="file.id">
+      <SamplePlayer :file="file" />
+      <SampleWaveform :file="file" />
     </div>
-    <div class="sample-waveform">
-      <SampleWaveform :file="slice" />
-    </div>
+    <input type="file" accept="audio/*" @input="handleFileInput" />
   </dialog>
 </template>
 
