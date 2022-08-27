@@ -9,8 +9,8 @@
   import { useSlices } from "@/stores/slices"
   import { useMessages } from "@/stores/messages"
 
-  const SampleList = defineAsyncComponent(
-    () => import("@/components/audiofiles/SampleList.vue"),
+  const SlicesList = defineAsyncComponent(
+    () => import("@/components/audiofiles/SlicesList.vue"),
   )
   const DownloadPti = defineAsyncComponent(
     () => import("@/components/DownloadPti.vue"),
@@ -66,7 +66,7 @@
     <ShowMessages />
     <form @submit.prevent>
       <AudioFileInput />
-      <SampleList v-if="fileSelected" />
+      <SlicesList v-if="fileSelected" />
       <DownloadPti v-if="fileSelected" />
     </form>
   </main>
