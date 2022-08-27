@@ -11,6 +11,7 @@
 
   const slicesStore = useSlices()
   const dialog = ref<HTMLDialogElement | null>(null)
+  const visible = ref(false)
 
   const props = defineProps<{
     slice: Slice
@@ -44,6 +45,7 @@
     el.showModal()
     el.classList.add("show")
     document.documentElement.style.overflowY = "hidden"
+    setTimeout(() => (visible.value = true))
   })
 
   onUnmounted(() => {
@@ -66,13 +68,13 @@
           <ButtonControl icon="close" @click="close" />
 
           <SamplePlayer :file="slice" />
-          <SampleWaveform :file="slice" />
+          <SampleWaveform v-if="visible" :file="slice" />
 
           <h2>Layers</h2>
 
           <div v-for="file in slice.layers" :key="file.id">
             <SamplePlayer :file="file" />
-            <SampleWaveform :file="file" />
+            <SampleWaveform v-if="visible" :file="file" />
           </div>
 
           <input type="file" accept="audio/*" @input="handleFileInput" />
