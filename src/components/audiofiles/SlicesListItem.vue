@@ -2,7 +2,7 @@
   import { ref, watch } from "vue"
   import type { Slice } from "@/stores/slices"
   import { useSlices } from "@/stores/slices"
-  import { displayDuration } from "@/audio-tools/numberformat"
+  import AudioFieldset from "@/components/audiofiles/AudioFieldset.vue"
   import SamplePlayer from "@/components/audiofiles/SamplePlayer.vue"
   import SampleWaveform from "@/components/audiofiles/SampleWaveform.vue"
 
@@ -15,15 +15,6 @@
   const slicesStore = useSlices()
   const samplePlayer = ref<InstanceType<typeof SamplePlayer> | null>(null)
   const trim = ref(false)
-
-  function shortenString(str: string, maxLength: number) {
-    const { length } = str
-    if (length <= maxLength) return str
-    const halfLength = Math.floor(maxLength / 2)
-    return (
-      str.substring(0, halfLength) + "…" + str.substring(length - halfLength)
-    )
-  }
 
   function displayName(fileName: string) {
     return fileName.replace(/\.[^.]+$/, "")
@@ -50,17 +41,10 @@
   })
 </script>
 <template>
-  <fieldset
-    :title="`${displayName(slice.name)} - ${displayDuration(
-      slice.audio.duration,
-    )}`"
+  <AudioFieldset
+    :name="displayName(slice.name)"
+    :duration="slice.audio.duration"
   >
-    <legend>
-      <span class="name">{{ shortenString(displayName(slice.name), 25) }}</span>
-      <time :datetime="slice.audio.duration.toFixed(3)">{{
-        displayDuration(slice.audio.duration)
-      }}</time>
-    </legend>
     <SampleWaveform :file="slice" @click="togglePlayback" />
     <div class="controls" title="">
       <SamplePlayer ref="samplePlayer" :file="slice" class="play" />
@@ -100,38 +84,13 @@
     <div class="controls">
       <label>Trim silence: <input v-model="trim" type="checkbox" /></label>
     </div>
-  </fieldset>
+  </AudioFieldset>
 </template>
 
 <style scoped>
   fieldset {
     width: 300px;
-    padding: 8px 0 0;
-    overflow: hidden;
   }
-
-  legend {
-    display: flex;
-    width: 100%;
-    margin: 0 auto;
-    padding: 0 4px;
-    background-color: #fff;
-    color: #000;
-    font-weight: 400;
-    max-width: 284px;
-  }
-
-  legend span {
-    margin-right: auto;
-    overflow: hidden;
-    white-space: nowrap;
-    margin-right: 4px;
-  }
-
-  legend time {
-    margin-left: auto;
-  }
-
   .controls {
     display: flex;
     padding: 8px;

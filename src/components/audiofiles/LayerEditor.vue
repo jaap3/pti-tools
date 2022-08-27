@@ -4,6 +4,7 @@
   import { useSlices } from "@/stores/slices"
 
   import AppContainer from "@/components/AppContainer.vue"
+  import AudioFieldset from "@/components/audiofiles/AudioFieldset.vue"
   import SamplePlayer from "@/components/audiofiles/SamplePlayer.vue"
   import SampleWaveform from "@/components/audiofiles/SampleWaveform.vue"
 
@@ -60,8 +61,7 @@
       @click="handleClickOutside"
     >
       <form @submit.prevent>
-        <fieldset>
-          <legend>{{ slice.name }}</legend>
+        <AudioFieldset :name="slice.name" :duration="slice.audio.duration">
           <button type="button" @click="close">
             <span class="material-icons">close</span>
           </button>
@@ -77,7 +77,7 @@
           </div>
 
           <input type="file" accept="audio/*" @input="handleFileInput" />
-        </fieldset>
+        </AudioFieldset>
       </form>
     </AppContainer>
   </dialog>
