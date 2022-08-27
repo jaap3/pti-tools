@@ -28,15 +28,19 @@
   }
 
   onMounted(() => {
-    if (!dialog.value) return
-    dialog.value.addEventListener("close", handleClose)
-    dialog.value.showModal()
+    const el = dialog.value
+    if (!el) return
+    el.tabIndex = -1
+    el.focus()
+    el.addEventListener("close", handleClose)
+    el.showModal()
     document.documentElement.style.overflowY = "hidden"
   })
 
   onUnmounted(() => {
-    if (!dialog.value) return
-    dialog.value.removeEventListener("close", handleClose)
+    const el = dialog.value
+    if (!el) return
+    el.removeEventListener("close", handleClose)
     document.documentElement.style.overflowY = "auto"
   })
 </script>
