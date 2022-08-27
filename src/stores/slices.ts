@@ -91,7 +91,7 @@ export const useSlices = defineStore("slices", () => {
     slices.value.push({
       ...audioFile,
       id: crypto.randomUUID(),
-      layers: [],
+      layers: [audioFile],
     })
   }
 
