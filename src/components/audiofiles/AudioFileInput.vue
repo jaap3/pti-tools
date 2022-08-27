@@ -62,8 +62,7 @@
       )
       return
     }
-    const buffer = await file.arrayBuffer()
-    await slicesStore.addSlice(file.name, buffer)
+    await slicesStore.addSlice(file)
   }
 
   async function handleInput(evt: Event) {

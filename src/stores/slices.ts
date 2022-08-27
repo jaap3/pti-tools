@@ -31,28 +31,13 @@ export const useSlices = defineStore("slices", () => {
 
   let source: AudioBufferSourceNode | null = null
 
-  async function addSlice(name: string, file: ArrayBuffer) {
-    if (maxSlicesReached.value) {
-      messagesStore.addMessage(
-        `Rejected "${name}", max. ${maxSlices} slices reached.`,
-        "warning",
-        { timeout: 8500 },
-      )
-      return
-    }
-
-    if (durationExceeded.value) {
-      messagesStore.addMessage(
-        `Rejected "${name}", total duration > ${maxDuration}.`,
-        "warning",
-        { timeout: 8500 },
-      )
-      return
-    }
+  async function loadAudio(file: File): Promise<AudioFile | undefined> {
+    const name = file.name
+    const buffer = await file.arrayBuffer()
 
     let audio: AudioBuffer
     try {
-      audio = await ctx.decodeAudioData(file)
+      audio = await ctx.decodeAudioData(buffer)
     } catch (e) {
       messagesStore.addMessage(
         `Rejected "${name}", invalid audio file.`,
@@ -71,11 +56,41 @@ export const useSlices = defineStore("slices", () => {
     }
 
     const monoAudio = await sumChannels(audio)
-    slices.value.push({
+    return {
       id: crypto.randomUUID(),
       name,
       audio: monoAudio,
       originalAudio: monoAudio,
+    }
+  }
+
+  async function addSlice(file: File) {
+    const name = file.name
+
+    if (maxSlicesReached.value) {
+      messagesStore.addMessage(
+        `Rejected "${name}", max. ${maxSlices} slices reached.`,
+        "warning",
+        { timeout: 8500 },
+      )
+      return
+    }
+
+    if (durationExceeded.value) {
+      messagesStore.addMessage(
+        `Rejected "${name}", total duration > ${maxDuration}.`,
+        "warning",
+        { timeout: 8500 },
+      )
+      return
+    }
+
+    const audioFile = await loadAudio(file)
+    if (!audioFile) return
+
+    slices.value.push({
+      ...audioFile,
+      id: crypto.randomUUID(),
       layers: [],
     })
   }
