@@ -2,6 +2,8 @@
   import { ref, onMounted, onUnmounted } from "vue"
   import type { Slice } from "@/stores/slices"
   import { useSlices } from "@/stores/slices"
+
+  import AppContainer from "@/components/AppContainer.vue"
   import SamplePlayer from "@/components/audiofiles/SamplePlayer.vue"
   import SampleWaveform from "@/components/audiofiles/SampleWaveform.vue"
 
@@ -14,6 +16,10 @@
 
   function close() {
     dialog.value?.close()
+  }
+
+  function handleClickOutside(evt: Event) {
+    if (evt.target === dialog.value?.firstElementChild) close()
   }
 
   function handleClose() {
@@ -46,41 +52,39 @@
 </script>
 
 <template>
-  <dialog
-    ref="dialog"
-    @click="
-      (evt) => {
-        if (evt.target === dialog) close()
-      }
-    "
-  >
-    <div class="inner">
-      <fieldset>
-        <legend>{{ slice.name }}</legend>
-        <button type="button" @click="close">
-          <span class="material-icons">close</span>
-        </button>
+  <dialog ref="dialog">
+    <AppContainer
+      tag="div"
+      :show-appreciation="true"
+      @click="handleClickOutside"
+    >
+      <form @submit.prevent>
+        <fieldset>
+          <legend>{{ slice.name }}</legend>
+          <button type="button" @click="close">
+            <span class="material-icons">close</span>
+          </button>
 
-        <SamplePlayer :file="slice" />
-        <SampleWaveform :file="slice" />
+          <SamplePlayer :file="slice" />
+          <SampleWaveform :file="slice" />
 
-        <h2>Layers</h2>
+          <h2>Layers</h2>
 
-        <div v-for="file in slice.layers" :key="file.id">
-          <SamplePlayer :file="file" />
-          <SampleWaveform :file="file" />
-        </div>
-        <input type="file" accept="audio/*" @input="handleFileInput" />
+          <div v-for="file in slice.layers" :key="file.id">
+            <SamplePlayer :file="file" />
+            <SampleWaveform :file="file" />
+          </div>
 
-        <input type="file" accept="audio/*" @input="handleFileInput" />
-      </fieldset>
-    </div>
+          <input type="file" accept="audio/*" @input="handleFileInput" />
+        </fieldset>
+      </form>
+    </AppContainer>
   </dialog>
 </template>
 
 <style scoped>
   dialog::backdrop {
-    background-color: rgba(0, 0, 0, 0.8);
+    background-color: rgba(0, 0, 0, 0.75);
   }
 
   dialog {
@@ -88,17 +92,16 @@
     background: transparent;
     height: 100%;
     width: 100%;
+    max-height: 100%;
+    max-width: 100%;
     margin: 0;
     border: 0;
     padding: 0;
   }
 
-  .inner {
+  form {
     background: #0a0a0a;
     color: #fffefe;
-    max-width: 960px;
-    margin: 0 auto;
-    height: 100%;
-    overflow: auto;
+    flex-grow: 1;
   }
 </style>

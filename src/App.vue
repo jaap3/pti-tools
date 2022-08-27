@@ -2,9 +2,8 @@
   import { defineAsyncComponent, computed } from "vue"
   import { storeToRefs } from "pinia"
 
-  import ShowMessages from "@/components/messages/ShowMessages.vue"
+  import AppContainer from "@/components/AppContainer.vue"
   import AudioFileInput from "@/components/audiofiles/AudioFileInput.vue"
-  import FooterBar from "@/components/FooterBar.vue"
 
   import { useSlices } from "@/stores/slices"
   import { useMessages } from "@/stores/messages"
@@ -62,15 +61,17 @@
 </script>
 
 <template>
-  <main @click="activateAudioContext">
-    <ShowMessages />
+  <AppContainer
+    tag="main"
+    :show-appreciation="fileSelected"
+    @click="activateAudioContext"
+  >
     <form @submit.prevent>
       <AudioFileInput />
       <SlicesList v-if="fileSelected" />
       <DownloadPti v-if="fileSelected" />
     </form>
-  </main>
-  <FooterBar :show-appreciation="fileSelected" />
+  </AppContainer>
 </template>
 
 <style>
@@ -94,20 +95,7 @@
   }
 
   #app {
-    display: flex;
-    flex-direction: column;
-    min-height: 100%;
-  }
-
-  main {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    max-width: 960px;
     height: 100%;
-    margin: 0 auto;
-    padding: 0 16px;
   }
 
   input[type="text"],
