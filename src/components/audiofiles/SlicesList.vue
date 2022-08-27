@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import { storeToRefs } from "pinia"
   import draggable from "vuedraggable"
-  import SampleListItem from "@/components/audiofiles/SampleListItem.vue"
+  import SlicesListItem from "@/components/audiofiles/SlicesListItem.vue"
   import { useSlices } from "@/stores/slices"
 
   const slicesStore = useSlices()
@@ -20,8 +20,8 @@
   >
     <template #item="{ element, index }">
       <li>
-        <SampleListItem
-          :file="element"
+        <SlicesListItem
+          :slice="element"
           :can-move-up="index > 0"
           :can-move-down="index < totalSlices - 1"
         />

@@ -1,13 +1,13 @@
 <script setup lang="ts">
   import { ref, watch } from "vue"
-  import type { AudioFile } from "@/stores/slices"
+  import type { Slice } from "@/stores/slices"
   import { useSlices } from "@/stores/slices"
   import { displayDuration } from "@/audio-tools/numberformat"
   import SamplePlayer from "@/components/audiofiles/SamplePlayer.vue"
   import SampleWaveform from "@/components/audiofiles/SampleWaveform.vue"
 
   const props = defineProps<{
-    file: AudioFile
+    slice: Slice
     canMoveUp: boolean
     canMoveDown: boolean
   }>()
@@ -42,48 +42,48 @@
 
   function handleRemove() {
     stop()
-    slicesStore.removeSlice(props.file)
+    slicesStore.removeSlice(props.slice)
   }
 
   watch(trim, (newValue) => {
-    slicesStore.trimAudio(props.file, newValue ? "both" : "none")
+    slicesStore.trimAudio(props.slice, newValue ? "both" : "none")
   })
 </script>
 <template>
   <fieldset
-    :title="`${displayName(file.name)} - ${displayDuration(
-      file.audio.duration,
+    :title="`${displayName(slice.name)} - ${displayDuration(
+      slice.audio.duration,
     )}`"
   >
     <legend>
-      <span class="name">{{ shortenString(displayName(file.name), 25) }}</span>
-      <time :datetime="file.audio.duration.toFixed(3)">{{
-        displayDuration(file.audio.duration)
+      <span class="name">{{ shortenString(displayName(slice.name), 25) }}</span>
+      <time :datetime="slice.audio.duration.toFixed(3)">{{
+        displayDuration(slice.audio.duration)
       }}</time>
     </legend>
-    <SampleWaveform :file="file" @click="togglePlayback" />
+    <SampleWaveform :file="slice" @click="togglePlayback" />
     <div class="controls" title="">
-      <SamplePlayer ref="samplePlayer" :file="file" class="play" />
+      <SamplePlayer ref="samplePlayer" :file="slice" class="play" />
       <button
         type="button"
         :disabled="!canMoveUp"
-        :title="`Move ${file.name} up one position`"
-        @click="slicesStore.moveSliceUp(file)"
+        :title="`Move ${slice.name} up one position`"
+        @click="slicesStore.moveSliceUp(slice)"
       >
         <span class="material-icons">arrow_back</span>
       </button>
       <button
         type="button"
         :disabled="!canMoveDown"
-        :title="`Move ${file.name} down one position`"
-        @click="slicesStore.moveSliceDown(file)"
+        :title="`Move ${slice.name} down one position`"
+        @click="slicesStore.moveSliceDown(slice)"
       >
         <span class="material-icons">arrow_forward</span>
       </button>
       <button
         type="button"
         class="delete"
-        :title="`Remove ${file.name} from the list of sample`"
+        :title="`Remove ${slice.name} from the list of sample`"
         @click.once="handleRemove"
       >
         <span class="material-icons">delete</span>
