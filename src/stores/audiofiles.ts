@@ -64,7 +64,7 @@ export const useAudioFiles = defineStore("audiofiles", () => {
       return
     }
 
-    const monoAudio = await sumChannels(audio, ctx)
+    const monoAudio = await sumChannels(audio)
     audioFiles.value.push({
       name,
       audio: monoAudio,
