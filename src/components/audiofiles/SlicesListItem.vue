@@ -3,6 +3,7 @@
   import type { Slice } from "@/stores/slices"
   import { useSlices } from "@/stores/slices"
   import AudioFieldset from "@/components/audiofiles/AudioFieldset.vue"
+  import ButtonControl from "@/components/audiofiles/ButtonControl.vue"
   import SamplePlayer from "@/components/audiofiles/SamplePlayer.vue"
   import SampleWaveform from "@/components/audiofiles/SampleWaveform.vue"
 
@@ -47,39 +48,33 @@
   >
     <SampleWaveform :file="slice" @click="togglePlayback" />
     <div class="controls" title="">
-      <SamplePlayer ref="samplePlayer" :file="slice" class="play" />
-      <button
-        type="button"
+      <SamplePlayer ref="samplePlayer" :file="slice" />
+      <ButtonControl
         class="layers"
         title="Layers"
+        icon="layers"
         @click="slicesStore.setEditSlice(slice)"
-      >
-        <span class="material-icons">layers</span>
-      </button>
-      <button
-        type="button"
+      />
+      <ButtonControl
         :disabled="!canMoveUp"
         :title="`Move ${slice.name} up one position`"
+        icon="arrow_back"
+        class="move-up"
         @click="slicesStore.moveSliceUp(slice)"
-      >
-        <span class="material-icons">arrow_back</span>
-      </button>
-      <button
-        type="button"
+      />
+      <ButtonControl
         :disabled="!canMoveDown"
         :title="`Move ${slice.name} down one position`"
+        icon="arrow_forward"
+        class="move-down"
         @click="slicesStore.moveSliceDown(slice)"
-      >
-        <span class="material-icons">arrow_forward</span>
-      </button>
-      <button
-        type="button"
+      />
+      <ButtonControl
         class="delete"
         :title="`Remove ${slice.name} from the list of slices`"
+        icon="delete"
         @click.once="handleRemove"
-      >
-        <span class="material-icons">delete</span>
-      </button>
+      />
     </div>
     <div class="controls">
       <label>Trim silence: <input v-model="trim" type="checkbox" /></label>
@@ -94,30 +89,36 @@
   .controls {
     display: flex;
     padding: 8px;
-    justify-content: center;
     align-items: center;
     background: #121212;
   }
 
-  :deep(button) {
+  .controls :deep(button) {
     margin: 0 8px;
-    width: 40px;
-    height: 40px;
-    line-height: 1;
-    user-select: none;
   }
 
-  :deep(.play) {
+  .controls :first-child {
     margin-left: 0;
   }
 
-  .layers {
+  .controls :last-child {
+    margin-right: 0;
+  }
+
+  .controls .layers {
     margin-right: auto;
   }
 
-  .delete {
+  .controls .move-up {
+    margin-right: 4px;
+  }
+
+  .controls .move-down {
+    margin-left: 4px;
+  }
+
+  .controls .delete {
     background-color: tomato;
     margin-left: auto;
-    margin-right: 0;
   }
 </style>

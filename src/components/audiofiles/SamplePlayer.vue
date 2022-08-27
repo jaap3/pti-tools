@@ -2,6 +2,7 @@
   import { ref } from "vue"
   import type { AudioFile } from "@/stores/slices"
   import { useSlices } from "@/stores/slices"
+  import ButtonControl from "@/components/audiofiles/ButtonControl.vue"
 
   const slicesStore = useSlices()
   const ctx = slicesStore.audioContext
@@ -33,22 +34,16 @@
 </script>
 
 <template>
-  <button
+  <ButtonControl
     v-if="!isPlaying"
-    :class="$attrs['class']"
-    type="button"
     :title="`Play ${file.name}`"
+    icon="play_arrow"
     @click="play"
-  >
-    <span class="material-icons">play_arrow</span>
-  </button>
-  <button
+  />
+  <ButtonControl
     v-if="isPlaying"
-    :class="$attrs['class']"
-    type="button"
     :title="`Stop playing ${file.name}`"
+    icon="stop"
     @click="stop"
-  >
-    <span class="material-icons">stop</span>
-  </button>
+  />
 </template>

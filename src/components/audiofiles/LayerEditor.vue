@@ -5,6 +5,7 @@
 
   import AppContainer from "@/components/AppContainer.vue"
   import AudioFieldset from "@/components/audiofiles/AudioFieldset.vue"
+  import ButtonControl from "@/components/audiofiles/ButtonControl.vue"
   import SamplePlayer from "@/components/audiofiles/SamplePlayer.vue"
   import SampleWaveform from "@/components/audiofiles/SampleWaveform.vue"
 
@@ -62,9 +63,7 @@
     >
       <form @submit.prevent>
         <AudioFieldset :name="slice.name" :duration="slice.audio.duration">
-          <button type="button" @click="close">
-            <span class="material-icons">close</span>
-          </button>
+          <ButtonControl icon="close" @click="close" />
 
           <SamplePlayer :file="slice" />
           <SampleWaveform :file="slice" />
