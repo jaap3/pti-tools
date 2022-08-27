@@ -10,7 +10,7 @@
   <draggable
     :list="audioFilesStore.audioFiles"
     tag="ol"
-    item-key="name"
+    item-key="id"
     handle="legend"
     :swap-threshold="0.5"
     :animation="300"

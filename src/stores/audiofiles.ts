@@ -4,6 +4,7 @@ import { useMessages } from "@/stores/messages"
 import { sumChannels, trimSilence } from "@/audio-tools"
 
 export interface AudioFile {
+  id: string
   name: string
   originalAudio: AudioBuffer
   audio: AudioBuffer
@@ -66,6 +67,7 @@ export const useAudioFiles = defineStore("audiofiles", () => {
 
     const monoAudio = await sumChannels(audio)
     audioFiles.value.push({
+      id: crypto.randomUUID(),
       name,
       audio: monoAudio,
       originalAudio: monoAudio,
