@@ -1,16 +1,11 @@
 <script setup lang="ts">
-  import { defineAsyncComponent } from "vue"
   import { storeToRefs } from "pinia"
   import draggable from "vuedraggable"
   import SlicesListItem from "@/components/audiofiles/SlicesListItem.vue"
   import { useSlices } from "@/stores/slices"
 
-  const LayerEditor = defineAsyncComponent(
-    () => import("@/components/audiofiles/LayerEditor.vue"),
-  )
-
   const slicesStore = useSlices()
-  const { slices, totalSlices, editSlice } = storeToRefs(slicesStore)
+  const { slices, totalSlices } = storeToRefs(slicesStore)
 </script>
 
 <template>
@@ -33,7 +28,6 @@
       </li>
     </template>
   </draggable>
-  <LayerEditor v-if="editSlice !== null" :slice="editSlice" />
 </template>
 
 <style scoped>

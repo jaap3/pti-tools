@@ -14,12 +14,15 @@
   const DownloadPti = defineAsyncComponent(
     () => import("@/components/DownloadPti.vue"),
   )
+  const LayerEditor = defineAsyncComponent(
+    () => import("@/components/audiofiles/LayerEditor.vue"),
+  )
 
   const slicesStore = useSlices()
   const messagesStore = useMessages()
   const audioContext = slicesStore.audioContext
 
-  const { totalSlices } = storeToRefs(slicesStore)
+  const { totalSlices, editSlice } = storeToRefs(slicesStore)
 
   function handleAudioContextStateChange() {
     messagesStore.removeMessage("audio-context-state")
@@ -72,6 +75,7 @@
       <DownloadPti v-if="fileSelected" />
     </form>
   </AppContainer>
+  <LayerEditor v-if="editSlice !== null" :slice="editSlice" />
 </template>
 
 <style>
