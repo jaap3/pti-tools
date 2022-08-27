@@ -27,6 +27,7 @@
 
   function handleClose() {
     slicesStore.editSlice = null
+    document.documentElement.style.overflowY = "auto"
   }
 
   async function handleFileInput(evt: Event) {
@@ -52,7 +53,6 @@
     const el = dialog.value
     if (!el) return
     el.removeEventListener("close", handleClose)
-    document.documentElement.style.overflowY = "auto"
   })
 </script>
 
