@@ -12,13 +12,14 @@ export function trimSilence(
   ctx: AudioContext,
   fromStart = true,
   fromEnd = true,
+  threshold = 0.0005,
 ) {
   const data = input.getChannelData(0)
-  const start = fromStart ? data.findIndex((v) => v !== 0) : 0
+  const start = fromStart ? data.findIndex((v) => Math.abs(v) > threshold) : 0
   let end = data.length - 1
   if (fromEnd) {
     data.reverse()
-    end -= data.findIndex((v) => v !== 0)
+    end -= data.findIndex((v) => Math.abs(v) > threshold)
     data.reverse()
   }
   const output = ctx.createBuffer(1, end - start, input.sampleRate)
