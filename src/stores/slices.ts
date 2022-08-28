@@ -134,6 +134,22 @@ export const useSlices = defineStore("slices", () => {
     slice.audio = slice.originalAudio
   }
 
+  async function removeLayer(slice: Slice, layer: AudioFile) {
+    if (slice.layers.length <= 1) {
+      messagesStore.addMessage(
+        `Cannot remove layer, a slice must have at least one layer.`,
+        "warning",
+        { timeout: 8500 },
+      )
+      return
+    }
+    slice.layers.splice(slice.layers.indexOf(layer), 1)
+    slice.originalAudio = await combineAudio(
+      slice.layers.map((layer) => layer.audio),
+    )
+    slice.audio = slice.originalAudio
+  }
+
   function trimAudio(file: AudioFile, option: TrimOption) {
     if (ctx === undefined) return
 
@@ -187,6 +203,7 @@ export const useSlices = defineStore("slices", () => {
     removeSlice,
     setEditSlice,
     addLayer,
+    removeLayer,
     trimAudio,
     getAudioBufferSourceNode,
     stopPlayback,

@@ -5,6 +5,7 @@
 
   import AppContainer from "@/components/AppContainer.vue"
   import AudioFieldset from "@/components/audiofiles/AudioFieldset.vue"
+  import ButtonControl from "@/components/audiofiles/ButtonControl.vue"
   import SamplePlayer from "@/components/audiofiles/SamplePlayer.vue"
 
   const slicesStore = useSlices()
@@ -68,7 +69,17 @@
           <h2>Layers</h2>
 
           <div v-for="file in slice.layers" :key="file.id">
-            <SamplePlayer v-if="visible" :file="file" />
+            <SamplePlayer v-if="visible" :file="file">
+              <template #controls>
+                <ButtonControl
+                  :disabled="slice.layers.length <= 1"
+                  title="Remove"
+                  icon="delete"
+                  class="delete"
+                  @click="slicesStore.removeLayer(slice, file)"
+                />
+              </template>
+            </SamplePlayer>
           </div>
 
           <input type="file" accept="audio/*" @input="handleFileInput" />
@@ -100,14 +111,22 @@
     opacity: 0;
   }
 
+  .show {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+
   form {
     background: #0a0a0a;
     color: #fffefe;
     flex-grow: 1;
   }
 
-  .show {
-    transform: scale(1) translateY(0);
-    opacity: 1;
+  .controls .delete {
+    margin-left: auto;
+  }
+
+  .controls .delete:not(:disabled) {
+    background-color: tomato;
   }
 </style>
