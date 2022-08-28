@@ -9,6 +9,7 @@
   import ButtonControl from "@/components/audiofiles/ButtonControl.vue"
   import ControlsHolder from "@/components/audiofiles/ControlsHolder.vue"
   import SamplePlayer from "@/components/audiofiles/SamplePlayer.vue"
+  import TrimControl from "@/components/audiofiles/TrimControl.vue"
 
   const slicesStore = useSlices()
   const { maxLayers, maxDuration } = slicesStore
@@ -75,6 +76,9 @@
           class="slice"
         >
           <SamplePlayer v-if="visible" :file="slice" />
+          <ControlsHolder>
+            <TrimControl :file="slice" />
+          </ControlsHolder>
 
           <fieldset class="layers">
             <legend>Layers</legend>
@@ -102,6 +106,9 @@
                       />
                     </template>
                   </SamplePlayer>
+                  <ControlsHolder>
+                    <TrimControl :file="file" />
+                  </ControlsHolder>
                 </AudioFieldset>
               </li>
             </ol>

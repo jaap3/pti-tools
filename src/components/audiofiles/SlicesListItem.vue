@@ -1,11 +1,12 @@
 <script setup lang="ts">
-  import { ref, watch } from "vue"
+  import { ref } from "vue"
   import type { Slice } from "@/stores/slices"
   import { useSlices } from "@/stores/slices"
   import AudioFieldset from "@/components/audiofiles/AudioFieldset.vue"
   import ButtonControl from "@/components/audiofiles/ButtonControl.vue"
   import ControlsHolder from "@/components/audiofiles/ControlsHolder.vue"
   import SamplePlayer from "@/components/audiofiles/SamplePlayer.vue"
+  import TrimControl from "@/components/audiofiles/TrimControl.vue"
 
   const props = defineProps<{
     slice: Slice
@@ -15,7 +16,6 @@
 
   const slicesStore = useSlices()
   const samplePlayer = ref<InstanceType<typeof SamplePlayer> | null>(null)
-  const trim = ref(false)
 
   function stop() {
     samplePlayer.value?.stop()
@@ -25,10 +25,6 @@
     stop()
     slicesStore.removeSlice(props.slice)
   }
-
-  watch(trim, (newValue) => {
-    slicesStore.trimAudio(props.slice, newValue ? "both" : "none")
-  })
 </script>
 <template>
   <AudioFieldset :name="slice.name" :duration="slice.audio.duration">
@@ -63,7 +59,7 @@
       </template>
     </SamplePlayer>
     <ControlsHolder class="controls">
-      <label>Trim silence: <input v-model="trim" type="checkbox" /></label>
+      <TrimControl :file="slice" />
     </ControlsHolder>
   </AudioFieldset>
 </template>

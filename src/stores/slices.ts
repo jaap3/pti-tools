@@ -3,15 +3,24 @@ import { defineStore, acceptHMRUpdate } from "pinia"
 import { useMessages } from "@/stores/messages"
 import { sumChannels, trimSilence, combineAudio } from "@/audio-tools"
 
+interface AudioFileOptions {
+  trim: TrimOption
+}
+
 export interface AudioFile {
   id: string
   name: string
   originalAudio: AudioBuffer
   audio: AudioBuffer
+  options: AudioFileOptions
+}
+
+export interface Layer extends AudioFile {
+  slice: WeakRef<Slice>
 }
 
 export interface Slice extends AudioFile {
-  layers: AudioFile[]
+  layers: Layer[]
 }
 
 export type TrimOption = "none" | "start" | "end" | "both"
@@ -83,6 +92,9 @@ export const useSlices = defineStore("slices", () => {
       name: displayName(name),
       audio: monoAudio,
       originalAudio: monoAudio,
+      options: {
+        trim: "none",
+      },
     }
   }
 
@@ -107,11 +119,18 @@ export const useSlices = defineStore("slices", () => {
       } else {
         const audioFile = await loadAudio(file)
         if (audioFile) {
-          slices.value.push({
+          const slice = {
             ...audioFile,
+            layers: [] as Layer[],
+          }
+          const layer = {
+            ...audioFile,
+            options: { ...audioFile.options },
             id: crypto.randomUUID(),
-            layers: [audioFile],
-          })
+            slice: new WeakRef(slice),
+          }
+          slice.layers.push(layer)
+          slices.value.push(slice)
         }
       }
     } finally {
@@ -141,7 +160,6 @@ export const useSlices = defineStore("slices", () => {
 
   async function addLayer(slice: Slice, file: File) {
     const unlock = await layerMutex.lock()
-
     const name = file.name
     try {
       if (slice.layers.length >= maxLayers) {
@@ -153,21 +171,20 @@ export const useSlices = defineStore("slices", () => {
       } else {
         const audioFile = await loadAudio(file)
         if (audioFile) {
-          slice.layers.push(audioFile)
-          slice.originalAudio = await combineAudio([
-            slice.audio,
-            audioFile.audio,
-          ])
-          slice.audio = slice.originalAudio
-          slice.name = slice.layers.map((layer) => layer.name).join(" + ")
+          const layer = {
+            ...audioFile,
+            slice: new WeakRef(slice),
+          }
+          slice.layers.push(layer)
         }
+        await handleLayerChange(slice)
       }
     } finally {
       unlock()
     }
   }
 
-  async function removeLayer(slice: Slice, layer: AudioFile) {
+  async function removeLayer(slice: Slice, layer: Layer) {
     const unlock = await layerMutex.lock()
     try {
       if (slice.layers.length <= 1) {
@@ -178,19 +195,25 @@ export const useSlices = defineStore("slices", () => {
         )
       } else {
         slice.layers.splice(slice.layers.indexOf(layer), 1)
-        slice.originalAudio = await combineAudio(
-          slice.layers.map((layer) => layer.audio),
-        )
-        slice.audio = slice.originalAudio
-        slice.name = slice.layers.map((layer) => layer.name).join(" + ")
+        await handleLayerChange(slice)
       }
     } finally {
       unlock()
     }
   }
 
-  function trimAudio(file: AudioFile, option: TrimOption) {
+  async function handleLayerChange(slice: Slice) {
+    slice.originalAudio = await combineAudio(
+      slice.layers.map((layer) => layer.audio),
+    )
+    trimAudio(slice, slice.options.trim)
+    slice.name = slice.layers.map((layer) => layer.name).join(" + ")
+  }
+
+  function trimAudio(file: AudioFile | Slice | Layer, option: TrimOption) {
     if (ctx === undefined) return
+
+    file.options.trim = option
 
     const audio = file.originalAudio
     switch (option) {
@@ -206,6 +229,11 @@ export const useSlices = defineStore("slices", () => {
       case "both":
         file.audio = trimSilence(audio, ctx)
         break
+    }
+
+    if ("slice" in file) {
+      const slice = file.slice.deref()
+      if (slice) handleLayerChange(slice)
     }
   }
 
