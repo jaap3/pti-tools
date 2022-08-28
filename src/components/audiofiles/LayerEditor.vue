@@ -59,6 +59,8 @@
     if (!el) return
     el.removeEventListener("close", handleClose)
   })
+
+  // TODO: Stop sample playback layer is removed or dialog is closed
 </script>
 
 <template>
