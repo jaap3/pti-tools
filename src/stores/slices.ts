@@ -24,6 +24,20 @@ function displayName(fileName: string) {
   return fileName.replace(/\.[^.]+$/, "")
 }
 
+class Mutex {
+  private promise = Promise.resolve()
+
+  lock() {
+    let resolver: () => void
+    const currentPromise = this.promise
+    this.promise = new Promise<void>((resolve) => {
+      resolver = () => resolve()
+    })
+    const unlock = currentPromise.then(() => resolver)
+    return unlock
+  }
+}
+
 export const useSlices = defineStore("slices", () => {
   const ctx = new AudioContext({
     latencyHint: "interactive",
@@ -33,6 +47,9 @@ export const useSlices = defineStore("slices", () => {
   const messagesStore = useMessages()
   const slices = ref<Slice[]>([])
   const editSlice = ref<Slice | null>(null)
+
+  const sliceMutex = new Mutex()
+  const layerMutex = new Mutex()
 
   let source: AudioBufferSourceNode | null = null
 
@@ -72,6 +89,8 @@ export const useSlices = defineStore("slices", () => {
   async function addSlice(file: File) {
     const name = file.name
 
+    const unlock = await sliceMutex.lock()
+
     if (maxSlicesReached.value) {
       messagesStore.addMessage(
         `Rejected "${name}", max. ${maxSlices} slices reached.`,
@@ -79,25 +98,25 @@ export const useSlices = defineStore("slices", () => {
         { timeout: 8500 },
       )
       return
-    }
-
-    if (durationExceeded.value) {
+    } else if (durationExceeded.value) {
       messagesStore.addMessage(
         `Rejected "${name}", total duration > ${maxDuration}.`,
         "warning",
         { timeout: 8500 },
       )
       return
+    } else {
+      const audioFile = await loadAudio(file)
+      if (audioFile) {
+        slices.value.push({
+          ...audioFile,
+          id: crypto.randomUUID(),
+          layers: [audioFile],
+        })
+      }
     }
 
-    const audioFile = await loadAudio(file)
-    if (!audioFile) return
-
-    slices.value.push({
-      ...audioFile,
-      id: crypto.randomUUID(),
-      layers: [audioFile],
-    })
+    unlock()
   }
 
   function moveSliceUp(slice: Slice) {
@@ -121,6 +140,8 @@ export const useSlices = defineStore("slices", () => {
   }
 
   async function addLayer(slice: Slice, file: File) {
+    const unlock = await layerMutex.lock()
+
     const name = file.name
     if (slice.layers.length >= maxLayers) {
       messagesStore.addMessage(
@@ -129,17 +150,23 @@ export const useSlices = defineStore("slices", () => {
         { timeout: 8500 },
       )
       return
+    } else {
+      const audioFile = await loadAudio(file)
+      if (audioFile) {
+        slice.layers.push(audioFile)
+        slice.originalAudio = await combineAudio(
+          slice.layers.map((layer) => layer.audio),
+        )
+        slice.audio = slice.originalAudio
+      }
     }
-    const audioFile = await loadAudio(file)
-    if (!audioFile) return
-    slice.layers.push(audioFile)
-    slice.originalAudio = await combineAudio(
-      slice.layers.map((layer) => layer.audio),
-    )
-    slice.audio = slice.originalAudio
+
+    unlock()
   }
 
   async function removeLayer(slice: Slice, layer: AudioFile) {
+    const unlock = await layerMutex.lock()
+
     if (slice.layers.length <= 1) {
       messagesStore.addMessage(
         `Cannot remove layer, a slice must have at least one layer.`,
@@ -147,12 +174,15 @@ export const useSlices = defineStore("slices", () => {
         { timeout: 8500 },
       )
       return
+    } else {
+      slice.layers.splice(slice.layers.indexOf(layer), 1)
+      slice.originalAudio = await combineAudio(
+        slice.layers.map((layer) => layer.audio),
+      )
+      slice.audio = slice.originalAudio
     }
-    slice.layers.splice(slice.layers.indexOf(layer), 1)
-    slice.originalAudio = await combineAudio(
-      slice.layers.map((layer) => layer.audio),
-    )
-    slice.audio = slice.originalAudio
+
+    unlock()
   }
 
   function trimAudio(file: AudioFile, option: TrimOption) {
