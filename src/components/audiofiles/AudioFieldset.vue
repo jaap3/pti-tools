@@ -10,13 +10,16 @@
     )
   }
 
-  defineProps<{ name: string; duration: number }>()
+  withDefaults(
+    defineProps<{ name: string; truncateNameAt: number; duration: number }>(),
+    { truncateNameAt: 25 },
+  )
 </script>
 
 <template>
   <fieldset :title="`${name} - ${displayDuration(duration)}`">
     <legend>
-      <span class="name">{{ shortenString(name, 25) }}</span>
+      <span class="name">{{ shortenString(name, truncateNameAt) }}</span>
       <time :datetime="duration.toFixed(3)">{{
         displayDuration(duration)
       }}</time>
@@ -45,8 +48,10 @@
   :is(legend span) {
     margin-right: auto;
     overflow: hidden;
+    text-overflow: ellipsis;
     white-space: nowrap;
     margin-right: 4px;
+    max-width: calc(100vw - 128px);
   }
 
   :is(legend time) {

@@ -70,6 +70,7 @@
       <form @submit.prevent>
         <AudioFieldset
           :name="slice.name"
+          :truncate-name-at="100"
           :duration="slice.audio.duration"
           class="slice"
         >

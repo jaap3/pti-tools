@@ -154,10 +154,9 @@ export const useSlices = defineStore("slices", () => {
       const audioFile = await loadAudio(file)
       if (audioFile) {
         slice.layers.push(audioFile)
-        slice.originalAudio = await combineAudio(
-          slice.layers.map((layer) => layer.audio),
-        )
+        slice.originalAudio = await combineAudio([slice.audio, audioFile.audio])
         slice.audio = slice.originalAudio
+        slice.name = slice.layers.map((layer) => layer.name).join(" + ")
       }
     }
 
@@ -180,6 +179,7 @@ export const useSlices = defineStore("slices", () => {
         slice.layers.map((layer) => layer.audio),
       )
       slice.audio = slice.originalAudio
+      slice.name = slice.layers.map((layer) => layer.name).join(" + ")
     }
 
     unlock()
