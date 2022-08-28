@@ -68,7 +68,11 @@
       @click="handleClickOutside"
     >
       <form @submit.prevent>
-        <AudioFieldset :name="slice.name" :duration="slice.audio.duration">
+        <AudioFieldset
+          :name="slice.name"
+          :duration="slice.audio.duration"
+          class="slice"
+        >
           <SamplePlayer v-if="visible" :file="slice" />
 
           <fieldset class="layers">
@@ -139,6 +143,12 @@
     background: #0a0a0a;
     color: #fffefe;
     flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .slice {
+    flex-grow: 1;
   }
 
   .layers {
@@ -160,7 +170,7 @@
   }
 
   .file-input {
-    margin: 0 8px;
+    margin: 16px 8px;
   }
 
   ol {
