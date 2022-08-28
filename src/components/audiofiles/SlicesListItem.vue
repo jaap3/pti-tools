@@ -17,10 +17,6 @@
   const samplePlayer = ref<InstanceType<typeof SamplePlayer> | null>(null)
   const trim = ref(false)
 
-  function displayName(fileName: string) {
-    return fileName.replace(/\.[^.]+$/, "")
-  }
-
   function stop() {
     samplePlayer.value?.stop()
   }
@@ -35,10 +31,7 @@
   })
 </script>
 <template>
-  <AudioFieldset
-    :name="displayName(slice.name)"
-    :duration="slice.audio.duration"
-  >
+  <AudioFieldset :name="slice.name" :duration="slice.audio.duration">
     <SamplePlayer ref="samplePlayer" :file="slice">
       <template #controls>
         <ButtonControl

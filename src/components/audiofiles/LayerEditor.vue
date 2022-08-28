@@ -6,6 +6,7 @@
   import AppContainer from "@/components/AppContainer.vue"
   import AudioFieldset from "@/components/audiofiles/AudioFieldset.vue"
   import ButtonControl from "@/components/audiofiles/ButtonControl.vue"
+  import ControlsHolder from "@/components/audiofiles/ControlsHolder.vue"
   import SamplePlayer from "@/components/audiofiles/SamplePlayer.vue"
 
   const slicesStore = useSlices()
@@ -66,26 +67,36 @@
         <AudioFieldset :name="slice.name" :duration="slice.audio.duration">
           <SamplePlayer v-if="visible" :file="slice" />
 
-          <h2>Layers</h2>
+          <fieldset class="layers">
+            <legend>Layers</legend>
 
-          <div v-for="file in slice.layers" :key="file.id">
-            <SamplePlayer v-if="visible" :file="file">
-              <template #controls>
-                <ButtonControl
-                  :disabled="slice.layers.length <= 1"
-                  title="Remove"
-                  icon="delete"
-                  class="delete"
-                  @click="slicesStore.removeLayer(slice, file)"
-                />
-              </template>
-            </SamplePlayer>
-          </div>
+            <ol>
+              <li v-for="file in slice.layers" :key="file.id">
+                <AudioFieldset
+                  :name="file.name"
+                  :duration="file.audio.duration"
+                >
+                  <SamplePlayer v-if="visible" :file="file">
+                    <template #controls>
+                      <ButtonControl
+                        :disabled="slice.layers.length <= 1"
+                        title="Remove"
+                        icon="delete"
+                        class="delete"
+                        @click="slicesStore.removeLayer(slice, file)"
+                      />
+                    </template>
+                  </SamplePlayer>
+                </AudioFieldset>
+              </li>
+            </ol>
 
-          <input type="file" accept="audio/*" @input="handleFileInput" />
+            <input type="file" accept="audio/*" @input="handleFileInput" />
+          </fieldset>
         </AudioFieldset>
-
-        <button type="button" @click="close">Back</button>
+        <ControlsHolder>
+          <button type="button" class="back" @click="close">Back</button>
+        </ControlsHolder>
       </form>
     </AppContainer>
   </dialog>
@@ -122,11 +133,66 @@
     flex-grow: 1;
   }
 
+  .layers {
+    margin: 8px 0;
+    padding: 8px 0;
+    border: 0;
+    border-top: 1px solid#a0a0a0;
+  }
+
+  .layers legend {
+    display: flex;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 4px;
+    background-color: #fff;
+    color: #000;
+    font-weight: 400;
+    max-width: calc(100% - 16px);
+  }
+
+  ol {
+    display: flex;
+    flex-wrap: wrap;
+    list-style: none;
+    margin: 0 auto;
+    padding: 0;
+    max-width: 300px;
+  }
+
+  li {
+    margin: 8px 0;
+  }
+
+  li fieldset {
+    margin: 0 -1px;
+  }
+
+  @media only screen and (min-width: 655px) {
+    ol {
+      max-width: 608px;
+    }
+  }
+
+  @media only screen and (min-width: 976px) {
+    ol {
+      max-width: 960px;
+    }
+
+    li:nth-child(3n + 2) {
+      margin: 8px 8px;
+    }
+  }
+
   .controls .delete {
     margin-left: auto;
   }
 
   .controls .delete:not(:disabled) {
     background-color: tomato;
+  }
+
+  .back {
+    margin-left: auto;
   }
 </style>
