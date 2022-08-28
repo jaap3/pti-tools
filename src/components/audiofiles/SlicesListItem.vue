@@ -36,7 +36,7 @@
       <template #controls>
         <ButtonControl
           class="layers"
-          title="Layers"
+          :title="`Layers (${slice.layers.length})`"
           icon="layers"
           @click="slicesStore.setEditSlice(slice)"
         />
