@@ -91,32 +91,32 @@ export const useSlices = defineStore("slices", () => {
 
     const unlock = await sliceMutex.lock()
 
-    if (maxSlicesReached.value) {
-      messagesStore.addMessage(
-        `Rejected "${name}", max. ${maxSlices} slices reached.`,
-        "warning",
-        { timeout: 8500 },
-      )
-      return
-    } else if (durationExceeded.value) {
-      messagesStore.addMessage(
-        `Rejected "${name}", total duration > ${maxDuration}.`,
-        "warning",
-        { timeout: 8500 },
-      )
-      return
-    } else {
-      const audioFile = await loadAudio(file)
-      if (audioFile) {
-        slices.value.push({
-          ...audioFile,
-          id: crypto.randomUUID(),
-          layers: [audioFile],
-        })
+    try {
+      if (maxSlicesReached.value) {
+        messagesStore.addMessage(
+          `Rejected "${name}", max. ${maxSlices} slices reached.`,
+          "warning",
+          { timeout: 8500 },
+        )
+      } else if (durationExceeded.value) {
+        messagesStore.addMessage(
+          `Rejected "${name}", total duration > ${maxDuration}.`,
+          "warning",
+          { timeout: 8500 },
+        )
+      } else {
+        const audioFile = await loadAudio(file)
+        if (audioFile) {
+          slices.value.push({
+            ...audioFile,
+            id: crypto.randomUUID(),
+            layers: [audioFile],
+          })
+        }
       }
+    } finally {
+      unlock()
     }
-
-    unlock()
   }
 
   function moveSliceUp(slice: Slice) {
@@ -143,46 +143,50 @@ export const useSlices = defineStore("slices", () => {
     const unlock = await layerMutex.lock()
 
     const name = file.name
-    if (slice.layers.length >= maxLayers) {
-      messagesStore.addMessage(
-        `Rejected "${name}", max. ${maxLayers} layers reached.`,
-        "warning",
-        { timeout: 8500 },
-      )
-      return
-    } else {
-      const audioFile = await loadAudio(file)
-      if (audioFile) {
-        slice.layers.push(audioFile)
-        slice.originalAudio = await combineAudio([slice.audio, audioFile.audio])
-        slice.audio = slice.originalAudio
-        slice.name = slice.layers.map((layer) => layer.name).join(" + ")
+    try {
+      if (slice.layers.length >= maxLayers) {
+        messagesStore.addMessage(
+          `Rejected "${name}", max. ${maxLayers} layers reached.`,
+          "warning",
+          { timeout: 8500 },
+        )
+      } else {
+        const audioFile = await loadAudio(file)
+        if (audioFile) {
+          slice.layers.push(audioFile)
+          slice.originalAudio = await combineAudio([
+            slice.audio,
+            audioFile.audio,
+          ])
+          slice.audio = slice.originalAudio
+          slice.name = slice.layers.map((layer) => layer.name).join(" + ")
+        }
       }
+    } finally {
+      unlock()
     }
-
-    unlock()
   }
 
   async function removeLayer(slice: Slice, layer: AudioFile) {
     const unlock = await layerMutex.lock()
-
-    if (slice.layers.length <= 1) {
-      messagesStore.addMessage(
-        `Cannot remove layer, a slice must have at least one layer.`,
-        "warning",
-        { timeout: 8500 },
-      )
-      return
-    } else {
-      slice.layers.splice(slice.layers.indexOf(layer), 1)
-      slice.originalAudio = await combineAudio(
-        slice.layers.map((layer) => layer.audio),
-      )
-      slice.audio = slice.originalAudio
-      slice.name = slice.layers.map((layer) => layer.name).join(" + ")
+    try {
+      if (slice.layers.length <= 1) {
+        messagesStore.addMessage(
+          `Cannot remove layer, a slice must have at least one layer.`,
+          "warning",
+          { timeout: 8500 },
+        )
+      } else {
+        slice.layers.splice(slice.layers.indexOf(layer), 1)
+        slice.originalAudio = await combineAudio(
+          slice.layers.map((layer) => layer.audio),
+        )
+        slice.audio = slice.originalAudio
+        slice.name = slice.layers.map((layer) => layer.name).join(" + ")
+      }
+    } finally {
+      unlock()
     }
-
-    unlock()
   }
 
   function trimAudio(file: AudioFile, option: TrimOption) {
