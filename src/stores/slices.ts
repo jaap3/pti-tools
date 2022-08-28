@@ -19,6 +19,10 @@ export type TrimOption = "none" | "start" | "end" | "both"
 const maxSlices = 48
 const maxDuration = 45 // seconds
 
+function displayName(fileName: string) {
+  return fileName.replace(/\.[^.]+$/, "")
+}
+
 export const useSlices = defineStore("slices", () => {
   const ctx = new AudioContext({
     latencyHint: "interactive",
@@ -58,7 +62,7 @@ export const useSlices = defineStore("slices", () => {
     const monoAudio = await sumChannels(audio)
     return {
       id: crypto.randomUUID(),
-      name,
+      name: displayName(name),
       audio: monoAudio,
       originalAudio: monoAudio,
     }
