@@ -95,7 +95,7 @@
 </script>
 
 <template>
-  <label @dragover="handleDragOver" @drop="handleDrop">
+  <label :class="{ disabled }" @dragover="handleDragOver" @drop="handleDrop">
     Choose / drop audio file(s) / folders
     <small
       >(<code>.wav</code>,&nbsp;<code>.mp3</code>,&nbsp;<code>.flac</code>,
@@ -137,5 +137,9 @@
     height: 100%;
     opacity: 0;
     cursor: pointer;
+  }
+
+  :disabled {
+    cursor: not-allowed;
   }
 </style>
