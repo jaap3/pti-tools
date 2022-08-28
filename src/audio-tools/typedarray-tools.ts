@@ -10,5 +10,7 @@ export function mergeFloat32Arrays(arrays: Float32Array[]) {
 }
 
 export function float32ToInt16(data: Float32Array) {
-  return Int16Array.from(data, (v) => (v < 0 ? v * 0x8000 : v * 0x7fff))
+  return Int16Array.from(data, (v) =>
+    v < 0 ? Math.max(-1, v) * 0x8000 : Math.min(v, 1) * 0x7fff,
+  )
 }
