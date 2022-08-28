@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { ref, onMounted, onUnmounted, computed } from "vue"
+  import { ref, onMounted, onUnmounted } from "vue"
   import type { Slice } from "@/stores/slices"
   import { useSlices } from "@/stores/slices"
 
@@ -14,6 +14,7 @@
   const { maxLayers, maxDuration } = slicesStore
   const dialog = ref<HTMLDialogElement | null>(null)
   const visible = ref(false)
+  const fileLoaderDisabled = ref(false)
 
   const props = defineProps<{
     slice: Slice
@@ -35,6 +36,9 @@
   async function handleFileInput(file: File) {
     if (fileLoaderDisabled.value) return
     await slicesStore.addLayer(props.slice, file)
+    fileLoaderDisabled.value =
+      props.slice.layers.length >= maxLayers ||
+      props.slice.audio.duration >= maxDuration
   }
 
   onMounted(() => {
@@ -54,12 +58,6 @@
     if (!el) return
     el.removeEventListener("close", handleClose)
   })
-
-  const fileLoaderDisabled = computed(
-    () =>
-      props.slice.layers.length > maxLayers ||
-      props.slice.audio.duration > maxDuration,
-  )
 </script>
 
 <template>
