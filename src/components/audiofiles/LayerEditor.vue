@@ -6,7 +6,6 @@
   import AppContainer from "@/components/AppContainer.vue"
   import AudioFieldset from "@/components/audiofiles/AudioFieldset.vue"
   import SamplePlayer from "@/components/audiofiles/SamplePlayer.vue"
-  import SampleWaveform from "@/components/audiofiles/SampleWaveform.vue"
 
   const slicesStore = useSlices()
   const dialog = ref<HTMLDialogElement | null>(null)
@@ -64,14 +63,12 @@
     >
       <form @submit.prevent>
         <AudioFieldset :name="slice.name" :duration="slice.audio.duration">
-          <SamplePlayer :file="slice" />
-          <SampleWaveform v-if="visible" :file="slice" />
+          <SamplePlayer v-if="visible" :file="slice" />
 
           <h2>Layers</h2>
 
           <div v-for="file in slice.layers" :key="file.id">
-            <SamplePlayer :file="file" />
-            <SampleWaveform v-if="visible" :file="file" />
+            <SamplePlayer v-if="visible" :file="file" />
           </div>
 
           <input type="file" accept="audio/*" @input="handleFileInput" />
