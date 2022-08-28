@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { defineAsyncComponent, computed } from "vue"
+  import { defineAsyncComponent, computed, watch } from "vue"
   import { storeToRefs } from "pinia"
 
   import AppContainer from "@/components/AppContainer.vue"
@@ -22,7 +22,13 @@
   const messagesStore = useMessages()
   const audioContext = slicesStore.audioContext
 
-  const { totalSlices, editSlice } = storeToRefs(slicesStore)
+  const { maxSlices, maxDuration } = slicesStore
+  const { totalSlices, editSlice, maxSlicesReached, durationExceeded } =
+    storeToRefs(slicesStore)
+
+  const fileLoaderDisabled = computed(
+    () => maxSlicesReached.value || durationExceeded.value,
+  )
 
   function handleAudioContextStateChange() {
     messagesStore.removeMessage("audio-context-state")
@@ -55,6 +61,41 @@
     }
   }
 
+  async function handleFileInput(file: File) {
+    if (fileLoaderDisabled.value) return
+    await slicesStore.addSlice(file)
+  }
+
+  watch(
+    maxSlicesReached,
+    (newValue) => {
+      messagesStore.removeMessage("max-slices-reached")
+      if (newValue) {
+        messagesStore.addMessage(
+          `Max. files reached (${maxSlices}): Remove one or more files to enable the file loader.`,
+          "info",
+          { id: "max-slices-reached" },
+        )
+      }
+    },
+    { immediate: true },
+  )
+
+  watch(
+    durationExceeded,
+    (newValue) => {
+      messagesStore.removeMessage("duration-exceeded")
+      if (newValue) {
+        messagesStore.addMessage(
+          `Total duration exceeds ${maxDuration}: Remove one or more files to enable the file loader.`,
+          "info",
+          { id: "duration-exceeded" },
+        )
+      }
+    },
+    { immediate: true },
+  )
+
   const fileSelected = computed(() => {
     if (!fileSelected.value && totalSlices.value === 0) {
       return false
@@ -70,7 +111,7 @@
     @click="activateAudioContext"
   >
     <form @submit.prevent>
-      <AudioFileInput />
+      <AudioFileInput :disabled="fileLoaderDisabled" @input="handleFileInput" />
       <SlicesList v-if="fileSelected" />
       <DownloadPti v-if="fileSelected" />
     </form>

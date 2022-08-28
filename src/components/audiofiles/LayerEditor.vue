@@ -1,15 +1,17 @@
 <script setup lang="ts">
-  import { ref, onMounted, onUnmounted } from "vue"
+  import { ref, onMounted, onUnmounted, computed } from "vue"
   import type { Slice } from "@/stores/slices"
   import { useSlices } from "@/stores/slices"
 
   import AppContainer from "@/components/AppContainer.vue"
+  import AudioFileInput from "@/components/audiofiles/AudioFileInput.vue"
   import AudioFieldset from "@/components/audiofiles/AudioFieldset.vue"
   import ButtonControl from "@/components/audiofiles/ButtonControl.vue"
   import ControlsHolder from "@/components/audiofiles/ControlsHolder.vue"
   import SamplePlayer from "@/components/audiofiles/SamplePlayer.vue"
 
   const slicesStore = useSlices()
+  const { maxLayers, maxDuration } = slicesStore
   const dialog = ref<HTMLDialogElement | null>(null)
   const visible = ref(false)
 
@@ -30,10 +32,8 @@
     document.documentElement.style.overflowY = "auto"
   }
 
-  async function handleFileInput(evt: Event) {
-    const input = evt.target as HTMLInputElement
-    const file: File | undefined = input.files?.[0]
-    if (!file) return
+  async function handleFileInput(file: File) {
+    if (fileLoaderDisabled.value) return
     await slicesStore.addLayer(props.slice, file)
   }
 
@@ -54,6 +54,12 @@
     if (!el) return
     el.removeEventListener("close", handleClose)
   })
+
+  const fileLoaderDisabled = computed(
+    () =>
+      props.slice.layers.length > maxLayers ||
+      props.slice.audio.duration > maxDuration,
+  )
 </script>
 
 <template>
@@ -69,6 +75,12 @@
 
           <fieldset class="layers">
             <legend>Layers</legend>
+
+            <AudioFileInput
+              :disabled="fileLoaderDisabled"
+              class="file-input"
+              @input="handleFileInput"
+            />
 
             <ol>
               <li v-for="file in slice.layers" :key="file.id">
@@ -90,8 +102,6 @@
                 </AudioFieldset>
               </li>
             </ol>
-
-            <input type="file" accept="audio/*" @input="handleFileInput" />
           </fieldset>
         </AudioFieldset>
         <ControlsHolder>
@@ -149,6 +159,10 @@
     color: #000;
     font-weight: 400;
     max-width: calc(100% - 16px);
+  }
+
+  .file-input {
+    margin: 0 8px;
   }
 
   ol {

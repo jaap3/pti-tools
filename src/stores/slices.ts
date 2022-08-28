@@ -18,6 +18,7 @@ export type TrimOption = "none" | "start" | "end" | "both"
 
 const maxSlices = 48
 const maxDuration = 45 // seconds
+const maxLayers = 12
 
 function displayName(fileName: string) {
   return fileName.replace(/\.[^.]+$/, "")
@@ -121,9 +122,9 @@ export const useSlices = defineStore("slices", () => {
 
   async function addLayer(slice: Slice, file: File) {
     const name = file.name
-    if (slice.layers.length >= 3) {
+    if (slice.layers.length >= maxLayers) {
       messagesStore.addMessage(
-        `Rejected "${name}", max. 3 layers reached.`,
+        `Rejected "${name}", max. ${maxLayers} layers reached.`,
         "warning",
         { timeout: 8500 },
       )
@@ -217,6 +218,7 @@ export const useSlices = defineStore("slices", () => {
     totalDuration,
     maxDuration,
     durationExceeded,
+    maxLayers,
   }
 })
 

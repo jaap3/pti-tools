@@ -1,53 +1,17 @@
 <script setup lang="ts">
-  import { computed, watch } from "vue"
-  import { storeToRefs } from "pinia"
   import { useMessages } from "@/stores/messages"
-  import { useSlices } from "@/stores/slices"
 
-  const messagesStore = useMessages()
-  const slicesStore = useSlices()
+  const props = withDefaults(defineProps<{ disabled: boolean }>(), {
+    disabled: false,
+  })
+
+  const emit = defineEmits<{
+    (e: "input", file: File): Promise<void>
+  }>()
 
   const sizeThreshold = 1024 * 1024 * 10 // 10MB
 
-  const { maxSlices, maxDuration } = slicesStore
-  const { maxSlicesReached, totalDuration, durationExceeded } =
-    storeToRefs(slicesStore)
-
-  const fileLoaderDisabled = computed(
-    () => maxSlicesReached.value || durationExceeded.value,
-  )
-
-  watch(
-    maxSlicesReached,
-    (newValue) => {
-      messagesStore.removeMessage("max-slices-reached")
-      if (newValue) {
-        messagesStore.addMessage(
-          `Max. files reached (${maxSlices}): Remove a file to enable the file loader.`,
-          "info",
-          { id: "max-slices-reached" },
-        )
-      }
-    },
-    { immediate: true },
-  )
-
-  watch(
-    durationExceeded,
-    (newValue) => {
-      messagesStore.removeMessage("duration-exceeded")
-      if (newValue) {
-        messagesStore.addMessage(
-          `Total duration exceeds ${maxDuration} (${totalDuration.value.toFixed(
-            3,
-          )}s): Remove one or more files to enable the file loader.`,
-          "info",
-          { id: "duration-exceeded" },
-        )
-      }
-    },
-    { immediate: true },
-  )
+  const messagesStore = useMessages()
 
   function displayBytes(bytes: number): string {
     return `${(bytes / (1024 * 1024)).toFixed(1)}MB`
@@ -62,13 +26,13 @@
       )
       return
     }
-    await slicesStore.addSlice(file)
+    await emit("input", file)
   }
 
   async function handleInput(evt: Event) {
     const input = evt.target as HTMLInputElement
     for (const file of Array.from(input.files ?? [])) {
-      if (fileLoaderDisabled.value) break
+      if (props.disabled) break
       await loadFile(file)
     }
   }
@@ -82,7 +46,7 @@
   /* Make sure eslint knows about the FileSystem API */
   /* global FileSystemEntry, FileSystemDirectoryEntry, FileSystemFileEntry */
   async function collectFiles(entry: FileSystemEntry) {
-    if (fileLoaderDisabled.value) return
+    if (props.disabled) return
     if (entry.isFile) {
       const resolvedEntry: Promise<File> = new Promise((resolve, reject) => {
         ;(entry as FileSystemFileEntry).file(resolve, reject)
@@ -108,7 +72,7 @@
         return 0
       })
       for (const entry of entries) {
-        if (fileLoaderDisabled.value) break
+        if (props.disabled) break
         await collectFiles(entry)
       }
     }
@@ -116,11 +80,11 @@
 
   async function handleDrop(evt: DragEvent) {
     evt.preventDefault()
-    if (fileLoaderDisabled.value) return
+    if (props.disabled) return
     if (!evt.dataTransfer) return
     const items = evt.dataTransfer.items
     for (const item of Array.from(items)) {
-      if (fileLoaderDisabled.value) break
+      if (props.disabled) break
       if (item.kind === "file") {
         // Even though it's prefixed with "webkit" most browsers support it.
         const entry = item.webkitGetAsEntry()
@@ -141,7 +105,7 @@
       multiple
       type="file"
       accept="audio/*"
-      :disabled="fileLoaderDisabled"
+      :disabled="disabled"
       @input="handleInput"
     />
   </label>
@@ -151,7 +115,6 @@
   label {
     display: block;
     position: relative;
-    width: 100%;
     outline: 1px dashed #fffefe;
     background: #0a0a0a;
     border-radius: 2rem;
