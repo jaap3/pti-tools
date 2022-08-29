@@ -71,6 +71,9 @@
       @click="handleClickOutside"
     >
       <form @submit.prevent>
+        <ControlsHolder class="back">
+          <button type="button" @click="close">Back</button>
+        </ControlsHolder>
         <AudioFieldset
           :name="slice.name"
           :truncate-name-at="100"
@@ -81,44 +84,36 @@
           <ControlsHolder>
             <TrimControl :file="slice" />
           </ControlsHolder>
-
-          <fieldset class="layers">
-            <legend>Layers</legend>
-
-            <AudioFileInput
-              :disabled="fileLoaderDisabled"
-              class="file-input"
-              @input="handleFileInput"
-            />
-
-            <ol>
-              <li v-for="file in slice.layers" :key="file.id">
-                <AudioFieldset
-                  :name="file.name"
-                  :duration="file.audio.duration"
-                >
-                  <SamplePlayer v-if="visible" :file="file">
-                    <template #controls>
-                      <ButtonControl
-                        :disabled="slice.layers.length <= 1"
-                        title="Remove"
-                        icon="delete"
-                        class="delete"
-                        @click="slicesStore.removeLayer(slice, file)"
-                      />
-                    </template>
-                  </SamplePlayer>
-                  <ControlsHolder>
-                    <TrimControl :file="file" />
-                  </ControlsHolder>
-                </AudioFieldset>
-              </li>
-            </ol>
-          </fieldset>
         </AudioFieldset>
-        <ControlsHolder>
-          <button type="button" class="back" @click="close">Back</button>
-        </ControlsHolder>
+        <fieldset class="layers">
+          <legend>Layers</legend>
+          <ol>
+            <li v-for="file in slice.layers" :key="file.id">
+              <AudioFieldset :name="file.name" :duration="file.audio.duration">
+                <SamplePlayer v-if="visible" :file="file">
+                  <template #controls>
+                    <ButtonControl
+                      :disabled="slice.layers.length <= 1"
+                      title="Remove"
+                      icon="delete"
+                      class="delete"
+                      @click="slicesStore.removeLayer(slice, file)"
+                    />
+                  </template>
+                </SamplePlayer>
+                <ControlsHolder>
+                  <TrimControl :file="file" />
+                </ControlsHolder>
+              </AudioFieldset>
+            </li>
+          </ol>
+
+          <AudioFileInput
+            :disabled="fileLoaderDisabled"
+            class="file-input"
+            @input="handleFileInput"
+          />
+        </fieldset>
       </form>
     </AppContainer>
   </dialog>
@@ -153,19 +148,30 @@
     background: #0a0a0a;
     color: #fffefe;
     flex-grow: 1;
+  }
+
+  form,
+  .slice,
+  .layers,
+  ol {
+    flex: 1 1 0;
     display: flex;
     flex-direction: column;
   }
 
   .slice {
-    flex-grow: 1;
+    flex-grow: 0;
+    flex-basis: fit-content;
+    margin: -12px 0 0;
+  }
+
+  .slice .controls:last-of-type {
+    padding-bottom: 24px;
   }
 
   .layers {
-    margin: 8px 0;
     padding: 8px 0;
-    border: 0;
-    border-top: 1px solid#a0a0a0;
+    margin: -12px 0 0;
   }
 
   .layers legend {
@@ -180,11 +186,14 @@
   }
 
   .file-input {
-    margin: 16px 8px;
+    width: calc(100% - 32px);
+    margin: 16px;
   }
 
   ol {
-    display: flex;
+    flex-direction: row;
+    align-content: flex-start;
+    width: 100%;
     flex-wrap: wrap;
     list-style: none;
     margin: 0 auto;
@@ -225,6 +234,9 @@
   }
 
   .back {
+    padding-bottom: 24px;
+  }
+  .back button {
     margin-left: auto;
   }
 </style>

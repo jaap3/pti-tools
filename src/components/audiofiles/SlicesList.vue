@@ -32,12 +32,15 @@
 
 <style scoped>
   ol {
+    width: 100%;
+    flex-grow: 1;
     display: flex;
     flex-wrap: wrap;
     list-style: none;
     margin: 0 auto;
     padding: 0;
     max-width: 300px;
+    align-content: flex-start;
   }
 
   li {

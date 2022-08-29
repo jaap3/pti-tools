@@ -111,9 +111,13 @@
     @click="activateAudioContext"
   >
     <form @submit.prevent>
-      <AudioFileInput :disabled="fileLoaderDisabled" @input="handleFileInput" />
-      <SlicesList v-if="fileSelected" />
       <DownloadPti v-if="fileSelected" />
+      <SlicesList v-if="fileSelected" />
+      <AudioFileInput
+        :disabled="fileLoaderDisabled"
+        class="file-input"
+        @input="handleFileInput"
+      />
     </form>
   </AppContainer>
   <LayerEditor v-if="editSlice !== null" :slice="editSlice" />
@@ -141,6 +145,12 @@
 
   #app {
     height: 100%;
+  }
+
+  form {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
   }
 
   input[type="text"],

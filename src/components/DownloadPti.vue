@@ -84,7 +84,7 @@
     align-items: stretch;
     flex-wrap: wrap;
     padding: 0;
-    margin: 16px 0;
+    margin: 0 0 16px;
     padding-top: 4px;
     background: #121212;
     color: #fefefe;
