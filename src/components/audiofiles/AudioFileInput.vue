@@ -78,18 +78,33 @@
     }
   }
 
+  function* entryGenerator(entries: (FileSystemEntry | null)[]) {
+    for (const entry of entries) {
+      if (props.disabled) return
+      if (entry !== null) {
+        yield entry
+      }
+    }
+  }
+
   async function handleDrop(evt: DragEvent) {
     evt.preventDefault()
     if (props.disabled) return
     if (!evt.dataTransfer) return
-    const items = evt.dataTransfer.items
-    for (const item of Array.from(items)) {
-      if (props.disabled) break
-      if (item.kind === "file") {
-        // Even though it's prefixed with "webkit" most browsers support it.
-        const entry = item.webkitGetAsEntry()
-        if (entry) await collectFiles(entry)
-      }
+
+    // Collect files from the drop event, has to be done before processing the files
+    // because the browser will only let use access for a short window of time.
+    const entries: Generator<FileSystemEntry> = entryGenerator(
+      Array.from(evt.dataTransfer.items).map((item) => {
+        if (item.kind === "file") {
+          // Even though it's prefixed with "webkit" most browsers support it.
+          return item.webkitGetAsEntry()
+        }
+        return null
+      }),
+    )
+    for await (const entry of entries) {
+      await collectFiles(entry)
     }
   }
 </script>
