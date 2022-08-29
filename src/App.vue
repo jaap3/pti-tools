@@ -1,23 +1,34 @@
 <script setup lang="ts">
-  import { defineAsyncComponent, computed } from "vue"
+  import { defineAsyncComponent, computed, watch } from "vue"
+  import { storeToRefs } from "pinia"
 
-  import ShowMessages from "@/components/messages/ShowMessages.vue"
+  import AppContainer from "@/components/AppContainer.vue"
   import AudioFileInput from "@/components/audiofiles/AudioFileInput.vue"
-  import FooterBar from "@/components/FooterBar.vue"
 
-  import { useAudioFiles } from "@/stores/audiofiles"
+  import { useSlices } from "@/stores/slices"
   import { useMessages } from "@/stores/messages"
 
-  const SampleList = defineAsyncComponent(
-    () => import("@/components/audiofiles/SampleList.vue"),
+  const SlicesList = defineAsyncComponent(
+    () => import("@/components/audiofiles/SlicesList.vue"),
   )
   const DownloadPti = defineAsyncComponent(
     () => import("@/components/DownloadPti.vue"),
   )
+  const LayerEditor = defineAsyncComponent(
+    () => import("@/components/audiofiles/LayerEditor.vue"),
+  )
 
-  const audioFilesStore = useAudioFiles()
+  const slicesStore = useSlices()
   const messagesStore = useMessages()
-  const audioContext = audioFilesStore.audioContext
+  const audioContext = slicesStore.audioContext
+
+  const { maxSlices, maxDuration } = slicesStore
+  const { totalSlices, editSlice, maxSlicesReached, durationExceeded } =
+    storeToRefs(slicesStore)
+
+  const fileLoaderDisabled = computed(
+    () => maxSlicesReached.value || durationExceeded.value,
+  )
 
   function handleAudioContextStateChange() {
     messagesStore.removeMessage("audio-context-state")
@@ -50,8 +61,43 @@
     }
   }
 
+  async function handleFileInput(file: File) {
+    if (fileLoaderDisabled.value) return
+    await slicesStore.addSlice(file)
+  }
+
+  watch(
+    maxSlicesReached,
+    (newValue) => {
+      messagesStore.removeMessage("max-slices-reached")
+      if (newValue) {
+        messagesStore.addMessage(
+          `Max. files reached (${maxSlices}): Remove one or more files to enable the file loader.`,
+          "info",
+          { id: "max-slices-reached" },
+        )
+      }
+    },
+    { immediate: true },
+  )
+
+  watch(
+    durationExceeded,
+    (newValue) => {
+      messagesStore.removeMessage("duration-exceeded")
+      if (newValue) {
+        messagesStore.addMessage(
+          `Total duration exceeds ${maxDuration}: Remove one or more files to enable the file loader.`,
+          "info",
+          { id: "duration-exceeded" },
+        )
+      }
+    },
+    { immediate: true },
+  )
+
   const fileSelected = computed(() => {
-    if (!fileSelected.value && audioFilesStore.audioFiles.length === 0) {
+    if (!fileSelected.value && totalSlices.value === 0) {
       return false
     }
     return true
@@ -59,15 +105,22 @@
 </script>
 
 <template>
-  <main @click="activateAudioContext">
-    <ShowMessages />
+  <AppContainer
+    tag="main"
+    :show-appreciation="fileSelected"
+    @click="activateAudioContext"
+  >
     <form @submit.prevent>
-      <AudioFileInput />
-      <SampleList v-if="fileSelected" />
       <DownloadPti v-if="fileSelected" />
+      <SlicesList v-if="fileSelected" />
+      <AudioFileInput
+        :disabled="fileLoaderDisabled"
+        class="file-input"
+        @input="handleFileInput"
+      />
     </form>
-  </main>
-  <FooterBar :show-appreciation="fileSelected" />
+  </AppContainer>
+  <LayerEditor v-if="editSlice !== null" :slice="editSlice" />
 </template>
 
 <style>
@@ -91,20 +144,13 @@
   }
 
   #app {
-    display: flex;
-    flex-direction: column;
-    min-height: 100%;
+    height: 100%;
   }
 
-  main {
+  form {
     flex-grow: 1;
     display: flex;
     flex-direction: column;
-    width: 100%;
-    max-width: 960px;
-    height: 100%;
-    margin: 0 auto;
-    padding: 0 16px;
   }
 
   input[type="text"],

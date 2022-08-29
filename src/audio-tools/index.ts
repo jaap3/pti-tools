@@ -27,3 +27,17 @@ export function trimSilence(
   output.copyToChannel(data.slice(start, end), 0)
   return output
 }
+
+export async function combineAudio(input: AudioBuffer[]) {
+  if (input.length === 1) return input[0] as AudioBuffer // no need to combine
+  const length = Math.max(...input.map((buffer) => buffer.length))
+  const sampleRate = (input[0] as AudioBuffer).sampleRate
+  const offline = new OfflineAudioContext(1, length, sampleRate)
+  for (const file of input) {
+    const source = offline.createBufferSource()
+    source.buffer = file
+    source.connect(offline.destination)
+    source.start()
+  }
+  return await offline.startRendering()
+}

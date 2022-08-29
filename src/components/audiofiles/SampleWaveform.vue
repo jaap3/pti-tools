@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import type { AudioFile } from "@/stores/audiofiles"
+  import type { AudioFile } from "@/stores/slices"
   import { onMounted, ref, watch } from "vue"
 
   const canvas = ref<HTMLCanvasElement | null>(null)
@@ -67,10 +67,19 @@
     const samplesToDraw = Math.min(width * 100, bufferLength)
     for (let i = 0; i <= samplesToDraw; i++) {
       if (prevY === undefined) {
-        ctx.moveTo(0, (prevY = (buffer[0] || 0) * yScale))
+        ctx.moveTo(
+          0,
+          (prevY = Math.max(-1, Math.min(1, buffer[0] || 0)) * yScale),
+        )
       } else {
         y =
-          (buffer[Math.floor((i / samplesToDraw) * bufferLength)] || 0) * yScale
+          Math.max(
+            -1,
+            Math.min(
+              1,
+              buffer[Math.floor((i / samplesToDraw) * bufferLength)] || 0,
+            ),
+          ) * yScale
         if (y !== prevY || i === samplesToDraw) {
           x = (i / samplesToDraw) * width
           if (skipped) ctx.lineTo(x, prevY)

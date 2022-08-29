@@ -1,14 +1,16 @@
 <script setup lang="ts">
+  import { storeToRefs } from "pinia"
   import draggable from "vuedraggable"
-  import SampleListItem from "@/components/audiofiles/SampleListItem.vue"
-  import { useAudioFiles } from "@/stores/audiofiles"
+  import SlicesListItem from "@/components/audiofiles/SlicesListItem.vue"
+  import { useSlices } from "@/stores/slices"
 
-  const audioFilesStore = useAudioFiles()
+  const slicesStore = useSlices()
+  const { slices, totalSlices } = storeToRefs(slicesStore)
 </script>
 
 <template>
   <draggable
-    :list="audioFilesStore.audioFiles"
+    :list="slices"
     tag="ol"
     item-key="id"
     handle="legend"
@@ -18,10 +20,10 @@
   >
     <template #item="{ element, index }">
       <li>
-        <SampleListItem
-          :file="element"
+        <SlicesListItem
+          :slice="element"
           :can-move-up="index > 0"
-          :can-move-down="index < audioFilesStore.audioFiles.length - 1"
+          :can-move-down="index < totalSlices - 1"
         />
       </li>
     </template>
@@ -30,12 +32,15 @@
 
 <style scoped>
   ol {
+    width: 100%;
+    flex-grow: 1;
     display: flex;
     flex-wrap: wrap;
     list-style: none;
     margin: 0 auto;
     padding: 0;
     max-width: 300px;
+    align-content: flex-start;
   }
 
   li {
