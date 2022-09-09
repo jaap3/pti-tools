@@ -7,8 +7,10 @@
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview",
-    "lint": "eslint . --ext .ts,.vue",
-    "lintfix": "npm run lint -- --fix",
+    "lint:prettier": "prettier . --check",
+    "lint:eslint": "eslint . --ext .ts,.vue",
+    "lint": "npm run lint:prettier && npm run lint:eslint",
+    "lintfix": "npm run lint:prettier -- --write && npm run lint:eslint -- --fix",
     "test": "jest --coverage"
   },
   "dependencies": {
