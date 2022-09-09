@@ -33,15 +33,15 @@
 
 <style scoped>
   ol {
-    width: 100%;
-    flex-grow: 1;
     display: flex;
+    flex-grow: 1;
     flex-wrap: wrap;
-    list-style: none;
-    margin: 0 auto;
-    padding: 0;
-    max-width: 300px;
     align-content: flex-start;
+    width: 100%;
+    max-width: 300px;
+    padding: 0;
+    margin: 0 auto;
+    list-style: none;
   }
 
   li {
@@ -68,7 +68,7 @@
     }
 
     li:nth-child(3n + 2) {
-      margin: 8px 8px;
+      margin: 8px;
     }
   }
 </style>

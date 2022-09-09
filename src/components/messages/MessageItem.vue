@@ -34,45 +34,46 @@
 <style scoped>
   .message {
     display: flex;
-    padding: 8px 8px;
+    padding: 8px;
   }
+
   .error {
-    background: #ffafc0;
     color: #4f393d;
+    background: #ffafc0;
     border: 1px solid #4f393d;
   }
 
   .warning {
-    background: #ffffaf;
     color: #4f4e39;
+    background: #ffffaf;
     border: 1px solid #4f4e39;
   }
 
   .success {
-    background: #c3ffaf;
     color: #4f4e39;
+    background: #c3ffaf;
     border: 1px solid #4f4e39;
   }
 
   .info {
-    background: #afe0ff;
     color: #39464e;
+    background: #afe0ff;
     border: 1px solid #39464e;
   }
 
   .message-type {
     display: inline-block;
-    font-weight: 400;
     margin-right: 6px;
+    font-weight: 400;
   }
 
   .message-remove {
-    border: none;
-    background: none;
     display: inline-block;
-    cursor: pointer;
-    vertical-align: middle;
     margin-left: auto;
     font-size: 1rem;
+    vertical-align: middle;
+    cursor: pointer;
+    background: none;
+    border: none;
   }
 </style>

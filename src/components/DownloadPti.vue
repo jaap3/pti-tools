@@ -64,7 +64,7 @@
     </span>
     <span>
       <label>
-        <span class="downloadLabel">Download: </span>
+        <span class="download-label">Download: </span>
         <button
           :disabled="!instrumentNameValid || durationExceeded"
           :title="`Download ${fileName}`"
@@ -81,22 +81,21 @@
 <style scoped>
   fieldset {
     display: flex;
-    align-items: stretch;
     flex-wrap: wrap;
-    padding: 0;
-    margin: 0 0 16px;
-    padding-top: 4px;
-    background: #121212;
-    color: #fefefe;
-    border: 0;
     align-items: center;
+    padding: 0;
+    padding-top: 4px;
+    margin: 0 0 16px;
+    color: #fefefe;
+    background: #121212;
+    border: 0;
   }
 
   fieldset > span {
     display: flex;
     flex-basis: 100%;
-    padding: 8px;
     align-items: center;
+    padding: 8px;
   }
 
   input:invalid {
@@ -122,7 +121,7 @@
       flex-basis: auto;
     }
 
-    .downloadLabel {
+    .download-label {
       display: none;
     }
 

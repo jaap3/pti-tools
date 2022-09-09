@@ -121,47 +121,47 @@
 
 <style scoped>
   dialog::backdrop {
-    background-color: rgba(0, 0, 0, 0.75);
+    background-color: rgb(0 0 0 / 75%);
   }
 
   dialog {
     position: fixed;
-    background: transparent;
-    height: 100%;
     width: 100%;
-    max-height: 100%;
     max-width: 100%;
-    margin: 0;
-    border: 0;
+    height: 100%;
+    max-height: 100%;
     padding: 0;
+    margin: 0;
+    background: transparent;
+    border: 0;
+    opacity: 0;
     transition: all 0.3s ease-in;
     transform: scale(0.5) translateY(100%);
-    opacity: 0;
   }
 
   .show {
-    transform: scale(1) translateY(0);
     opacity: 1;
+    transform: scale(1) translateY(0);
   }
 
   form {
-    background: #0a0a0a;
-    color: #fffefe;
     flex-grow: 1;
+    color: #fffefe;
+    background: #0a0a0a;
   }
 
   form,
   .slice,
   .layers,
   ol {
-    flex: 1 1 0;
     display: flex;
+    flex: 1 1 0;
     flex-direction: column;
   }
 
   .slice {
-    flex-grow: 0;
     flex-basis: fit-content;
+    flex-grow: 0;
     margin: -12px 0 0;
   }
 
@@ -177,12 +177,12 @@
   .layers legend {
     display: flex;
     width: 100%;
-    margin: 0 auto;
-    padding: 0 4px;
-    background-color: #fff;
-    color: #000;
-    font-weight: 400;
     max-width: calc(100% - 16px);
+    padding: 0 4px;
+    margin: 0 auto;
+    font-weight: 400;
+    color: #000;
+    background-color: #fff;
   }
 
   .file-input {
@@ -191,14 +191,13 @@
   }
 
   ol {
-    flex-direction: row;
+    flex-flow: row wrap;
     align-content: flex-start;
     width: 100%;
-    flex-wrap: wrap;
-    list-style: none;
-    margin: 0 auto;
-    padding: 0;
     max-width: 300px;
+    padding: 0;
+    margin: 0 auto;
+    list-style: none;
   }
 
   li {
@@ -221,7 +220,7 @@
     }
 
     li:nth-child(3n + 2) {
-      margin: 8px 8px;
+      margin: 8px;
     }
   }
 
@@ -236,6 +235,7 @@
   .back {
     padding-bottom: 24px;
   }
+
   .back button {
     margin-left: auto;
   }

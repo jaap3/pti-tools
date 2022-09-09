@@ -50,16 +50,16 @@
 
 <style scoped>
   footer {
-    background-color: #0a0a0a;
     position: sticky;
     bottom: 0;
     display: flex;
     padding: 8px 16px;
+    background-color: #0a0a0a;
   }
 
   footer .appreciate {
-    text-align: right;
     margin-left: auto;
+    text-align: right;
   }
 
   footer > div {
