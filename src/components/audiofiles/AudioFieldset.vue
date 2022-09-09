@@ -11,7 +11,7 @@
   }
 
   withDefaults(
-    defineProps<{ name: string; truncateNameAt?: number; duration: number }>(),
+    defineProps<{ name: string; truncateNameAt: number; duration: number }>(),
     { truncateNameAt: 25 },
   )
 </script>
