@@ -26,13 +26,13 @@
   }
 
   .main {
-    flex-grow: 1;
     display: flex;
     flex-direction: column;
+    flex-grow: 1;
     width: 100%;
     max-width: 960px;
     height: 100%;
-    margin: 0 auto;
     padding: 0 16px;
+    margin: 0 auto;
   }
 </style>

@@ -83,7 +83,7 @@
   }
 
   .controls .delete {
-    background-color: tomato;
     margin-left: auto;
+    background-color: tomato;
   }
 </style>

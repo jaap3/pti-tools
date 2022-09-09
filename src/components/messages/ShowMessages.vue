@@ -69,9 +69,9 @@
   }
 
   ul {
-    list-style: none;
     padding: 0;
     margin: 0;
+    list-style: none;
   }
 
   li {
@@ -96,7 +96,7 @@
 
   .list-leave-active {
     position: absolute;
-    left: 0;
     right: 0;
+    left: 0;
   }
 </style>

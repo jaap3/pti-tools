@@ -123,12 +123,12 @@
 </template>
 
 <style>
-  @import url(sanitize.css);
-  @import url(sanitize.css/typography.css);
-  @import url(sanitize.css/forms.css);
-  @import url(material-icons/iconfont/filled.css);
-  @import url(@fontsource/manrope/latin-300.css);
-  @import url(@fontsource/manrope/latin-400.css);
+  @import "sanitize.css";
+  @import "sanitize.css/typography.css";
+  @import "sanitize.css/forms.css";
+  @import "material-icons/iconfont/filled.css";
+  @import "@fontsource/manrope/latin-300.css";
+  @import "@fontsource/manrope/latin-400.css";
 
   html,
   body {
@@ -136,10 +136,10 @@
   }
 
   body {
-    background: #0a0a0a;
-    color: #fffefe;
+    font-family: Manrope, sans-serif;
     font-weight: 300;
-    font-family: "Manrope", sans-serif;
+    color: #fffefe;
+    background: #0a0a0a;
   }
 
   #app {
@@ -147,17 +147,17 @@
   }
 
   form {
-    flex-grow: 1;
     display: flex;
     flex-direction: column;
+    flex-grow: 1;
   }
 
   input[type="text"],
   input[type="number"],
   button,
   select {
-    border: 1px solid #767677;
     background-color: #0a0a0a;
+    border: 1px solid #767677;
   }
 
   button:not(:disabled) {

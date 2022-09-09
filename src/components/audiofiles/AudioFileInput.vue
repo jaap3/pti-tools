@@ -128,14 +128,14 @@
 
 <style scoped>
   label {
-    display: block;
     position: relative;
-    outline: 1px dashed #fffefe;
-    background: #0a0a0a;
-    border-radius: 2rem;
+    display: block;
     padding: 2rem;
     margin: 16px 0;
     text-align: center;
+    background: #0a0a0a;
+    border-radius: 2rem;
+    outline: 1px dashed #fffefe;
   }
 
   label:focus,
@@ -145,13 +145,13 @@
 
   input {
     position: absolute;
-    overflow: hidden;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    opacity: 0;
+    overflow: hidden;
     cursor: pointer;
+    opacity: 0;
   }
 
   :disabled {

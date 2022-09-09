@@ -30,29 +30,28 @@
 
 <style scoped>
   :is(fieldset) {
-    margin: 0;
     padding: 8px 0 0;
+    margin: 0;
     overflow: hidden;
   }
 
   :is(legend) {
     display: flex;
     width: 100%;
-    margin: 0 auto;
-    padding: 0 4px;
-    background-color: #fff;
-    color: #000;
-    font-weight: 400;
     max-width: calc(100% - 16px);
+    padding: 0 4px;
+    margin: 0 auto;
+    font-weight: 400;
+    color: #000;
+    background-color: #fff;
   }
 
   :is(legend span) {
-    margin-right: auto;
+    max-width: calc(100vw - 128px);
+    margin-right: 4px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    margin-right: 4px;
-    max-width: calc(100vw - 128px);
   }
 
   :is(legend time) {
