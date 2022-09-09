@@ -2,12 +2,11 @@ import {
   float32ToInt16,
   mergeFloat32Arrays,
 } from "@/audio-tools/typedarray-tools"
-
 import {
-  MAX_SLICES,
   defaultPtiHeader,
-  samplePlayback,
   headerFieldOffset,
+  MAX_SLICES,
+  samplePlayback,
 } from "@/pti-file-format/constants"
 
 const asciiEncoder: TextEncoder = new TextEncoder()

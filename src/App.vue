@@ -1,12 +1,11 @@
 <script setup lang="ts">
-  import { defineAsyncComponent, computed, watch } from "vue"
   import { storeToRefs } from "pinia"
+  import { computed, defineAsyncComponent, watch } from "vue"
 
   import AppContainer from "@/components/AppContainer.vue"
   import AudioFileInput from "@/components/audiofiles/AudioFileInput.vue"
-
-  import { useSlices } from "@/stores/slices"
   import { useMessages } from "@/stores/messages"
+  import { useSlices } from "@/stores/slices"
 
   const SlicesList = defineAsyncComponent(
     () => import("@/components/audiofiles/SlicesList.vue"),

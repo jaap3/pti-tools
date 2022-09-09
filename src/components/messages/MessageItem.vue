@@ -1,5 +1,6 @@
 <script setup lang="ts">
   import { onMounted } from "vue"
+
   import type { Message } from "@/stores/messages"
 
   const props = defineProps<{ message: Message }>()

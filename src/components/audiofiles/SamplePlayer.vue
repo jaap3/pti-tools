@@ -1,10 +1,11 @@
 <script setup lang="ts">
   import { ref } from "vue"
-  import type { AudioFile } from "@/stores/slices"
-  import { useSlices } from "@/stores/slices"
+
   import ButtonControl from "@/components/audiofiles/ButtonControl.vue"
   import ControlsHolder from "@/components/audiofiles/ControlsHolder.vue"
   import SampleWaveform from "@/components/audiofiles/SampleWaveform.vue"
+  import type { AudioFile } from "@/stores/slices"
+  import { useSlices } from "@/stores/slices"
 
   const slicesStore = useSlices()
   const ctx = slicesStore.audioContext

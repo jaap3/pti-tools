@@ -1,6 +1,7 @@
 <script setup lang="ts">
   import { storeToRefs } from "pinia"
   import draggable from "vuedraggable"
+
   import SlicesListItem from "@/components/audiofiles/SlicesListItem.vue"
   import { useSlices } from "@/stores/slices"
 

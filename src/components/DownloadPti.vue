@@ -1,8 +1,8 @@
 <script setup lang="ts">
-  import type { Ref, ComputedRef } from "vue"
   import { storeToRefs } from "pinia"
+  import type { ComputedRef, Ref } from "vue"
+  import { computed, ref } from "vue"
 
-  import { ref, computed } from "vue"
   import { displayDuration } from "@/audio-tools/numberformat"
   import { createBeatSlicedPtiFromSamples } from "@/pti-file-format"
   import { useSlices } from "@/stores/slices"

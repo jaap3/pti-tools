@@ -1,7 +1,8 @@
 import "randomuuid" // polyfill for crypto.randomUUID()
 
-import { createApp } from "vue"
 import { createPinia } from "pinia"
+import { createApp } from "vue"
+
 import App from "@/App.vue"
 
 const app = createApp(App)
