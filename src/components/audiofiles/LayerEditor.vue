@@ -1,15 +1,15 @@
 <script setup lang="ts">
-  import { ref, onMounted, onUnmounted } from "vue"
-  import type { Slice } from "@/stores/slices"
-  import { useSlices } from "@/stores/slices"
+  import { onMounted, onUnmounted, ref } from "vue"
 
   import AppContainer from "@/components/AppContainer.vue"
-  import AudioFileInput from "@/components/audiofiles/AudioFileInput.vue"
   import AudioFieldset from "@/components/audiofiles/AudioFieldset.vue"
+  import AudioFileInput from "@/components/audiofiles/AudioFileInput.vue"
   import ButtonControl from "@/components/audiofiles/ButtonControl.vue"
   import ControlsHolder from "@/components/audiofiles/ControlsHolder.vue"
   import SamplePlayer from "@/components/audiofiles/SamplePlayer.vue"
   import TrimControl from "@/components/audiofiles/TrimControl.vue"
+  import type { Slice } from "@/stores/slices"
+  import { useSlices } from "@/stores/slices"
 
   const slicesStore = useSlices()
   const { maxLayers, maxDuration } = slicesStore

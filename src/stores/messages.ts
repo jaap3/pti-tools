@@ -1,4 +1,4 @@
-import { defineStore, acceptHMRUpdate } from "pinia"
+import { acceptHMRUpdate, defineStore } from "pinia"
 import { ref } from "vue"
 
 export interface MessageOptions {

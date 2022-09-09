@@ -1,8 +1,8 @@
 import type {
-  samplePlayback,
+  filterType,
   granularLoopMode,
   granularShape,
-  filterType,
+  samplePlayback,
 } from "@/pti-file-format/constants"
 
 export type SamplePlayback = typeof samplePlayback[keyof typeof samplePlayback]

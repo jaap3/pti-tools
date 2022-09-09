@@ -10,10 +10,15 @@
     "parser": "@typescript-eslint/parser",
     "sourceType": "module"
   },
+  "plugins": ["simple-import-sort"],
   "extends": [
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:vue/vue3-recommended",
     "plugin:prettier/recommended"
-  ]
+  ],
+  "rules": {
+    "simple-import-sort/imports": "error",
+    "simple-import-sort/exports": "error"
+  }
 }

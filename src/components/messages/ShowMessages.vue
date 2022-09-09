@@ -2,7 +2,6 @@
   import { computed } from "vue"
 
   import MessageItem from "@/components/messages/MessageItem.vue"
-
   import type { Message } from "@/stores/messages"
   import { useMessages } from "@/stores/messages"
 

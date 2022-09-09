@@ -1,7 +1,8 @@
+import { acceptHMRUpdate, defineStore } from "pinia"
 import { computed, ref } from "vue"
-import { defineStore, acceptHMRUpdate } from "pinia"
+
+import { combineAudio, sumChannels, trimSilence } from "@/audio-tools"
 import { useMessages } from "@/stores/messages"
-import { sumChannels, trimSilence, combineAudio } from "@/audio-tools"
 
 interface AudioFileOptions {
   trim: TrimOption

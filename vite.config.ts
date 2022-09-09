@@ -1,9 +1,8 @@
-import { join as pathJoin } from "path"
+import vue from "@vitejs/plugin-vue"
 import * as ejs from "ejs"
+import * as path from "path"
 import type { Plugin, ResolvedConfig } from "vite"
 import { defineConfig, splitVendorChunkPlugin } from "vite"
-import { resolve } from "path"
-import vue from "@vitejs/plugin-vue"
 
 const htmlPlugin = (): Plugin => {
   let config: ResolvedConfig | undefined
@@ -13,7 +12,7 @@ const htmlPlugin = (): Plugin => {
       config = resolvedConfig
     },
     transformIndexHtml(html) {
-      return ejs.render(html, { ...config.env, path: { join: pathJoin } })
+      return ejs.render(html, { ...config.env, path: { join: path.join } })
     },
   }
 }
@@ -23,7 +22,7 @@ export default defineConfig({
   plugins: [vue(), splitVendorChunkPlugin(), htmlPlugin()],
   resolve: {
     alias: {
-      "@": resolve(__dirname, "src"),
+      "@": path.resolve(__dirname, "src"),
     },
   },
   server: {
