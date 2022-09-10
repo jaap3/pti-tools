@@ -18,8 +18,8 @@
     )
   }
 
-  withDefaults(
-    defineProps<{ name: string; truncateNameAt: number; duration: number }>(),
+  const props = withDefaults(
+    defineProps<{ name: string; truncateNameAt?: number; duration: number }>(),
     { truncateNameAt: 25 },
   )
 </script>
@@ -27,7 +27,7 @@
 <template>
   <fieldset :title="`${name} - ${displayDuration(duration)}`">
     <legend>
-      <span class="name">{{ shortenString(name, truncateNameAt) }}</span>
+      <span class="name">{{ shortenString(name, props.truncateNameAt) }}</span>
       <time :datetime="duration.toFixed(3)">{{
         displayDuration(duration)
       }}</time>
