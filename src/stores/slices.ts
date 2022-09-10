@@ -253,15 +253,15 @@ export const useSlices = defineStore("slices", () => {
 
   /**
    * Removes a layer from the slice. Does nothing if the slice has only one
-   * layer, or if the layer is not contained in the slice.
+   * layer.
    *
-   * @param slice - The slice to remove the layer from.
    * @param layer - The layer to remove.
    */
-  // TODO: Pick the slice from the layer instead of passing it as a parameter.
   // TODO: Raise errors instead of adding messages.
-  async function removeLayer(slice: Slice, layer: Layer) {
+  async function removeLayer(layer: Layer) {
     const unlock = await layerMutex.lock()
+    const slice = layer.slice.deref()
+    if (!slice) return
     try {
       if (slice.layers.length <= 1) {
         messagesStore.addMessage(
@@ -271,7 +271,6 @@ export const useSlices = defineStore("slices", () => {
         )
       } else {
         const idx = slice.layers.indexOf(layer)
-        if (idx === -1) return
         slice.layers.splice(idx, 1)
         await handleLayerChange(slice)
       }

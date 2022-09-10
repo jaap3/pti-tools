@@ -109,21 +109,24 @@
         <fieldset class="layers">
           <legend>Layers</legend>
           <ol>
-            <li v-for="file in slice.layers" :key="file.id">
-              <AudioFieldset :name="file.name" :duration="file.audio.duration">
-                <SamplePlayer v-if="visible" :file="file">
+            <li v-for="layer in slice.layers" :key="layer.id">
+              <AudioFieldset
+                :name="layer.name"
+                :duration="layer.audio.duration"
+              >
+                <SamplePlayer v-if="visible" :file="layer">
                   <template #controls>
                     <ButtonControl
                       :disabled="slice.layers.length <= 1"
                       title="Remove"
                       icon="delete"
                       class="delete"
-                      @click="slicesStore.removeLayer(slice, file)"
+                      @click="slicesStore.removeLayer(layer)"
                     />
                   </template>
                 </SamplePlayer>
                 <ControlsHolder>
-                  <TrimControl :file="file" />
+                  <TrimControl :file="layer" />
                 </ControlsHolder>
               </AudioFieldset>
             </li>
