@@ -13,11 +13,24 @@
 
   const messagesStore = useMessages()
 
+  /**
+   * Converts the given number of bytes to a string representing the size
+   * in megabytes (e.g. 1024 -> "1MB").
+   *
+   * @param bytes - The number of bytes to convert.
+   * @returns A string representing the size in megabytes.
+   */
   function displayBytes(bytes: number): string {
     return `${(bytes / (1024 * 1024)).toFixed(1)}MB`
   }
 
-  async function loadFile(file: File) {
+  /**
+   * Emits an input event with the given file; unless the file is too large,
+   * in which case an error message is displayed.
+   *
+   * @param file - The file to emit.
+   */
+  async function emitInput(file: File) {
     if (file.size > sizeThreshold) {
       messagesStore.addMessage(
         `Rejected "${file.name}", too large (>${displayBytes(sizeThreshold)}).`,
@@ -29,29 +42,47 @@
     await emit("input", file)
   }
 
+  /**
+   * Handles the input event from the file input element. Emits an input event
+   * for each file in the input, up until the input is disabled.
+   *
+   * @param evt - The input event.
+   */
   async function handleInput(evt: Event) {
     const input = evt.target as HTMLInputElement
     for (const file of Array.from(input.files ?? [])) {
       if (props.disabled) break
-      await loadFile(file)
+      await emitInput(file)
     }
   }
 
+  /**
+   * Handles the dragover event from the file input element. Prevents the
+   * default action to allow the drop event to be fired.
+   *
+   * @param evt - The dragover event.
+   */
   function handleDragOver(evt: DragEvent) {
     evt.preventDefault()
     if (!evt.dataTransfer) return
     evt.dataTransfer.dropEffect = "copy"
   }
 
-  /* Make sure eslint knows about the FileSystem API */
+  // Make sure eslint knows about the FileSystem API
   /* global FileSystemEntry, FileSystemDirectoryEntry, FileSystemFileEntry */
+  /**
+   * Handles a dropped file or directory. Emits an input event for each file
+   * in the directory, up until the input is disabled.
+   *
+   * @param entry - The dropped entry.
+   */
   async function collectFiles(entry: FileSystemEntry) {
     if (props.disabled) return
     if (entry.isFile) {
       const resolvedEntry: Promise<File> = new Promise((resolve, reject) => {
         ;(entry as FileSystemFileEntry).file(resolve, reject)
       })
-      await loadFile(await resolvedEntry)
+      await emitInput(await resolvedEntry)
     } else if (entry.isDirectory) {
       // Recurse into directories
       const resolvedEntries: Promise<FileSystemEntry[]> = new Promise(
@@ -78,7 +109,17 @@
     }
   }
 
-  function* entryGenerator(entries: (FileSystemEntry | null)[]) {
+  /**
+   * Creates a async generator that yields the filesystem entries from the
+   * given list of file system entries. Skips any null entries, and stops
+   * when the input is disabled.
+   *
+   * @param entries - The list of entries to yield.
+   * @yields The next entry.
+   */
+  function* entryGenerator(
+    entries: (FileSystemEntry | null)[],
+  ): Generator<FileSystemEntry> {
     for (const entry of entries) {
       if (props.disabled) return
       if (entry !== null) {
@@ -87,6 +128,11 @@
     }
   }
 
+  /**
+   * Handles the drop event from the file input element.
+   *
+   * @param evt - The drop event.
+   */
   async function handleDrop(evt: DragEvent) {
     evt.preventDefault()
     if (props.disabled) return
@@ -104,6 +150,7 @@
       }),
     )
     for await (const entry of entries) {
+      if (props.disabled) return
       await collectFiles(entry)
     }
   }

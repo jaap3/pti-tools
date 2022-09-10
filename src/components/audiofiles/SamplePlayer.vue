@@ -16,6 +16,9 @@
 
   const isPlaying = ref<boolean>(false)
 
+  /**
+   * Plays the audio file. Any other playing audio file is stopped.
+   */
   function play() {
     isPlaying.value = true
     const source = slicesStore.getAudioBufferSourceNode(props.file)
@@ -24,11 +27,19 @@
     source.start(0)
   }
 
+  /**
+   * Stop the playback of any audio file that has been started by this
+   * component type.
+   */
   function stop() {
     slicesStore.stopPlayback()
     isPlaying.value = false
   }
 
+  /**
+   * Toggle the playback of the audio file (i.e. play when stopped,
+   * stop when playing).
+   */
   function togglePlayback() {
     isPlaying.value ? stop() : play()
   }

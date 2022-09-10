@@ -21,19 +21,40 @@
     slice: Slice
   }>()
 
+  /**
+   * Closes the dialog.
+   */
   function close() {
     dialog.value?.close()
   }
 
+  /**
+   * Closes the dialog when the user clicks outside of it.
+   *
+   * @param evt - The click event.
+   */
   function handleClickOutside(evt: Event) {
     if (evt.target === dialog.value?.firstElementChild) close()
   }
 
+  /**
+   * Handles the closing of the dialog.
+   *
+   *  - Cancels the edit of the slice.
+   *  - (Re-)enables scrolling on the root element.
+   */
   function handleClose() {
-    slicesStore.editSlice = null
+    slicesStore.setEditSlice(null)
     document.documentElement.style.overflowY = "auto"
   }
 
+  /**
+   * Attempts to load the audio file and add it to the list of layers.
+   *
+   * Does nothing if the input is disabled.
+   *
+   * @param file - The audio file to load.
+   */
   async function handleFileInput(file: File) {
     if (fileLoaderDisabled.value) return
     await slicesStore.addLayer(props.slice, file)

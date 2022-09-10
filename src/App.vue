@@ -29,6 +29,11 @@
     () => maxSlicesReached.value || durationExceeded.value,
   )
 
+  /**
+   * Handles state changes in the audio context.
+   * Adds relevant messages to the messages store depending on which state
+   * the audio context transitioned to.
+   */
   function handleAudioContextStateChange() {
     messagesStore.removeMessage("audio-context-state")
     if (audioContext?.state === "suspended") {
@@ -60,6 +65,12 @@
     }
   }
 
+  /**
+   * Loads the audio file(s) selected/dropped by the user.
+   * Does nothing if the input is disabled.
+   *
+   * @param file - The audio file to load.
+   */
   async function handleFileInput(file: File) {
     if (fileLoaderDisabled.value) return
     await slicesStore.addSlice(file)

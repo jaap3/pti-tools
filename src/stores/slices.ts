@@ -30,10 +30,6 @@ const maxSlices = 48
 const maxDuration = 45 // seconds
 const maxLayers = 12
 
-function displayName(fileName: string) {
-  return fileName.replace(/\.[^.]+$/, "")
-}
-
 class Mutex {
   private promise = Promise.resolve()
 
@@ -63,6 +59,25 @@ export const useSlices = defineStore("slices", () => {
 
   let source: AudioBufferSourceNode | null = null
 
+  /**
+   * Strips the extension from a filename.
+   *
+   * @param fileName - The filename.
+   * @returns The filename without the extension.
+   */
+  function displayName(fileName: string) {
+    return fileName.replace(/\.[^.]+$/, "")
+  }
+
+  /**
+   * Attempts to load an audio file.
+   *
+   * @param file - A File object.
+   * @returns A promise that resolves to an object containing the audio buffer,
+   *     file name and other metadata. This data can then be augmented to
+   *     become a slice or layer.
+   */
+  // TODO: Raise errors instead of adding messages and returning null.
   async function loadAudio(file: File): Promise<AudioFile | undefined> {
     const name = file.name
     const buffer = await file.arrayBuffer()
@@ -99,6 +114,12 @@ export const useSlices = defineStore("slices", () => {
     }
   }
 
+  /**
+   * Attempts to load an audio file and add it to the store.
+   *
+   * @param file - A File object.
+   */
+  // TODO: Raise errors instead of adding messages and returning null.
   async function addSlice(file: File) {
     const name = file.name
 
@@ -139,26 +160,71 @@ export const useSlices = defineStore("slices", () => {
     }
   }
 
+  /**
+   * Moves the slice up one position in the list of slices.
+   *
+   * Does nothing if the slice is already at the top, or if it is not in the
+   * list of slices.
+   *
+   * @param slice - The slice to move.
+   */
   function moveSliceUp(slice: Slice) {
     const idx = slices.value.indexOf(slice)
+    if (idx <= 0) return
     slices.value.splice(idx, 1)
     slices.value.splice(idx - 1, 0, slice)
   }
 
+  /**
+   * Moves the slice down one position in the list of slices.
+   *
+   * Does nothing if the slice is already at the bottom, or if it is not in the
+   * list of slices.
+   *
+   * @param slice - The slice to move.
+   */
   function moveSliceDown(slice: Slice) {
     const idx = slices.value.indexOf(slice)
+    if (idx === -1 || idx === slices.value.length - 1) return
     slices.value.splice(idx, 1)
     slices.value.splice(idx + 1, 0, slice)
   }
 
+  /**
+   * Removes a slice from the store. If the slice is currently being edited,
+   * the edit is cancelled.
+   *
+   * Does nothing if the slice is not in the list of slices.
+   *
+   * @param slice - The slice to remove.
+   */
   function removeSlice(slice: Slice) {
-    slices.value.splice(slices.value.indexOf(slice), 1)
+    const idx = slices.value.indexOf(slice)
+    if (idx === -1) return
+    setEditSlice(null)
+    slices.value.splice(idx, 1)
   }
 
-  function setEditSlice(slice: Slice) {
+  /**
+   * Sets the slice that is currently being edited. Pass `null` to cancel the
+   * current edit.
+   *
+   * Does nothing if the slice is not in the list of slices.
+   *
+   * @param slice - The slice to edit (or `null` to cancel the edit).
+   */
+  function setEditSlice(slice: Slice | null) {
+    if (slice && !slices.value.includes(slice)) return
     editSlice.value = slice
   }
 
+  /**
+   * Attempts to load an audio file and add it to the slice as a new layer.
+   *
+   * @param slice - The slice to add the layer to.
+   * @param file - A File object.
+   */
+  // TODO: Raise errors instead of adding messages and returning null.
   async function addLayer(slice: Slice, file: File) {
     const unlock = await layerMutex.lock()
     const name = file.name
@@ -185,6 +251,15 @@ export const useSlices = defineStore("slices", () => {
     }
   }
 
+  /**
+   * Removes a layer from the slice. Does nothing if the slice has only one
+   * layer, or if the layer is not contained in the slice.
+   *
+   * @param slice - The slice to remove the layer from.
+   * @param layer - The layer to remove.
+   */
+  // TODO: Pick the slice from the layer instead of passing it as a parameter.
+  // TODO: Raise errors instead of adding messages.
   async function removeLayer(slice: Slice, layer: Layer) {
     const unlock = await layerMutex.lock()
     try {
@@ -195,7 +270,9 @@ export const useSlices = defineStore("slices", () => {
           { timeout: 8500 },
         )
       } else {
-        slice.layers.splice(slice.layers.indexOf(layer), 1)
+        const idx = slice.layers.indexOf(layer)
+        if (idx === -1) return
+        slice.layers.splice(idx, 1)
         await handleLayerChange(slice)
       }
     } finally {
@@ -203,6 +280,12 @@ export const useSlices = defineStore("slices", () => {
     }
   }
 
+  /**
+   * Replaces the slice's audio with the combined audio of all its layers.
+   * Updates the slice's name to reflect the names of its layers.
+   *
+   * @param slice - The slice to update.
+   */
   async function handleLayerChange(slice: Slice) {
     slice.originalAudio = await combineAudio(
       slice.layers.map((layer) => layer.audio),
@@ -211,6 +294,15 @@ export const useSlices = defineStore("slices", () => {
     slice.name = slice.layers.map((layer) => layer.name).join(" + ")
   }
 
+  /**
+   * Trims the file's audio according to the given trim option.
+   * Updates the file's trim option to reflect the requested trim.
+   *
+   * If the given file is a layer, the slice's audio is also updated.
+   *
+   * @param file - The file to trim.
+   * @param option - The trim option to apply.
+   */
   function trimAudio(file: AudioFile | Slice | Layer, option: TrimOption) {
     if (ctx === undefined) return
 
@@ -238,13 +330,25 @@ export const useSlices = defineStore("slices", () => {
     }
   }
 
-  function getAudioBufferSourceNode(file: AudioFile) {
+  /**
+   * Creates a new AudioBufferSourceNode from the given audio file.
+   * Any previous AudioBufferSourceNode created by this function
+   * is disconnected and disposed.
+   *
+   * @param file - The audio file to create the node from.
+   * @returns The new AudioBufferSourceNode.
+   */
+  function getAudioBufferSourceNode(file: AudioFile): AudioBufferSourceNode {
     stopPlayback()
     const { audio: buffer } = file
     source = new AudioBufferSourceNode(ctx, { buffer })
     return source
   }
 
+  /**
+   * Stops the playback of the AudioBufferSourceNode most recently created
+   * by getAudioBufferSourceNode (if any).
+   */
   function stopPlayback() {
     source?.stop()
     source?.disconnect()

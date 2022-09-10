@@ -22,6 +22,9 @@
     () => `${instrumentName.value || "stitched"}.pti`,
   )
 
+  /**
+   * Creates a PTI file from the current slices and triggers a download prompt.
+   */
   async function handleDownload() {
     const audio = slices.value.map((slice) => slice.audio.getChannelData(0))
     const buffer = createBeatSlicedPtiFromSamples(audio, instrumentName.value)

@@ -16,6 +16,13 @@ export interface Message extends MessageOptions {
 export const useMessages = defineStore("messages", () => {
   const messages = ref<Message[]>([])
 
+  /**
+   * Adds a message to the store.
+   *
+   * @param text - The message text.
+   * @param level - The message level (one of "info", "success", "warning", or "error").
+   * @param options - Additional options (id and/or timeout).
+   */
   function addMessage(
     text: string,
     level: Message["level"],
@@ -30,6 +37,11 @@ export const useMessages = defineStore("messages", () => {
     })
   }
 
+  /**
+   * Removes a message from the store.
+   *
+   * @param id - The message id.
+   */
   function removeMessage(id: string) {
     messages.value = messages.value.filter((message) => message.id !== id)
   }

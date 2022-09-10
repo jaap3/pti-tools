@@ -10,8 +10,15 @@
     file: AudioFile
   }>()
 
-  function handleInput(e: Event) {
-    const input = e.target as HTMLInputElement
+  /**
+   * Handles the toggling of the trim control checkbox.
+   * Sets the trim flag to "both" or "none" depending on whether the checkbox
+   * is checked or not.
+   *
+   * @param evt - The input event.
+   */
+  function handleInput(evt: Event) {
+    const input = evt.target as HTMLInputElement
     slicesStore.trimAudio(props.file, input.checked ? "both" : "none")
   }
 

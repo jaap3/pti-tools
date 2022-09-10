@@ -14,6 +14,9 @@
     { height: 150, width: null },
   )
 
+  /**
+   * Creates the rendering contexts and draws the waveform of the audio file.
+   */
   function drawInstrument() {
     if (canvas.value === null) return
 
@@ -44,6 +47,14 @@
     ctx.drawImage(offscreenCanvas, 0, 0)
   }
 
+  /**
+   * Draws the waveform of the audio file.
+   *
+   * @param ctx - The canvas context.
+   * @param buffer - The audio buffer.
+   * @param width - The width of the canvas.
+   * @param height - The height of the canvas.
+   */
   function drawWaveform(
     ctx: CanvasRenderingContext2D,
     buffer: Float32Array,
