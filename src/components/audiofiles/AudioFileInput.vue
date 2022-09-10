@@ -54,6 +54,7 @@
       if (props.disabled) break
       await emitInput(file)
     }
+    input.value = ""
   }
 
   /**
