@@ -8,9 +8,11 @@
   import ControlsHolder from "@/components/audiofiles/ControlsHolder.vue"
   import SamplePlayer from "@/components/audiofiles/SamplePlayer.vue"
   import TrimControl from "@/components/audiofiles/TrimControl.vue"
-  import type { Slice } from "@/stores/slices"
+  import { useMessages } from "@/stores/messages"
+  import type { Layer, Slice } from "@/stores/slices"
   import { useSlices } from "@/stores/slices"
 
+  const messagesStore = useMessages()
   const slicesStore = useSlices()
   const { maxLayers, maxDuration } = slicesStore
   const dialog = ref<HTMLDialogElement | null>(null)
@@ -57,10 +59,28 @@
    */
   async function handleFileInput(file: File) {
     if (fileLoaderDisabled.value) return
-    await slicesStore.addLayer(props.slice, file)
-    fileLoaderDisabled.value =
-      props.slice.layers.length >= maxLayers ||
-      props.slice.audio.duration >= maxDuration
+
+    const error = await slicesStore.addLayer(props.slice, file)
+
+    if (error) {
+      messagesStore.addMessage(error.message, error.level, { timeout: 8500 })
+    } else {
+      fileLoaderDisabled.value =
+        props.slice.layers.length >= maxLayers ||
+        props.slice.audio.duration >= maxDuration
+    }
+  }
+
+  /**
+   * Removes a layer from its slice.
+   *
+   * @param layer - The layer to remove.
+   */
+  async function handleDelete(layer: Layer) {
+    const error = await slicesStore.removeLayer(layer)
+    if (error) {
+      messagesStore.addMessage(error.message, error.level, { timeout: 8500 })
+    }
   }
 
   onMounted(() => {
@@ -121,7 +141,7 @@
                       title="Remove"
                       icon="delete"
                       class="delete"
-                      @click="slicesStore.removeLayer(layer)"
+                      @click="handleDelete(layer)"
                     />
                   </template>
                 </SamplePlayer>

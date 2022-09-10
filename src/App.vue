@@ -73,7 +73,10 @@
    */
   async function handleFileInput(file: File) {
     if (fileLoaderDisabled.value) return
-    await slicesStore.addSlice(file)
+    const error = await slicesStore.addSlice(file)
+    if (error) {
+      messagesStore.addMessage(error.message, error.level, { timeout: 8500 })
+    }
   }
 
   watch(

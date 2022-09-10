@@ -2,7 +2,6 @@ import { acceptHMRUpdate, defineStore } from "pinia"
 import { computed, ref } from "vue"
 
 import { combineAudio, sumChannels, trimSilence } from "@/audio-tools"
-import { useMessages } from "@/stores/messages"
 
 interface AudioFileOptions {
   trim: TrimOption
@@ -22,6 +21,12 @@ export interface Layer extends AudioFile {
 
 export interface Slice extends AudioFile {
   layers: Layer[]
+}
+
+export interface ErrorMessage {
+  message: string
+  level: "error" | "warning"
+  isError: true
 }
 
 export type TrimOption = "none" | "start" | "end" | "both"
@@ -44,13 +49,30 @@ class Mutex {
   }
 }
 
+/**
+ * Creates an error message object.
+ *
+ * @param message - The error message.
+ * @param level - The error level.
+ * @returns The error message object.
+ */
+function errorMessage(
+  message: string,
+  level: "error" | "warning" = "error",
+): ErrorMessage {
+  return {
+    message,
+    level,
+    isError: true,
+  }
+}
+
 export const useSlices = defineStore("slices", () => {
   const ctx = new AudioContext({
     latencyHint: "interactive",
     sampleRate: 44100,
   })
 
-  const messagesStore = useMessages()
   const slices = ref<Slice[]>([])
   const editSlice = ref<Slice | null>(null)
 
@@ -75,10 +97,10 @@ export const useSlices = defineStore("slices", () => {
    * @param file - A File object.
    * @returns A promise that resolves to an object containing the audio buffer,
    *     file name and other metadata. This data can then be augmented to
-   *     become a slice or layer.
+   *     become a slice or layer. If the operation fails, the promise resolves
+   *     to an object with a message that can be displayed to the user.
    */
-  // TODO: Raise errors instead of adding messages and returning null.
-  async function loadAudio(file: File): Promise<AudioFile | undefined> {
+  async function loadAudio(file: File): Promise<AudioFile | ErrorMessage> {
     const name = file.name
     const buffer = await file.arrayBuffer()
 
@@ -86,20 +108,16 @@ export const useSlices = defineStore("slices", () => {
     try {
       audio = await ctx.decodeAudioData(buffer)
     } catch (e) {
-      messagesStore.addMessage(
-        `Rejected "${name}", invalid audio file.`,
+      return errorMessage(
+        `Could not load "${name}", invalid audio file.`,
         "error",
-        { timeout: 8500 },
       )
-      return
     }
     if (audio.duration > maxDuration) {
-      messagesStore.addMessage(
+      return errorMessage(
         `Rejected "${name}", too long (>${maxDuration}s).`,
         "warning",
-        { timeout: 8500 },
       )
-      return
     }
 
     const monoAudio = await sumChannels(audio)
@@ -118,29 +136,31 @@ export const useSlices = defineStore("slices", () => {
    * Attempts to load an audio file and add it to the store.
    *
    * @param file - A File object.
+   * @returns A promise containing an object with a message to display
+   *     to the user if the operation failed, nothing otherwise.
    */
-  // TODO: Raise errors instead of adding messages and returning null.
-  async function addSlice(file: File) {
+  async function addSlice(file: File): Promise<ErrorMessage | void> {
     const name = file.name
 
     const unlock = await sliceMutex.lock()
 
     try {
       if (maxSlicesReached.value) {
-        messagesStore.addMessage(
+        return errorMessage(
           `Rejected "${name}", max. ${maxSlices} slices reached.`,
           "warning",
-          { timeout: 8500 },
         )
       } else if (durationExceeded.value) {
-        messagesStore.addMessage(
+        return errorMessage(
           `Rejected "${name}", total duration > ${maxDuration}.`,
           "warning",
-          { timeout: 8500 },
         )
       } else {
-        const audioFile = await loadAudio(file)
-        if (audioFile) {
+        const audioFileOrError = await loadAudio(file)
+        if ("isError" in audioFileOrError && audioFileOrError.isError) {
+          return audioFileOrError
+        } else if ("audio" in audioFileOrError) {
+          const audioFile = audioFileOrError
           const slice = {
             ...audioFile,
             layers: [] as Layer[],
@@ -223,21 +243,27 @@ export const useSlices = defineStore("slices", () => {
    *
    * @param slice - The slice to add the layer to.
    * @param file - A File object.
+   * @returns A promise containing an object with a message to display
+   *     to the user if the operation failed, nothing otherwise.
    */
-  // TODO: Raise errors instead of adding messages and returning null.
-  async function addLayer(slice: Slice, file: File) {
+  async function addLayer(
+    slice: Slice,
+    file: File,
+  ): Promise<ErrorMessage | void> {
     const unlock = await layerMutex.lock()
     const name = file.name
     try {
       if (slice.layers.length >= maxLayers) {
-        messagesStore.addMessage(
-          `Rejected "${name}", max. ${maxLayers} layers reached.`,
+        return errorMessage(
+          `Rejected "${name}", max. layers reached (${maxLayers}).`,
           "warning",
-          { timeout: 8500 },
         )
       } else {
-        const audioFile = await loadAudio(file)
-        if (audioFile) {
+        const audioFileOrError = await loadAudio(file)
+        if ("isError" in audioFileOrError && audioFileOrError.isError) {
+          return audioFileOrError
+        } else if ("audio" in audioFileOrError) {
+          const audioFile = audioFileOrError
           const layer = {
             ...audioFile,
             slice: new WeakRef(slice),
@@ -256,18 +282,18 @@ export const useSlices = defineStore("slices", () => {
    * layer.
    *
    * @param layer - The layer to remove.
+   * @returns A promise containing an object with a message to display
+   *     to the user if the operation failed, nothing otherwise.
    */
-  // TODO: Raise errors instead of adding messages.
-  async function removeLayer(layer: Layer) {
+  async function removeLayer(layer: Layer): Promise<ErrorMessage | void> {
     const unlock = await layerMutex.lock()
     const slice = layer.slice.deref()
     if (!slice) return
     try {
       if (slice.layers.length <= 1) {
-        messagesStore.addMessage(
-          `Cannot remove layer, a slice must have at least one layer.`,
+        return errorMessage(
+          "Cannot remove layer, a slice must have at least one layer.",
           "warning",
-          { timeout: 8500 },
         )
       } else {
         const idx = slice.layers.indexOf(layer)
