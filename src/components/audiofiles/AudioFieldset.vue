@@ -20,7 +20,7 @@
 
   const props = withDefaults(
     defineProps<{ name: string; truncateNameAt?: number; duration: number }>(),
-    { truncateNameAt: 25 },
+    { truncateNameAt: 22 },
   )
 </script>
 
