@@ -35,20 +35,6 @@ const maxSlices = 48
 const maxDuration = 45 // seconds
 const maxLayers = 12
 
-class Mutex {
-  private promise = Promise.resolve()
-
-  lock() {
-    let resolver: () => void
-    const currentPromise = this.promise
-    this.promise = new Promise<void>((resolve) => {
-      resolver = () => resolve()
-    })
-    const unlock = currentPromise.then(() => resolver)
-    return unlock
-  }
-}
-
 /**
  * Creates an error message object.
  *
@@ -75,9 +61,6 @@ export const useSlices = defineStore("slices", () => {
 
   const slices = ref<Slice[]>([])
   const editSlice = ref<Slice | null>(null)
-
-  const sliceMutex = new Mutex()
-  const layerMutex = new Mutex()
 
   let source: AudioBufferSourceNode | null = null
 
@@ -142,41 +125,35 @@ export const useSlices = defineStore("slices", () => {
   async function addSlice(file: File): Promise<ErrorMessage | void> {
     const name = file.name
 
-    const unlock = await sliceMutex.lock()
-
-    try {
-      if (maxSlicesReached.value) {
-        return errorMessage(
-          `Rejected "${name}", max. ${maxSlices} slices reached.`,
-          "warning",
-        )
-      } else if (durationExceeded.value) {
-        return errorMessage(
-          `Rejected "${name}", total duration > ${maxDuration}.`,
-          "warning",
-        )
-      } else {
-        const audioFileOrError = await loadAudio(file)
-        if ("isError" in audioFileOrError && audioFileOrError.isError) {
-          return audioFileOrError
-        } else if ("audio" in audioFileOrError) {
-          const audioFile = audioFileOrError
-          const slice = {
-            ...audioFile,
-            layers: [] as Layer[],
-          }
-          const layer = {
-            ...audioFile,
-            options: { ...audioFile.options },
-            id: crypto.randomUUID(),
-            slice: new WeakRef(slice),
-          }
-          slice.layers.push(layer)
-          slices.value.push(slice)
+    if (maxSlicesReached.value) {
+      return errorMessage(
+        `Rejected "${name}", max. ${maxSlices} slices reached.`,
+        "warning",
+      )
+    } else if (durationExceeded.value) {
+      return errorMessage(
+        `Rejected "${name}", total duration > ${maxDuration}.`,
+        "warning",
+      )
+    } else {
+      const audioFileOrError = await loadAudio(file)
+      if ("isError" in audioFileOrError && audioFileOrError.isError) {
+        return audioFileOrError
+      } else if ("audio" in audioFileOrError) {
+        const audioFile = audioFileOrError
+        const slice = {
+          ...audioFile,
+          layers: [] as Layer[],
         }
+        const layer = {
+          ...audioFile,
+          options: { ...audioFile.options },
+          id: crypto.randomUUID(),
+          slice: new WeakRef(slice),
+        }
+        slice.layers.push(layer)
+        slices.value.push(slice)
       }
-    } finally {
-      unlock()
     }
   }
 
@@ -250,30 +227,25 @@ export const useSlices = defineStore("slices", () => {
     slice: Slice,
     file: File,
   ): Promise<ErrorMessage | void> {
-    const unlock = await layerMutex.lock()
     const name = file.name
-    try {
-      if (slice.layers.length >= maxLayers) {
-        return errorMessage(
-          `Rejected "${name}", max. layers reached (${maxLayers}).`,
-          "warning",
-        )
-      } else {
-        const audioFileOrError = await loadAudio(file)
-        if ("isError" in audioFileOrError && audioFileOrError.isError) {
-          return audioFileOrError
-        } else if ("audio" in audioFileOrError) {
-          const audioFile = audioFileOrError
-          const layer = {
-            ...audioFile,
-            slice: new WeakRef(slice),
-          }
-          slice.layers.push(layer)
+    if (slice.layers.length >= maxLayers) {
+      return errorMessage(
+        `Rejected "${name}", max. layers reached (${maxLayers}).`,
+        "warning",
+      )
+    } else {
+      const audioFileOrError = await loadAudio(file)
+      if ("isError" in audioFileOrError && audioFileOrError.isError) {
+        return audioFileOrError
+      } else if ("audio" in audioFileOrError) {
+        const audioFile = audioFileOrError
+        const layer = {
+          ...audioFile,
+          slice: new WeakRef(slice),
         }
-        await handleLayerChange(slice)
+        slice.layers.push(layer)
       }
-    } finally {
-      unlock()
+      await handleLayerChange(slice)
     }
   }
 
@@ -286,22 +258,17 @@ export const useSlices = defineStore("slices", () => {
    *     to the user if the operation failed, nothing otherwise.
    */
   async function removeLayer(layer: Layer): Promise<ErrorMessage | void> {
-    const unlock = await layerMutex.lock()
     const slice = layer.slice.deref()
     if (!slice) return
-    try {
-      if (slice.layers.length <= 1) {
-        return errorMessage(
-          "Cannot remove layer, a slice must have at least one layer.",
-          "warning",
-        )
-      } else {
-        const idx = slice.layers.indexOf(layer)
-        slice.layers.splice(idx, 1)
-        await handleLayerChange(slice)
-      }
-    } finally {
-      unlock()
+    if (slice.layers.length <= 1) {
+      return errorMessage(
+        "Cannot remove layer, a slice must have at least one layer.",
+        "warning",
+      )
+    } else {
+      const idx = slice.layers.indexOf(layer)
+      slice.layers.splice(idx, 1)
+      await handleLayerChange(slice)
     }
   }
 

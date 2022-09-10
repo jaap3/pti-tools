@@ -1,17 +1,20 @@
 <script setup lang="ts">
   import { useMessages } from "@/stores/messages"
 
-  const props = withDefaults(defineProps<{ disabled: boolean }>(), {
-    disabled: false,
-  })
-
-  const emit = defineEmits<{
-    (e: "input", file: File): Promise<void>
-  }>()
-
-  const sizeThreshold = 1024 * 1024 * 10 // 10MB
+  const props = withDefaults(
+    defineProps<{
+      disabled: boolean
+      onInput?: (file: File) => Promise<unknown>
+    }>(),
+    {
+      disabled: false,
+      onInput: async () => null,
+    },
+  )
 
   const messagesStore = useMessages()
+
+  const sizeThreshold = 1024 * 1024 * 10 // 10MB
 
   /**
    * Converts the given number of bytes to a string representing the size
@@ -39,20 +42,24 @@
       )
       return
     }
-    await emit("input", file)
+    await props.onInput(file)
   }
 
   /**
    * Handles the input event from the file input element. Emits an input event
-   * for each file in the input, up until the input is disabled.
+   * for each file in the input. If the input is disabled while emitting,
+   * one final input event is emitted allowing the listener to keep track
+   * of the first file that must be ignored.
    *
    * @param evt - The input event.
    */
   async function handleInput(evt: Event) {
     const input = evt.target as HTMLInputElement
     for (const file of Array.from(input.files ?? [])) {
-      if (props.disabled) break
+      const wasDisabled = props.disabled
       await emitInput(file)
+      // The input was disabled in the previous iteration, break.
+      if (wasDisabled && props.disabled) return
     }
     input.value = ""
   }
@@ -73,12 +80,13 @@
   /* global FileSystemEntry, FileSystemDirectoryEntry, FileSystemFileEntry */
   /**
    * Handles a dropped file or directory. Emits an input event for each file
-   * in the directory, up until the input is disabled.
+   * in the directory. If the input is disabled while emitting,
+   * one final input event is emitted allowing the listener to keep track
+   * of the first file that must be ignored.
    *
    * @param entry - The dropped entry.
    */
   async function collectFiles(entry: FileSystemEntry) {
-    if (props.disabled) return
     if (entry.isFile) {
       const resolvedEntry: Promise<File> = new Promise((resolve, reject) => {
         ;(entry as FileSystemFileEntry).file(resolve, reject)
@@ -104,27 +112,9 @@
         return 0
       })
       for (const entry of entries) {
-        if (props.disabled) break
+        const wasDisabled = props.disabled
         await collectFiles(entry)
-      }
-    }
-  }
-
-  /**
-   * Creates a async generator that yields the filesystem entries from the
-   * given list of file system entries. Skips any null entries, and stops
-   * when the input is disabled.
-   *
-   * @param entries - The list of entries to yield.
-   * @yields The next entry.
-   */
-  function* entryGenerator(
-    entries: (FileSystemEntry | null)[],
-  ): Generator<FileSystemEntry> {
-    for (const entry of entries) {
-      if (props.disabled) return
-      if (entry !== null) {
-        yield entry
+        if (wasDisabled && props.disabled) return
       }
     }
   }
@@ -140,19 +130,20 @@
     if (!evt.dataTransfer) return
 
     // Collect files from the drop event, has to be done before processing the files
-    // because the browser will only let use access for a short window of time.
-    const entries: Generator<FileSystemEntry> = entryGenerator(
-      Array.from(evt.dataTransfer.items).map((item) => {
+    // as browsers only allow access for a short window of time.
+    const entries: FileSystemEntry[] = Array.from(evt.dataTransfer.items)
+      .map((item) => {
         if (item.kind === "file") {
           // Even though it's prefixed with "webkit" most browsers support it.
           return item.webkitGetAsEntry()
         }
         return null
-      }),
-    )
-    for await (const entry of entries) {
-      if (props.disabled) return
+      })
+      .filter((entry): entry is FileSystemEntry => entry !== null)
+    for (const entry of entries) {
+      const wasDisabled = props.disabled
       await collectFiles(entry)
+      if ((wasDisabled || entry.isDirectory) && props.disabled) return
     }
   }
 </script>

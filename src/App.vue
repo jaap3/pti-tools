@@ -72,7 +72,6 @@
    * @param file - The audio file to load.
    */
   async function handleFileInput(file: File) {
-    if (fileLoaderDisabled.value) return
     const error = await slicesStore.addSlice(file)
     if (error) {
       messagesStore.addMessage(error.message, error.level, { timeout: 8500 })
