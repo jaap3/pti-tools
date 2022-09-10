@@ -14,7 +14,6 @@
     "lib": ["ESNext", "DOM"],
     "skipLibCheck": true,
     "paths": {
-      "*": ["./src/*", "./declarations/*"],
       "@/*": ["./src/*"]
     }
   },
