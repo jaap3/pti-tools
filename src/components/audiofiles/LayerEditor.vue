@@ -100,12 +100,17 @@
     slicesStore.stopPlayback()
     const el = dialog.value
     if (!el) return
+    // Focus the modal dialog.
     el.tabIndex = -1
     el.focus()
-    el.addEventListener("close", handleClose)
     el.showModal()
+    el.addEventListener("close", handleClose)
+    // Trigger CSS animation.
     el.classList.add("show")
+    // Disable scrolling on the root element.
     document.documentElement.style.overflowY = "hidden"
+    // Delay rendering of some of the dialog content to allow for correct
+    // DOM measurements.
     setTimeout(() => (visible.value = true))
   })
 
