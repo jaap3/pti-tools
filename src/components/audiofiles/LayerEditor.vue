@@ -5,12 +5,12 @@
   import AppContainer from "@/components/AppContainer.vue"
   import AudioFieldset from "@/components/audiofiles/AudioFieldset.vue"
   import AudioFileInput from "@/components/audiofiles/AudioFileInput.vue"
-  import ButtonControl from "@/components/audiofiles/ButtonControl.vue"
   import ControlsHolder from "@/components/audiofiles/ControlsHolder.vue"
+  import LayerListItem from "@/components/audiofiles/LayerListItem.vue"
   import SamplePlayer from "@/components/audiofiles/SamplePlayer.vue"
   import TrimControl from "@/components/audiofiles/TrimControl.vue"
   import { useMessages } from "@/stores/messages"
-  import type { Layer, Slice } from "@/stores/slices"
+  import type { Slice } from "@/stores/slices"
   import { useSlices } from "@/stores/slices"
 
   const messagesStore = useMessages()
@@ -63,18 +63,6 @@
    */
   async function handleFileInput(file: File) {
     const error = await slicesStore.addLayer(file)
-    if (error) {
-      messagesStore.addMessage(error.message, error.level, { timeout: 8500 })
-    }
-  }
-
-  /**
-   * Removes a layer from its slice.
-   *
-   * @param layer - The layer to remove.
-   */
-  async function handleDelete(layer: Layer) {
-    const error = await slicesStore.removeLayer(layer)
     if (error) {
       messagesStore.addMessage(error.message, error.level, { timeout: 8500 })
     }
@@ -149,25 +137,10 @@
           <legend>Layers</legend>
           <ol>
             <li v-for="layer in slice.layers" :key="layer.id">
-              <AudioFieldset
-                :name="layer.name"
-                :duration="layer.audio.duration"
-              >
-                <SamplePlayer v-if="visible" :file="layer">
-                  <template #controls>
-                    <ButtonControl
-                      :disabled="slice.layers.length <= 1"
-                      title="Remove"
-                      icon="delete"
-                      class="delete"
-                      @click="handleDelete(layer)"
-                    />
-                  </template>
-                </SamplePlayer>
-                <ControlsHolder>
-                  <TrimControl :file="layer" />
-                </ControlsHolder>
-              </AudioFieldset>
+              <LayerListItem
+                :layer="layer"
+                :can-delete="slice.layers.length > 1"
+              />
             </li>
           </ol>
 
@@ -285,14 +258,6 @@
     li:nth-child(3n + 2) {
       margin: 8px;
     }
-  }
-
-  .controls .delete {
-    margin-left: auto;
-  }
-
-  .controls .delete:not(:disabled) {
-    background-color: tomato;
   }
 
   .back {
