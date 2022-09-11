@@ -3,6 +3,8 @@ import { computed, ref } from "vue"
 
 import { combineAudio, sumChannels, trimSilence } from "@/audio-tools"
 
+/* Types */
+
 interface AudioFileOptions {
   trim: TrimOption
 }
@@ -31,9 +33,13 @@ export interface ErrorMessage {
 
 export type TrimOption = "none" | "start" | "end" | "both"
 
+/* Constants */
+
 const maxSlices = 48
 const maxDuration = 45 // seconds
 const maxLayers = 12
+
+/* Utilities */
 
 /**
  * Creates an error message object.
@@ -53,67 +59,83 @@ function errorMessage(
   }
 }
 
+/**
+ * Strips the extension from a filename.
+ *
+ * @param fileName - The filename.
+ * @returns The filename without the extension.
+ */
+function displayName(fileName: string) {
+  return fileName.replace(/\.[^.]+$/, "")
+}
+
+/**
+ * Attempts to load an audio file.
+ *
+ * @param file - A File object.
+ * @returns A promise that resolves to an object containing the audio buffer,
+ *     file name and other metadata. This data can then be augmented to
+ *     become a slice or layer. If the operation fails, the promise resolves
+ *     to an object with a message that can be displayed to the user.
+ */
+async function loadAudio(file: File): Promise<AudioFile | ErrorMessage> {
+  const ctx = new OfflineAudioContext(1, 1, 44100)
+  const name = file.name
+  const buffer = await file.arrayBuffer()
+
+  let audio: AudioBuffer
+  try {
+    audio = await ctx.decodeAudioData(buffer)
+  } catch (e) {
+    return errorMessage(
+      `Could not load "${name}", invalid audio file.`,
+      "error",
+    )
+  }
+  if (audio.duration > maxDuration) {
+    return errorMessage(
+      `Rejected "${name}", too long (>${maxDuration}s).`,
+      "warning",
+    )
+  }
+
+  const monoAudio = await sumChannels(audio)
+  return {
+    id: crypto.randomUUID(),
+    name: displayName(name),
+    audio: monoAudio,
+    originalAudio: monoAudio,
+    options: {
+      trim: "none",
+    },
+  }
+}
+
+/* Store */
+
 export const useSlices = defineStore("slices", () => {
+  /* State */
+  const slices = ref<Slice[]>([])
+  const editSlice = ref<Slice | null>(null)
+
   const ctx = new AudioContext({
     latencyHint: "interactive",
     sampleRate: 44100,
   })
-
-  const slices = ref<Slice[]>([])
-  const editSlice = ref<Slice | null>(null)
-
   let source: AudioBufferSourceNode | null = null
 
-  /**
-   * Strips the extension from a filename.
-   *
-   * @param fileName - The filename.
-   * @returns The filename without the extension.
-   */
-  function displayName(fileName: string) {
-    return fileName.replace(/\.[^.]+$/, "")
-  }
+  /* Computed */
+  const totalSlices = computed(() => slices.value.length)
 
-  /**
-   * Attempts to load an audio file.
-   *
-   * @param file - A File object.
-   * @returns A promise that resolves to an object containing the audio buffer,
-   *     file name and other metadata. This data can then be augmented to
-   *     become a slice or layer. If the operation fails, the promise resolves
-   *     to an object with a message that can be displayed to the user.
-   */
-  async function loadAudio(file: File): Promise<AudioFile | ErrorMessage> {
-    const name = file.name
-    const buffer = await file.arrayBuffer()
+  const maxSlicesReached = computed(() => totalSlices.value >= maxSlices)
 
-    let audio: AudioBuffer
-    try {
-      audio = await ctx.decodeAudioData(buffer)
-    } catch (e) {
-      return errorMessage(
-        `Could not load "${name}", invalid audio file.`,
-        "error",
-      )
-    }
-    if (audio.duration > maxDuration) {
-      return errorMessage(
-        `Rejected "${name}", too long (>${maxDuration}s).`,
-        "warning",
-      )
-    }
+  const totalDuration = computed(() =>
+    slices.value.reduce((sum, file) => sum + file.audio.duration, 0),
+  )
 
-    const monoAudio = await sumChannels(audio)
-    return {
-      id: crypto.randomUUID(),
-      name: displayName(name),
-      audio: monoAudio,
-      originalAudio: monoAudio,
-      options: {
-        trim: "none",
-      },
-    }
-  }
+  const durationExceeded = computed(() => totalDuration.value > maxDuration)
+
+  /* Actions */
 
   /**
    * Attempts to load an audio file and add it to the store.
@@ -347,20 +369,21 @@ export const useSlices = defineStore("slices", () => {
     source = null
   }
 
-  const totalSlices = computed(() => slices.value.length)
-
-  const maxSlicesReached = computed(() => totalSlices.value >= maxSlices)
-
-  const totalDuration = computed(() =>
-    slices.value.reduce((sum, file) => sum + file.audio.duration, 0),
-  )
-
-  const durationExceeded = computed(() => totalDuration.value > maxDuration)
-
   return {
-    audioContext: ctx,
+    // Constants
+    maxSlices,
+    maxDuration,
+    maxLayers,
+    // State
     slices,
     editSlice,
+    audioContext: ctx,
+    // Computed
+    totalSlices,
+    maxSlicesReached,
+    totalDuration,
+    durationExceeded,
+    // Actions
     addSlice,
     moveSliceUp,
     moveSliceDown,
@@ -371,13 +394,6 @@ export const useSlices = defineStore("slices", () => {
     trimAudio,
     getAudioBufferSourceNode,
     stopPlayback,
-    maxSlices,
-    totalSlices,
-    maxSlicesReached,
-    totalDuration,
-    maxDuration,
-    durationExceeded,
-    maxLayers,
   }
 })
 
