@@ -28,10 +28,10 @@
   }
 
   /**
-   * Stop the playback of any audio file that has been started by this
-   * component type.
+   * Stop the playback of any audio that has been started by this component.
    */
   function stop() {
+    if (!isPlaying.value) return
     slicesStore.stopPlayback()
     isPlaying.value = false
   }
