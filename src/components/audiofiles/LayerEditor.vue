@@ -96,6 +96,8 @@
   )
 
   onMounted(() => {
+    // Stop any audio playback when the dialog is opened.
+    slicesStore.stopPlayback()
     const el = dialog.value
     if (!el) return
     el.tabIndex = -1
@@ -108,12 +110,12 @@
   })
 
   onUnmounted(() => {
+    // Stop any audio playback when the dialog is closed.
+    slicesStore.stopPlayback()
     const el = dialog.value
     if (!el) return
     el.removeEventListener("close", handleClose)
   })
-
-  // TODO: Stop sample playback layer is removed or dialog is closed
 </script>
 
 <template>
