@@ -20,7 +20,7 @@
   }>()
 
   /**
-   * Removes a layer from its slice.
+   * Stop the playback of this layer and removes it from its slice.
    *
    * @param layer - The layer to remove.
    */

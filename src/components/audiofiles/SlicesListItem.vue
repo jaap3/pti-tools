@@ -19,19 +19,10 @@
   const samplePlayer = ref<InstanceType<typeof SamplePlayer> | null>(null)
 
   /**
-   * Stop the playback of any audio file that has been started by this
-   * component type.
-   */
-  function stop() {
-    samplePlayer.value?.stop()
-  }
-
-  /**
-   * Stops the playback of any audio file that has been started by this
-   * component type and removes the slice from the list of slices.
+   * Stops the playback this slice and removes it from the list of slices.
    */
   function handleRemove() {
-    stop()
+    samplePlayer.value?.stop()
     slicesStore.removeSlice(props.slice)
   }
 </script>
