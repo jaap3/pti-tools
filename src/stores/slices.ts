@@ -1,5 +1,5 @@
 import { acceptHMRUpdate, defineStore } from "pinia"
-import { computed, ref } from "vue"
+import { computed, ref, watch } from "vue"
 
 import { combineAudio, sumChannels, trimSilence } from "@/audio-tools"
 
@@ -17,9 +17,7 @@ export interface AudioFile {
   options: AudioFileOptions
 }
 
-export interface Layer extends AudioFile {
-  slice: WeakRef<Slice>
-}
+export type Layer = AudioFile
 
 export interface Slice extends AudioFile {
   layers: Layer[]
@@ -135,6 +133,26 @@ export const useSlices = defineStore("slices", () => {
 
   const durationExceeded = computed(() => totalDuration.value > maxDuration)
 
+  const editSliceLayers = computed(() => {
+    return editSlice.value?.layers
+  })
+
+  const maxLayersReached = computed(() => {
+    return editSliceLayers.value
+      ? editSliceLayers.value.length >= maxLayers
+      : false
+  })
+
+  /* Watchers */
+  watch(
+    editSliceLayers,
+    async () => {
+      if (editSlice.value && editSliceLayers.value)
+        await handleLayerChange(editSlice.value)
+    },
+    { deep: true },
+  )
+
   /* Actions */
 
   /**
@@ -171,7 +189,6 @@ export const useSlices = defineStore("slices", () => {
           ...audioFile,
           options: { ...audioFile.options },
           id: crypto.randomUUID(),
-          slice: new WeakRef(slice),
         }
         slice.layers.push(layer)
         slices.value.push(slice)
@@ -238,19 +255,21 @@ export const useSlices = defineStore("slices", () => {
   }
 
   /**
-   * Attempts to load an audio file and add it to the slice as a new layer.
+   * Attempts to load an audio file and add it to the slice that is currently
+   * being edited as a new layer.
    *
-   * @param slice - The slice to add the layer to.
+   * Does nothing if there is no slice being edited, or if the maximum number
+   * of layers for that slice has been reached.
+   *
    * @param file - A File object.
    * @returns A promise containing an object with a message to display
    *     to the user if the operation failed, nothing otherwise.
    */
-  async function addLayer(
-    slice: Slice,
-    file: File,
-  ): Promise<ErrorMessage | void> {
+  async function addLayer(file: File): Promise<ErrorMessage | void> {
+    const slice = editSlice.value
+    if (!slice) return
     const name = file.name
-    if (slice.layers.length >= maxLayers) {
+    if (maxLayersReached.value) {
       return errorMessage(
         `Rejected "${name}", max. layers reached (${maxLayers}).`,
         "warning",
@@ -263,24 +282,23 @@ export const useSlices = defineStore("slices", () => {
         const audioFile = audioFileOrError
         const layer = {
           ...audioFile,
-          slice: new WeakRef(slice),
         }
         slice.layers.push(layer)
       }
-      await handleLayerChange(slice)
     }
   }
 
   /**
-   * Removes a layer from the slice. Does nothing if the slice has only one
-   * layer.
+   * Removes a layer from the slice that is currently being edited.
+   * Does nothing if the slice has only one layer, or if the given
+   * layer is not in the slice.
    *
    * @param layer - The layer to remove.
    * @returns A promise containing an object with a message to display
    *     to the user if the operation failed, nothing otherwise.
    */
   async function removeLayer(layer: Layer): Promise<ErrorMessage | void> {
-    const slice = layer.slice.deref()
+    const slice = editSlice.value
     if (!slice) return
     if (slice.layers.length <= 1) {
       return errorMessage(
@@ -289,8 +307,8 @@ export const useSlices = defineStore("slices", () => {
       )
     } else {
       const idx = slice.layers.indexOf(layer)
+      if (idx === -1) return
       slice.layers.splice(idx, 1)
-      await handleLayerChange(slice)
     }
   }
 
@@ -337,11 +355,6 @@ export const useSlices = defineStore("slices", () => {
         file.audio = trimSilence(audio, ctx)
         break
     }
-
-    if ("slice" in file) {
-      const slice = file.slice.deref()
-      if (slice) handleLayerChange(slice)
-    }
   }
 
   /**
@@ -383,6 +396,7 @@ export const useSlices = defineStore("slices", () => {
     maxSlicesReached,
     totalDuration,
     durationExceeded,
+    maxLayersReached,
     // Actions
     addSlice,
     moveSliceUp,

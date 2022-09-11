@@ -1,5 +1,6 @@
 <script setup lang="ts">
-  import { onMounted, onUnmounted, ref } from "vue"
+  import { storeToRefs } from "pinia"
+  import { computed, onMounted, onUnmounted, ref } from "vue"
 
   import AppContainer from "@/components/AppContainer.vue"
   import AudioFieldset from "@/components/audiofiles/AudioFieldset.vue"
@@ -14,12 +15,14 @@
 
   const messagesStore = useMessages()
   const slicesStore = useSlices()
-  const { maxLayers, maxDuration } = slicesStore
   const dialog = ref<HTMLDialogElement | null>(null)
   const visible = ref(false)
-  const fileLoaderDisabled = ref(false)
+  const { durationExceeded, maxLayersReached } = storeToRefs(slicesStore)
+  const fileLoaderDisabled = computed(
+    () => maxLayersReached.value || durationExceeded.value,
+  )
 
-  const props = defineProps<{
+  defineProps<{
     slice: Slice
   }>()
 
@@ -60,14 +63,10 @@
   async function handleFileInput(file: File) {
     if (fileLoaderDisabled.value) return
 
-    const error = await slicesStore.addLayer(props.slice, file)
+    const error = await slicesStore.addLayer(file)
 
     if (error) {
       messagesStore.addMessage(error.message, error.level, { timeout: 8500 })
-    } else {
-      fileLoaderDisabled.value =
-        props.slice.layers.length >= maxLayers ||
-        props.slice.audio.duration >= maxDuration
     }
   }
 
