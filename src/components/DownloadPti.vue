@@ -64,10 +64,7 @@
           maxlength="31"
           pattern="^[\x20-\x7E]+$"
       /></label>
-    </span>
-    <span>
       <label>
-        <span class="download-label">Download: </span>
         <button
           :disabled="!instrumentNameValid || durationExceeded"
           :title="`Download ${fileName}`"
@@ -122,10 +119,6 @@
 
     fieldset > span {
       flex-basis: auto;
-    }
-
-    .download-label {
-      display: none;
     }
 
     fieldset > span:not(:last-of-type) {
