@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import { storeToRefs } from "pinia"
-  import { computed, onMounted, onUnmounted, ref } from "vue"
+  import { computed, onMounted, onUnmounted, ref, watch } from "vue"
 
   import AppContainer from "@/components/AppContainer.vue"
   import AudioFieldset from "@/components/audiofiles/AudioFieldset.vue"
@@ -17,6 +17,7 @@
   const slicesStore = useSlices()
   const dialog = ref<HTMLDialogElement | null>(null)
   const visible = ref(false)
+  const { maxLayers } = slicesStore
   const { durationExceeded, maxLayersReached } = storeToRefs(slicesStore)
   const fileLoaderDisabled = computed(
     () => maxLayersReached.value || durationExceeded.value,
@@ -61,10 +62,7 @@
    * @param file - The audio file to load.
    */
   async function handleFileInput(file: File) {
-    if (fileLoaderDisabled.value) return
-
     const error = await slicesStore.addLayer(file)
-
     if (error) {
       messagesStore.addMessage(error.message, error.level, { timeout: 8500 })
     }
@@ -81,6 +79,21 @@
       messagesStore.addMessage(error.message, error.level, { timeout: 8500 })
     }
   }
+
+  watch(
+    maxLayersReached,
+    (newValue) => {
+      messagesStore.removeMessage("max-layers-reached")
+      if (newValue) {
+        messagesStore.addMessage(
+          `Max. layers reached (${maxLayers}): Remove one or more layers to enable the file loader.`,
+          "info",
+          { id: "max-layers-reached" },
+        )
+      }
+    },
+    { immediate: true },
+  )
 
   onMounted(() => {
     const el = dialog.value
