@@ -113,11 +113,16 @@
     if (!el) return
     el.height = props.height
     el.width = props.width || el.clientWidth || 300
-    drawInstrument()
+    requestAnimationFrame(drawInstrument)
   })
 
+  let debounce: ReturnType<typeof requestAnimationFrame> | null = null
   watch(props.file, () => {
-    drawInstrument()
+    if (debounce !== null) cancelAnimationFrame(debounce)
+    debounce = requestAnimationFrame(() => {
+      debounce = null
+      drawInstrument()
+    })
   })
 </script>
 

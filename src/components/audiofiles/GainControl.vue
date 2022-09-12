@@ -15,8 +15,13 @@
 
   const gain = ref(props.file.options.gain)
 
+  let debounce: ReturnType<typeof setTimeout> | null = null
   watch(gain, async () => {
-    await slicesStore.setGain(props.file, gain.value)
+    if (debounce !== null) clearTimeout(debounce)
+    debounce = setTimeout(async () => {
+      debounce = null
+      await slicesStore.setGain(props.file, gain.value)
+    }, 1000 / 60)
   })
 
   /**
