@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import { storeToRefs } from "pinia"
-  import type { ComputedRef, Ref } from "vue"
+  import type { Ref } from "vue"
   import { computed, ref } from "vue"
 
   import { displayDuration } from "@/audio-tools/numberformat"
@@ -8,25 +8,28 @@
   import { useSlices } from "@/stores/slices"
 
   const slicesStore = useSlices()
-  const { slices, totalSlices, totalDuration, durationExceeded } =
+  const { totalSlices, totalDuration, durationExceeded } =
     storeToRefs(slicesStore)
 
-  const instrumentName: Ref<string> = ref("")
+  const instrumentName = ref("")
   const instrumentNameInput: Ref<HTMLInputElement | null> = ref(null)
-  const instrumentNameValid: ComputedRef<boolean> = computed(
+  const instrumentNameValid = computed(
     () =>
       instrumentName.value === "" ||
       (instrumentNameInput.value?.reportValidity() ?? false),
   )
-  const fileName: ComputedRef<string> = computed(
-    () => `${instrumentName.value || "stitched"}.pti`,
+  const fileName = computed(() => `${instrumentName.value || "stitched"}.pti`)
+  const downloadDisabled = computed(
+    () => !instrumentNameValid.value || durationExceeded.value,
   )
 
   /**
    * Creates a PTI file from the current slices and triggers a download prompt.
    */
   async function handleDownload() {
-    const audio = slices.value.map((slice) => slice.audio.getChannelData(0))
+    const audio = slicesStore.slices.map((slice) =>
+      slice.audio.getChannelData(0),
+    )
     const buffer = createBeatSlicedPtiFromSamples(audio, instrumentName.value)
 
     const blob = new Blob([buffer], { type: "application/octet-stream" })
@@ -66,7 +69,7 @@
       /></label>
       <label>
         <button
-          :disabled="!instrumentNameValid || durationExceeded"
+          :disabled="downloadDisabled"
           :title="`Download ${fileName}`"
           type="button"
           @click="handleDownload"
