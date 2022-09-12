@@ -3,9 +3,8 @@
 
   import AudioFieldset from "@/components/audiofiles/AudioFieldset.vue"
   import ButtonControl from "@/components/audiofiles/ButtonControl.vue"
-  import ControlsHolder from "@/components/audiofiles/ControlsHolder.vue"
+  import EffectControls from "@/components/audiofiles/EffectControls.vue"
   import SamplePlayer from "@/components/audiofiles/SamplePlayer.vue"
-  import TrimControl from "@/components/audiofiles/TrimControl.vue"
   import type { Slice } from "@/stores/slices"
   import { useSlices } from "@/stores/slices"
 
@@ -58,9 +57,7 @@
         />
       </template>
     </SamplePlayer>
-    <ControlsHolder class="controls">
-      <TrimControl :file="slice" />
-    </ControlsHolder>
+    <EffectControls :file="slice" />
   </AudioFieldset>
 </template>
 

@@ -23,7 +23,6 @@ export async function sumChannels(input: AudioBuffer): Promise<AudioBuffer> {
  * Trims silence from the start and/or end of an AudioBuffer.
  *
  * @param input - The input AudioBuffer.
- * @param ctx - The AudioContext to use for processing.
  * @param fromStart - Trim silence from the start of the buffer (default: true).
  * @param fromEnd - Trim silence from the end of the buffer (default: true).
  * @param threshold - The minimum amplitude for a sample to be considered
@@ -33,7 +32,6 @@ export async function sumChannels(input: AudioBuffer): Promise<AudioBuffer> {
  */
 export function trimSilence(
   input: AudioBuffer,
-  ctx: AudioContext,
   fromStart = true,
   fromEnd = true,
   threshold = 0.0005,
@@ -47,9 +45,40 @@ export function trimSilence(
     end -= data.findIndex((v) => Math.abs(v) > threshold)
     data.reverse()
   }
-  const output = ctx.createBuffer(1, end - start, input.sampleRate)
+  const { sampleRate } = input
+  const offline = new OfflineAudioContext(1, 1, sampleRate)
+  const output = offline.createBuffer(1, end - start, sampleRate)
   output.copyToChannel(data.slice(start, end), 0)
   return output
+}
+
+/**
+ * Applies gain to an AudioBuffer.
+ *
+ *  - The output sample rate is the same as the input.
+ *  - The output will have a single channel (mono).
+ *
+ * @param input - The input AudioBuffer.
+ * @param gain - The gain to apply, in dB (must be between -24 and 24).
+ * @returns The gain-adjusted AudioBuffer, or the original buffer if gain is 1.
+ */
+export async function applyGain(
+  input: AudioBuffer,
+  gain: number,
+): Promise<AudioBuffer> {
+  if (gain === 1) return input
+  const { length, sampleRate } = input
+  const offline = new OfflineAudioContext(1, length, sampleRate)
+  const gainNode = new GainNode(offline, {
+    // Convert from dB to linear gain, clamp gain to [-24, 24] dB
+    gain: Math.pow(10, Math.min(Math.max(gain, -24), 24) / 20),
+  })
+  gainNode.connect(offline.destination)
+  const source = offline.createBufferSource()
+  source.buffer = input
+  source.connect(gainNode)
+  source.start()
+  return await offline.startRendering()
 }
 
 /**
