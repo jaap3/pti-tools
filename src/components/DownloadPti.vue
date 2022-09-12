@@ -4,7 +4,6 @@
   import { computed, ref } from "vue"
 
   import { displayDuration } from "@/audio-tools/numberformat"
-  import { createBeatSlicedPtiFromSamples } from "@/pti-file-format"
   import { useSlices } from "@/stores/slices"
 
   const slicesStore = useSlices()
@@ -18,7 +17,10 @@
       instrumentName.value === "" ||
       (instrumentNameInput.value?.reportValidity() ?? false),
   )
-  const fileName = computed(() => `${instrumentName.value || "stitched"}.pti`)
+  const fileType = ref("pti")
+  const fileName = computed(
+    () => `${instrumentName.value || "stitched"}.${fileType.value}`,
+  )
   const downloadDisabled = computed(
     () => !instrumentNameValid.value || durationExceeded.value,
   )
@@ -30,7 +32,20 @@
     const audio = slicesStore.slices.map((slice) =>
       slice.audio.getChannelData(0),
     )
-    const buffer = createBeatSlicedPtiFromSamples(audio, instrumentName.value)
+
+    let buffer: ArrayBufferLike
+
+    if (fileType.value === "pti") {
+      const { createBeatSlicedPtiFromSamples } = await import(
+        "@/pti-file-format"
+      )
+      buffer = createBeatSlicedPtiFromSamples(audio, instrumentName.value)
+    } else {
+      const { createWaveFileWithCuePoints } = await import(
+        "@/audio-tools/wavfile"
+      )
+      buffer = createWaveFileWithCuePoints(audio)
+    }
 
     const blob = new Blob([buffer], { type: "application/octet-stream" })
     const url = URL.createObjectURL(blob)
@@ -67,6 +82,12 @@
           maxlength="31"
           pattern="^[\x20-\x7E]+$"
       /></label>
+      <div aria-label="File type">
+        <select v-model="fileType">
+          <option value="pti" title="Polyend Tracker Instrument">.pti</option>
+          <option value="wav" title="Wave file (with cue points)">.wav</option>
+        </select>
+      </div>
       <label>
         <button
           :disabled="downloadDisabled"
@@ -97,7 +118,7 @@
   fieldset > span {
     display: flex;
     flex-basis: 100%;
-    align-items: center;
+    align-items: flex-end;
     padding: 8px;
   }
 

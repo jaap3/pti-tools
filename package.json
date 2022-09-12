@@ -25,7 +25,8 @@
     "sanitize.css": "^13.0.0",
     "vue": "^3.2.37",
     "vue-github-button": "^3.0.3",
-    "vuedraggable": "^4.1.0"
+    "vuedraggable": "^4.1.0",
+    "wavefile": "^11.0.0"
   },
   "devDependencies": {
     "@tsconfig/strictest": "^1.0.1",
