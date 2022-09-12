@@ -3,9 +3,8 @@
 
   import AudioFieldset from "@/components/audiofiles/AudioFieldset.vue"
   import ButtonControl from "@/components/audiofiles/ButtonControl.vue"
-  import ControlsHolder from "@/components/audiofiles/ControlsHolder.vue"
+  import EffectControls from "@/components/audiofiles/EffectControls.vue"
   import SamplePlayer from "@/components/audiofiles/SamplePlayer.vue"
-  import TrimControl from "@/components/audiofiles/TrimControl.vue"
   import { useMessages } from "@/stores/messages"
   import type { Layer } from "@/stores/slices"
   import { useSlices } from "@/stores/slices"
@@ -46,13 +45,15 @@
         />
       </template>
     </SamplePlayer>
-    <ControlsHolder>
-      <TrimControl :file="layer" />
-    </ControlsHolder>
+    <EffectControls :file="layer" />
   </AudioFieldset>
 </template>
 
 <style scoped>
+  fieldset {
+    width: 300px;
+  }
+
   .controls .delete {
     margin-left: auto;
   }

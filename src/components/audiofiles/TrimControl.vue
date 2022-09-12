@@ -17,9 +17,9 @@
    *
    * @param evt - The input event.
    */
-  function handleInput(evt: Event) {
+  async function handleInput(evt: Event) {
     const input = evt.target as HTMLInputElement
-    slicesStore.trimAudio(props.file, input.checked ? "both" : "none")
+    await slicesStore.trimAudio(props.file, input.checked ? "both" : "none")
   }
 
   const checked = computed(() => {
@@ -29,7 +29,16 @@
 
 <template>
   <label
-    >Trim silence:
-    <input :checked="checked" type="checkbox" @input="handleInput"
+    ><span>Trim: </span
+    ><input :checked="checked" type="checkbox" @input="handleInput"
   /></label>
 </template>
+
+<style scoped>
+  label {
+    display: flex;
+  }
+  input {
+    margin-left: 4px;
+  }
+</style>

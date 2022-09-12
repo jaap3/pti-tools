@@ -6,9 +6,9 @@
   import AudioFieldset from "@/components/audiofiles/AudioFieldset.vue"
   import AudioFileInput from "@/components/audiofiles/AudioFileInput.vue"
   import ControlsHolder from "@/components/audiofiles/ControlsHolder.vue"
+  import EffectControls from "@/components/audiofiles/EffectControls.vue"
   import LayerListItem from "@/components/audiofiles/LayerListItem.vue"
   import SamplePlayer from "@/components/audiofiles/SamplePlayer.vue"
-  import TrimControl from "@/components/audiofiles/TrimControl.vue"
   import { useMessages } from "@/stores/messages"
   import type { Slice } from "@/stores/slices"
   import { useSlices } from "@/stores/slices"
@@ -129,9 +129,7 @@
           class="slice"
         >
           <SamplePlayer v-if="visible" :file="slice" />
-          <ControlsHolder>
-            <TrimControl :file="slice" />
-          </ControlsHolder>
+          <EffectControls :file="slice" />
         </AudioFieldset>
         <fieldset class="layers">
           <legend>Layers</legend>
@@ -256,7 +254,7 @@
     }
 
     li:nth-child(3n + 2) {
-      margin: 8px;
+      margin: 8px 16px;
     }
   }
 

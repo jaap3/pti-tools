@@ -1,12 +1,18 @@
 import { acceptHMRUpdate, defineStore } from "pinia"
 import { computed, ref, watch } from "vue"
 
-import { combineAudio, sumChannels, trimSilence } from "@/audio-tools"
+import {
+  applyGain,
+  combineAudio,
+  sumChannels,
+  trimSilence,
+} from "@/audio-tools"
 
 /* Types */
 
 interface AudioFileOptions {
   trim: TrimOption
+  gain: number // Gain in dB.
 }
 
 export interface AudioFile {
@@ -105,8 +111,32 @@ async function loadAudio(file: File): Promise<AudioFile | ErrorMessage> {
     originalAudio: monoAudio,
     options: {
       trim: "none",
+      gain: 0,
     },
   }
+}
+
+/**
+ * Applies the audio file options.
+ *
+ * @param file - A AudioFile object.
+ */
+async function applyEffects(file: AudioFile | Slice | Layer) {
+  const { originalAudio, options: audioOptions } = file
+  let audio = originalAudio
+  switch (audioOptions.trim) {
+    case "start":
+      audio = trimSilence(audio, true, false)
+      break
+    case "end":
+      audio = trimSilence(audio, false, true)
+      break
+    case "both":
+      audio = trimSilence(audio)
+      break
+  }
+  audio = await applyGain(audio, audioOptions.gain)
+  file.audio = audio
 }
 
 /* Store */
@@ -322,7 +352,7 @@ export const useSlices = defineStore("slices", () => {
     slice.originalAudio = await combineAudio(
       slice.layers.map((layer) => layer.audio),
     )
-    trimAudio(slice, slice.options.trim)
+    await applyEffects(slice)
     slice.name = slice.layers.map((layer) => layer.name).join(" + ")
   }
 
@@ -335,26 +365,24 @@ export const useSlices = defineStore("slices", () => {
    * @param file - The file to trim.
    * @param option - The trim option to apply.
    */
-  function trimAudio(file: AudioFile | Slice | Layer, option: TrimOption) {
+  async function trimAudio(
+    file: AudioFile | Slice | Layer,
+    option: TrimOption,
+  ) {
     if (ctx === undefined) return
-
     file.options.trim = option
+    await applyEffects(file)
+  }
 
-    const audio = file.originalAudio
-    switch (option) {
-      case "none":
-        file.audio = audio
-        break
-      case "start":
-        file.audio = trimSilence(audio, ctx, true, false)
-        break
-      case "end":
-        file.audio = trimSilence(audio, ctx, false, true)
-        break
-      case "both":
-        file.audio = trimSilence(audio, ctx)
-        break
-    }
+  /**
+   * Sets the gain of the file's audio.
+   *
+   * @param file - The file to update.
+   * @param gain - The gain to apply.
+   */
+  async function setGain(file: AudioFile | Slice | Layer, gain: number) {
+    file.options.gain = Math.min(Math.max(gain, -24), 24)
+    await applyEffects(file)
   }
 
   /**
@@ -406,6 +434,7 @@ export const useSlices = defineStore("slices", () => {
     addLayer,
     removeLayer,
     trimAudio,
+    setGain,
     getAudioBufferSourceNode,
     stopPlayback,
   }
