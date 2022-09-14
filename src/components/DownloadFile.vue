@@ -30,7 +30,7 @@
    * a download prompt.
    */
   async function handleDownload() {
-    const audio = slicesStore.slices.map((slice) =>
+    const audio = slicesStore.slicesList.map((slice) =>
       slice.audio.getChannelData(0),
     )
 

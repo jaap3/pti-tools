@@ -16,16 +16,18 @@ interface AudioFileOptions {
 }
 
 export interface AudioFile {
-  id: string
   name: string
   originalAudio: AudioBuffer
   audio: AudioBuffer
   options: AudioFileOptions
 }
 
-export type Slice = AudioFile
+export interface Slice extends AudioFile {
+  id: string
+}
 
 export interface Layer extends AudioFile {
+  id: string
   sliceId: Slice["id"]
 }
 
@@ -105,7 +107,6 @@ async function loadAudio(file: File): Promise<AudioFile | ErrorMessage> {
 
   const monoAudio = await sumChannels(audio)
   return {
-    id: crypto.randomUUID(),
     name: displayName(name),
     audio: monoAudio,
     originalAudio: monoAudio,
@@ -143,9 +144,24 @@ async function applyEffects(file: AudioFile | Slice | Layer) {
 
 export const useSlices = defineStore("slices", () => {
   /* State */
-  const slices = ref<Slice[]>([])
+  const slices = ref<Record<Slice["id"], Slice>>({})
+  const sliceIdList = ref<Slice["id"][]>([])
   const activeSliceId = ref<Slice["id"] | null>(null)
-  const layers = ref<Layer[]>([])
+  const layers = ref<Record<Layer["id"], Layer>>({})
+
+  /* Lookups */
+
+  /**
+   * Returns the layers of the slice with the given ID.
+   *
+   * @param sliceId - The slice ID.
+   * @returns The layers of the slice.
+   */
+  function getLayers(sliceId: Slice["id"]) {
+    return Object.values(layers.value).filter(
+      (layer) => layer.sliceId === sliceId,
+    )
+  }
 
   const ctx = new AudioContext({
     latencyHint: "interactive",
@@ -154,27 +170,47 @@ export const useSlices = defineStore("slices", () => {
   let source: AudioBufferSourceNode | null = null
 
   /* Computed */
-  const totalSlices = computed(() => slices.value.length)
+  const slicesList = computed({
+    get() {
+      return sliceIdList.value
+        .map((id) => slices.value[id] ?? null)
+        .filter(Boolean) as Slice[]
+    },
+    set(value) {
+      // Make sure all given slices are in the store, then update the id list.
+      sliceIdList.value = value
+        .filter((slice) => Boolean(slices.value[slice.id]))
+        .map((slice) => slice.id)
+      // Reap any slices that are no longer in the list.
+      Object.keys(slices.value).forEach((id) => {
+        if (!sliceIdList.value.includes(id)) {
+          delete slices.value[id]
+        }
+      })
+    },
+  })
+
+  const totalSlices = computed(() => sliceIdList.value.length)
 
   const maxSlicesReached = computed(() => totalSlices.value >= maxSlices)
 
   const totalDuration = computed(() =>
-    slices.value.reduce((sum, file) => sum + file.audio.duration, 0),
+    Object.values(slices.value).reduce(
+      (sum, file) => sum + file.audio.duration,
+      0,
+    ),
   )
 
   const durationExceeded = computed(() => totalDuration.value > maxDuration)
 
   const activeSlice = computed(() => {
-    const id = activeSliceId.value
-    if (id) {
-      return slices.value.find((slice) => slice.id === id)
-    }
-    return null
+    const sliceId = activeSliceId.value
+    return sliceId === null ? null : slices.value[sliceId]
   })
 
   const activeSliceLayers = computed(() => {
     if (!activeSliceId.value) return []
-    return layers.value.filter((layer) => layer.sliceId === activeSliceId.value)
+    return getLayers(activeSliceId.value)
   })
 
   const maxLayersReached = computed(() => {
@@ -184,13 +220,7 @@ export const useSlices = defineStore("slices", () => {
   })
 
   /* Watchers */
-  watch(
-    activeSliceLayers,
-    async () => {
-      if (activeSliceLayers.value.length) await handleLayerChange()
-    },
-    { deep: true },
-  )
+  watch(activeSliceLayers, handleLayerChange, { deep: true })
 
   /* Actions */
 
@@ -221,6 +251,7 @@ export const useSlices = defineStore("slices", () => {
       } else if ("audio" in audioFileOrError) {
         const audioFile = audioFileOrError
         const slice = {
+          id: crypto.randomUUID(),
           ...audioFile,
         }
         const layer = {
@@ -229,8 +260,9 @@ export const useSlices = defineStore("slices", () => {
           id: crypto.randomUUID(),
           sliceId: slice.id,
         }
-        layers.value.push(layer)
-        slices.value.push(slice)
+        layers.value[layer.id] = layer
+        slices.value[slice.id] = slice
+        sliceIdList.value.push(slice.id)
       }
     }
   }
@@ -244,10 +276,10 @@ export const useSlices = defineStore("slices", () => {
    * @param slice - The slice to move.
    */
   function moveSliceUp(slice: Slice) {
-    const idx = slices.value.indexOf(slice)
+    const idx = sliceIdList.value.indexOf(slice.id)
     if (idx <= 0) return
-    slices.value.splice(idx, 1)
-    slices.value.splice(idx - 1, 0, slice)
+    sliceIdList.value.splice(idx, 1)
+    sliceIdList.value.splice(idx - 1, 0, slice.id)
   }
 
   /**
@@ -259,10 +291,10 @@ export const useSlices = defineStore("slices", () => {
    * @param slice - The slice to move.
    */
   function moveSliceDown(slice: Slice) {
-    const idx = slices.value.indexOf(slice)
-    if (idx === -1 || idx === slices.value.length - 1) return
-    slices.value.splice(idx, 1)
-    slices.value.splice(idx + 1, 0, slice)
+    const idx = sliceIdList.value.indexOf(slice.id)
+    if (idx === -1 || idx === sliceIdList.value.length - 1) return
+    sliceIdList.value.splice(idx, 1)
+    sliceIdList.value.splice(idx + 1, 0, slice.id)
   }
 
   /**
@@ -274,10 +306,11 @@ export const useSlices = defineStore("slices", () => {
    * @param slice - The slice to remove.
    */
   function removeSlice(slice: Slice) {
-    const idx = slices.value.indexOf(slice)
-    if (idx === -1) return
-    setActiveSlice(null)
-    slices.value.splice(idx, 1)
+    if (sliceIdList.value.includes(slice.id)) {
+      setActiveSlice(null)
+      sliceIdList.value = sliceIdList.value.filter((id) => id !== slice.id)
+      delete slices.value[slice.id]
+    }
   }
 
   /**
@@ -289,7 +322,7 @@ export const useSlices = defineStore("slices", () => {
    * @param slice - The slice to edit (or `null` to cancel the edit).
    */
   function setActiveSlice(slice: Slice | null) {
-    if (slice && !slices.value.includes(slice)) return
+    if (slice && !sliceIdList.value.includes(slice.id)) return
     activeSliceId.value = slice?.id ?? null
   }
 
@@ -320,9 +353,10 @@ export const useSlices = defineStore("slices", () => {
         const audioFile = audioFileOrError
         const layer = {
           ...audioFile,
+          id: crypto.randomUUID(),
           sliceId: activeSliceId.value,
         }
-        layers.value.push(layer)
+        layers.value[layer.id] = layer
       }
     }
   }
@@ -334,7 +368,7 @@ export const useSlices = defineStore("slices", () => {
    * @returns The number of layers for the slice.
    */
   function getLayerCount(slice: Slice): number {
-    return layers.value.filter((layer) => layer.sliceId === slice.id).length
+    return getLayers(slice.id).length
   }
 
   /**
@@ -355,9 +389,7 @@ export const useSlices = defineStore("slices", () => {
         "warning",
       )
     } else {
-      const idx = layers.value.indexOf(layer)
-      if (idx === -1) return
-      layers.value.splice(idx, 1)
+      delete layers.value[layer.id]
     }
   }
 
@@ -439,6 +471,7 @@ export const useSlices = defineStore("slices", () => {
     activeSlice,
     audioContext: ctx,
     // Computed
+    slicesList,
     totalSlices,
     maxSlicesReached,
     totalDuration,

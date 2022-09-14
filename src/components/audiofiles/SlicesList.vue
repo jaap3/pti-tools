@@ -6,12 +6,12 @@
   import { useSlices } from "@/stores/slices"
 
   const slicesStore = useSlices()
-  const { slices, totalSlices } = storeToRefs(slicesStore)
+  const { slicesList, totalSlices } = storeToRefs(slicesStore)
 </script>
 
 <template>
   <draggable
-    :list="slices"
+    v-model="slicesList"
     tag="ol"
     item-key="id"
     handle="legend"
