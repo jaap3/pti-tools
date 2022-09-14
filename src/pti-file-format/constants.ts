@@ -271,5 +271,3 @@ export const defaultPtiHeader: ArrayBuffer = (() => {
 
   return header
 })()
-
-export const MAX_SLICES = 48

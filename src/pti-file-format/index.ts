@@ -5,7 +5,6 @@ import {
 import {
   defaultPtiHeader,
   headerFieldOffset,
-  MAX_SLICES,
   samplePlayback,
 } from "@/pti-file-format/constants"
 
@@ -76,7 +75,7 @@ export function createBeatSlicedPtiFromSamples(
   view.setUint8(headerFieldOffset.samplePlayback, samplePlayback.BEAT_SLICE)
 
   // Limit the number of slices to 48
-  const slices = audio.slice(0, MAX_SLICES)
+  const slices = audio.slice(0, 48)
 
   // Set the amount of slices to the total number of entries in the slices array
   // (or 1, if the array is empty).
