@@ -26,7 +26,8 @@
   )
 
   /**
-   * Creates a PTI file from the current slices and triggers a download prompt.
+   * Creates a .pti or .wav file from the current slices, then triggers
+   * a download prompt.
    */
   async function handleDownload() {
     const audio = slicesStore.slices.map((slice) =>

@@ -10,8 +10,8 @@
   const SlicesList = defineAsyncComponent(
     () => import("@/components/audiofiles/SlicesList.vue"),
   )
-  const DownloadPti = defineAsyncComponent(
-    () => import("@/components/DownloadPti.vue"),
+  const DownloadFile = defineAsyncComponent(
+    () => import("@/components/DownloadFile.vue"),
   )
   const LayerEditor = defineAsyncComponent(
     () => import("@/components/audiofiles/LayerEditor.vue"),
@@ -123,7 +123,7 @@
     @click="activateAudioContext"
   >
     <form @submit.prevent>
-      <DownloadPti v-if="fileSelected" />
+      <DownloadFile v-if="fileSelected" />
       <SlicesList v-if="fileSelected" />
       <AudioFileInput
         :disabled="fileLoaderDisabled"
