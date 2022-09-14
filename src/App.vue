@@ -122,7 +122,7 @@
     :show-appreciation="fileSelected"
     @click="activateAudioContext"
   >
-    <form @submit.prevent>
+    <form v-if="editSlice === null" @submit.prevent>
       <DownloadFile v-if="fileSelected" />
       <SlicesList v-if="fileSelected" />
       <AudioFileInput
@@ -132,7 +132,7 @@
       />
     </form>
   </AppContainer>
-  <LayerEditor v-if="editSlice !== null" :slice="editSlice" />
+  <LayerEditor v-if="editSlice !== null" />
 </template>
 
 <style>
