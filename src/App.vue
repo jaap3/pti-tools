@@ -22,7 +22,7 @@
   const audioContext = slicesStore.audioContext
 
   const { maxSlices, maxDuration } = slicesStore
-  const { totalSlices, editSlice, maxSlicesReached, durationExceeded } =
+  const { totalSlices, activeSliceId, maxSlicesReached, durationExceeded } =
     storeToRefs(slicesStore)
 
   const fileLoaderDisabled = computed(
@@ -122,7 +122,7 @@
     :show-appreciation="fileSelected"
     @click="activateAudioContext"
   >
-    <form v-if="editSlice === null" @submit.prevent>
+    <form v-if="activeSliceId === null" @submit.prevent>
       <DownloadFile v-if="fileSelected" />
       <SlicesList v-if="fileSelected" />
       <AudioFileInput
@@ -132,7 +132,7 @@
       />
     </form>
   </AppContainer>
-  <LayerEditor v-if="editSlice !== null" />
+  <LayerEditor v-if="activeSliceId !== null" />
 </template>
 
 <style>

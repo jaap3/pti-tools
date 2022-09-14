@@ -31,9 +31,9 @@
       <template #controls>
         <ButtonControl
           class="layers"
-          :title="`Layers (${slice.layers.length})`"
+          :title="`Layers (${slicesStore.getLayerCount(slice)})`"
           icon="layers"
-          @click="slicesStore.setEditSlice(slice)"
+          @click="slicesStore.setActiveSlice(slice)"
         />
         <ButtonControl
           :disabled="!canMoveUp"

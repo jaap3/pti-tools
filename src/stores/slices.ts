@@ -23,10 +23,10 @@ export interface AudioFile {
   options: AudioFileOptions
 }
 
-export type Layer = AudioFile
+export type Slice = AudioFile
 
-export interface Slice extends AudioFile {
-  layers: Layer[]
+export interface Layer extends AudioFile {
+  sliceId: Slice["id"]
 }
 
 export interface ErrorMessage {
@@ -144,7 +144,8 @@ async function applyEffects(file: AudioFile | Slice | Layer) {
 export const useSlices = defineStore("slices", () => {
   /* State */
   const slices = ref<Slice[]>([])
-  const editSlice = ref<Slice | null>(null)
+  const activeSliceId = ref<Slice["id"] | null>(null)
+  const layers = ref<Layer[]>([])
 
   const ctx = new AudioContext({
     latencyHint: "interactive",
@@ -163,22 +164,30 @@ export const useSlices = defineStore("slices", () => {
 
   const durationExceeded = computed(() => totalDuration.value > maxDuration)
 
-  const editSliceLayers = computed(() => {
-    return editSlice.value?.layers
+  const activeSlice = computed(() => {
+    const id = activeSliceId.value
+    if (id) {
+      return slices.value.find((slice) => slice.id === id)
+    }
+    return null
+  })
+
+  const activeSliceLayers = computed(() => {
+    if (!activeSliceId.value) return []
+    return layers.value.filter((layer) => layer.sliceId === activeSliceId.value)
   })
 
   const maxLayersReached = computed(() => {
-    return editSliceLayers.value
-      ? editSliceLayers.value.length >= maxLayers
+    return activeSliceLayers.value
+      ? activeSliceLayers.value.length >= maxLayers
       : false
   })
 
   /* Watchers */
   watch(
-    editSliceLayers,
+    activeSliceLayers,
     async () => {
-      if (editSlice.value && editSliceLayers.value)
-        await handleLayerChange(editSlice.value)
+      if (activeSliceLayers.value.length) await handleLayerChange()
     },
     { deep: true },
   )
@@ -213,14 +222,14 @@ export const useSlices = defineStore("slices", () => {
         const audioFile = audioFileOrError
         const slice = {
           ...audioFile,
-          layers: [] as Layer[],
         }
         const layer = {
           ...audioFile,
           options: { ...audioFile.options },
           id: crypto.randomUUID(),
+          sliceId: slice.id,
         }
-        slice.layers.push(layer)
+        layers.value.push(layer)
         slices.value.push(slice)
       }
     }
@@ -267,7 +276,7 @@ export const useSlices = defineStore("slices", () => {
   function removeSlice(slice: Slice) {
     const idx = slices.value.indexOf(slice)
     if (idx === -1) return
-    setEditSlice(null)
+    setActiveSlice(null)
     slices.value.splice(idx, 1)
   }
 
@@ -279,9 +288,9 @@ export const useSlices = defineStore("slices", () => {
    *
    * @param slice - The slice to edit (or `null` to cancel the edit).
    */
-  function setEditSlice(slice: Slice | null) {
+  function setActiveSlice(slice: Slice | null) {
     if (slice && !slices.value.includes(slice)) return
-    editSlice.value = slice
+    activeSliceId.value = slice?.id ?? null
   }
 
   /**
@@ -296,8 +305,7 @@ export const useSlices = defineStore("slices", () => {
    *     to the user if the operation failed, nothing otherwise.
    */
   async function addLayer(file: File): Promise<ErrorMessage | void> {
-    const slice = editSlice.value
-    if (!slice) return
+    if (!activeSliceId.value) return
     const name = file.name
     if (maxLayersReached.value) {
       return errorMessage(
@@ -312,10 +320,21 @@ export const useSlices = defineStore("slices", () => {
         const audioFile = audioFileOrError
         const layer = {
           ...audioFile,
+          sliceId: activeSliceId.value,
         }
-        slice.layers.push(layer)
+        layers.value.push(layer)
       }
     }
+  }
+
+  /**
+   * Get the number of layers for a given slice.
+   *
+   * @param slice - Slice to get the layer count for.
+   * @returns The number of layers for the slice.
+   */
+  function getLayerCount(slice: Slice): number {
+    return layers.value.filter((layer) => layer.sliceId === slice.id).length
   }
 
   /**
@@ -328,32 +347,31 @@ export const useSlices = defineStore("slices", () => {
    *     to the user if the operation failed, nothing otherwise.
    */
   async function removeLayer(layer: Layer): Promise<ErrorMessage | void> {
-    const slice = editSlice.value
-    if (!slice) return
-    if (slice.layers.length <= 1) {
+    if (!activeSliceId.value) return
+    if (layer.sliceId !== activeSliceId.value) return
+    if (activeSliceLayers.value.length <= 1) {
       return errorMessage(
         "Cannot remove layer, a slice must have at least one layer.",
         "warning",
       )
     } else {
-      const idx = slice.layers.indexOf(layer)
+      const idx = layers.value.indexOf(layer)
       if (idx === -1) return
-      slice.layers.splice(idx, 1)
+      layers.value.splice(idx, 1)
     }
   }
 
   /**
    * Replaces the slice's audio with the combined audio of all its layers.
    * Updates the slice's name to reflect the names of its layers.
-   *
-   * @param slice - The slice to update.
    */
-  async function handleLayerChange(slice: Slice) {
-    slice.originalAudio = await combineAudio(
-      slice.layers.map((layer) => layer.audio),
-    )
+  async function handleLayerChange() {
+    const slice = activeSlice.value
+    const layers = activeSliceLayers.value
+    if (!slice || !layers.length) return
+    slice.originalAudio = await combineAudio(layers.map((layer) => layer.audio))
     await applyEffects(slice)
-    slice.name = slice.layers.map((layer) => layer.name).join(" + ")
+    slice.name = layers.map((layer) => layer.name).join(" + ")
   }
 
   /**
@@ -417,21 +435,24 @@ export const useSlices = defineStore("slices", () => {
     maxLayers,
     // State
     slices,
-    editSlice,
+    activeSliceId,
+    activeSlice,
     audioContext: ctx,
     // Computed
     totalSlices,
     maxSlicesReached,
     totalDuration,
     durationExceeded,
+    activeSliceLayers,
     maxLayersReached,
     // Actions
     addSlice,
     moveSliceUp,
     moveSliceDown,
     removeSlice,
-    setEditSlice,
+    setActiveSlice,
     addLayer,
+    getLayerCount,
     removeLayer,
     trimAudio,
     setGain,

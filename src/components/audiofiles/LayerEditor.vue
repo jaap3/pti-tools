@@ -10,7 +10,6 @@
   import LayerListItem from "@/components/audiofiles/LayerListItem.vue"
   import SamplePlayer from "@/components/audiofiles/SamplePlayer.vue"
   import { useMessages } from "@/stores/messages"
-  import type { Slice } from "@/stores/slices"
   import { useSlices } from "@/stores/slices"
 
   const messagesStore = useMessages()
@@ -18,14 +17,15 @@
   const dialog = ref<HTMLDialogElement | null>(null)
   const visible = ref(false)
   const { maxLayers } = slicesStore
-  const { durationExceeded, maxLayersReached } = storeToRefs(slicesStore)
+  const {
+    activeSlice: slice,
+    activeSliceLayers: layers,
+    durationExceeded,
+    maxLayersReached,
+  } = storeToRefs(slicesStore)
   const fileLoaderDisabled = computed(
     () => maxLayersReached.value || durationExceeded.value,
   )
-
-  defineProps<{
-    slice: Slice
-  }>()
 
   /**
    * Closes the dialog.
@@ -50,7 +50,7 @@
    *  - (Re-)enables scrolling on the root element.
    */
   function handleClose() {
-    slicesStore.setEditSlice(null)
+    slicesStore.setActiveSlice(null)
     document.documentElement.style.overflowY = "auto"
   }
 
@@ -118,7 +118,7 @@
       :show-appreciation="true"
       @click="handleClickOutside"
     >
-      <form @submit.prevent>
+      <form v-if="slice" @submit.prevent>
         <ControlsHolder class="back">
           <button type="button" @click="close">Back</button>
         </ControlsHolder>
@@ -134,11 +134,8 @@
         <fieldset class="layers">
           <legend>Layers</legend>
           <ol>
-            <li v-for="layer in slice.layers" :key="layer.id">
-              <LayerListItem
-                :layer="layer"
-                :can-delete="slice.layers.length > 1"
-              />
+            <li v-for="layer in layers" :key="layer.id">
+              <LayerListItem :layer="layer" :can-delete="layers.length > 1" />
             </li>
           </ol>
 
