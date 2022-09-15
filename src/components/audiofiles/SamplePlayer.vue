@@ -65,7 +65,7 @@
 </script>
 
 <template>
-  <SampleWaveform :audio="audioData" @click="togglePlayback" />
+  <SampleWaveform :audio="audioData" class="waveform" @click="togglePlayback" />
   <ControlsHolder class="controls">
     <ButtonControl
       :title="buttonTitle"
@@ -77,6 +77,10 @@
 </template>
 
 <style scoped>
+  .waveform {
+    cursor: pointer;
+  }
+
   :is(.controls button) {
     margin: 0 8px;
   }
