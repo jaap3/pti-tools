@@ -1,7 +1,5 @@
 <script setup lang="ts">
-  import { onMounted, ref, watch } from "vue"
-
-  import type { AudioFile } from "@/stores/slices"
+  import { computed, onMounted, ref, watch } from "vue"
 
   const canvas = ref<HTMLCanvasElement | null>(null)
 
@@ -9,16 +7,21 @@
     defineProps<{
       width?: number | null
       height?: number
-      file: AudioFile
+      audio: Float32Array
     }>(),
     { height: 150, width: null },
   )
+
+  const audioData = computed(() => {
+    if (canvas.value === null) return null
+    return props.audio
+  })
 
   /**
    * Creates the rendering contexts and draws the waveform of the audio file.
    */
   function drawInstrument() {
-    if (canvas.value === null) return
+    if (canvas.value == null || audioData.value === null) return
 
     const { ownerDocument: d, width, height } = canvas.value
 
@@ -36,12 +39,7 @@
     }) as CanvasRenderingContext2D
 
     // Draw waveform offscreen
-    drawWaveform(
-      offscreenCtx,
-      props.file.audio.getChannelData(0),
-      width,
-      height,
-    )
+    drawWaveform(offscreenCtx, props.audio, width, height)
 
     // Copy waveform to visible canvas
     ctx.drawImage(offscreenCanvas, 0, 0)
@@ -113,11 +111,10 @@
     if (!el) return
     el.height = props.height
     el.width = props.width || el.clientWidth || 300
-    requestAnimationFrame(drawInstrument)
   })
 
   let debounce: ReturnType<typeof requestAnimationFrame> | null = null
-  watch(props.file, () => {
+  watch(audioData, () => {
     if (debounce !== null) cancelAnimationFrame(debounce)
     debounce = requestAnimationFrame(() => {
       debounce = null
