@@ -1,4 +1,6 @@
 <script setup lang="ts">
+  import { computed } from "vue"
+
   import { displayDuration } from "@/audio-tools/numberformat"
 
   /**
@@ -22,15 +24,15 @@
     defineProps<{ name: string; truncateNameAt?: number; duration: number }>(),
     { truncateNameAt: 22 },
   )
+
+  const formattedDuration = computed(() => displayDuration(props.duration))
 </script>
 
 <template>
-  <fieldset :title="`${name} - ${displayDuration(duration)}`">
+  <fieldset :title="`${name} - ${formattedDuration}`">
     <legend>
       <span class="name">{{ shortenString(name, props.truncateNameAt) }}</span>
-      <time :datetime="duration.toFixed(3)">{{
-        displayDuration(duration)
-      }}</time>
+      <time :datetime="duration.toFixed(3)">{{ formattedDuration }}</time>
     </legend>
     <slot />
   </fieldset>

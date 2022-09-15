@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { ref } from "vue"
+  import { computed, ref } from "vue"
 
   import ButtonControl from "@/components/audiofiles/ButtonControl.vue"
   import ControlsHolder from "@/components/audiofiles/ControlsHolder.vue"
@@ -15,6 +15,16 @@
   }>()
 
   const isPlaying = ref<boolean>(false)
+
+  const buttonTitle = computed(() => {
+    return isPlaying.value
+      ? `Stop playing ${props.file.name}`
+      : `Play ${props.file.name}`
+  })
+
+  const buttonIcon = computed(() => {
+    return isPlaying.value ? "stop" : "play_arrow"
+  })
 
   /**
    * Plays the audio file. Any other playing audio file is stopped.
@@ -55,16 +65,9 @@
   <SampleWaveform :file="file" @click="togglePlayback" />
   <ControlsHolder class="controls">
     <ButtonControl
-      v-if="!isPlaying"
-      :title="`Play ${file.name}`"
-      icon="play_arrow"
-      @click="play"
-    />
-    <ButtonControl
-      v-if="isPlaying"
-      :title="`Stop playing ${file.name}`"
-      icon="stop"
-      @click="stop"
+      :title="buttonTitle"
+      :icon="buttonIcon"
+      @click="togglePlayback"
     />
     <slot name="controls" />
   </ControlsHolder>
