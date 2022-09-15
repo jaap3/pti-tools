@@ -64,12 +64,12 @@
 
   input[type="range"] {
     flex: 0 1 calc(100% - 8px);
+    width: 112px;
     height: 1.5em;
     cursor: pointer;
     background-color: #101010;
     border: 1px solid #777;
     appearance: none;
-    width: 112px;
   }
 
   input[type="range"]::-webkit-slider-runnable-track {

@@ -38,6 +38,7 @@
   label {
     display: flex;
   }
+
   input {
     margin-left: 4px;
   }
