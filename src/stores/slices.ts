@@ -10,6 +10,14 @@ import {
 
 /* Types */
 
+export interface ErrorMessage {
+  message: string
+  level: "error" | "warning"
+  isError: true
+}
+
+export type TrimOption = "none" | "start" | "end" | "both"
+
 interface AudioFileOptions {
   trim: TrimOption
   gain: number // Gain in dB.
@@ -30,14 +38,6 @@ export interface Layer extends AudioFile {
   id: string
   sliceId: Slice["id"]
 }
-
-export interface ErrorMessage {
-  message: string
-  level: "error" | "warning"
-  isError: true
-}
-
-export type TrimOption = "none" | "start" | "end" | "both"
 
 /* Constants */
 
