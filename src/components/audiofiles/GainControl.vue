@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { computed } from "vue"
+  import { computed, onMounted, onUnmounted } from "vue"
   import { ref, watch } from "vue"
 
   import type { AudioFile } from "@/stores/slices"
@@ -13,6 +13,9 @@
 
   const inputId = computed(() => `gain-control-${props.file.id}`)
 
+  const DEFAULT_STEP = 0.1
+  const SHIFT_STEP = 1
+  const step = ref(DEFAULT_STEP)
   const gain = ref(props.file.options.gain)
 
   let debounce: ReturnType<typeof setTimeout> | null = null
@@ -32,8 +35,36 @@
    */
   function handleWheel(evt: WheelEvent) {
     evt.preventDefault()
-    gain.value += Math.sign(evt.deltaY) * -0.1
+    gain.value += Math.sign(evt.deltaY) * -step.value
   }
+
+  /**
+   * Updates the step size when the shift key is pressed.
+   *
+   * @param evt - The keydown event.
+   */
+  function handleKeyDown(evt: KeyboardEvent) {
+    if (evt.key === "Shift") step.value = SHIFT_STEP
+  }
+
+  /**
+   * Updates the step size when the shift key is released.
+   *
+   * @param evt - The keyup event.
+   */
+  function handleKeyUp(evt: KeyboardEvent) {
+    if (evt.key === "Shift") step.value = DEFAULT_STEP
+  }
+
+  onMounted(() => {
+    document.addEventListener("keydown", handleKeyDown)
+    document.addEventListener("keyup", handleKeyUp)
+  })
+
+  onUnmounted(() => {
+    document.removeEventListener("keydown", handleKeyDown)
+    document.removeEventListener("keyup", handleKeyUp)
+  })
 </script>
 
 <template>
@@ -45,7 +76,7 @@
       type="range"
       min="-24"
       max="24"
-      step="0.1"
+      :step="step"
       @wheel="handleWheel"
       @dblclick="gain = 0"
     />
