@@ -107,27 +107,42 @@ export async function applyGain(
 
 /**
  * Combines multiple AudioBuffers into a single AudioBuffer.
- * All inputs will be "played" simultaneously resulting in a single
- * output buffer.
+ *
+ * Depending on the inSequence parameter, the buffers are either combined
+ * in sequence (i.e. the output will be the same length as the sum of the
+ * input buffer lengths) or in parallel (i.e. the output will be the same
+ * length as the longest input buffer).
  *
  *  - The output will have a single channel (mono).
- *  - The length of the output buffer is the same as the longest input buffer.
  *  - If no inputs are provided, an empty buffer is returned.
  *
  * @param input - The input AudioBuffers.
+ * @param inSequence
  * @returns A new AudioBuffer, or the first input if there is only one.
  */
-export async function combineAudio(input: AudioBuffer[]): Promise<AudioBuffer> {
+export async function combineAudio(
+  input: AudioBuffer[],
+  inSequence = false,
+): Promise<AudioBuffer> {
   if (input.length <= 1) {
     return input[0] || new AudioBuffer({ length: 0, sampleRate: 44100 })
   }
-  const length = Math.max(...input.map((buffer) => buffer.length))
+  let length = 0
+  if (inSequence) {
+    // The sum of the length of all input buffers
+    length = input.reduce((sum, buffer) => sum + buffer.length, 0)
+  } else {
+    // The length of the longest input buffer
+    length = Math.max(...input.map((buffer) => buffer.length))
+  }
   const offline = getOfflineAudioContext(length)
+  let start = 0
   for (const file of input) {
     const source = offline.createBufferSource()
     source.buffer = file
     source.connect(offline.destination)
-    source.start()
+    source.start(start)
+    if (inSequence) start += file.duration
   }
   return await offline.startRendering()
 }

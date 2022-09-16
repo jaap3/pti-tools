@@ -30,20 +30,25 @@
    * a download prompt.
    */
   async function handleDownload() {
-    const audio = slicesStore.slicesList.map((slice) => slice.audio)
+    const audio = await slicesStore.renderSlices()
 
     let buffer: ArrayBufferLike
 
     if (fileType.value === "pti") {
-      const { createBeatSlicedPtiFromSamples } = await import(
-        "@/pti-file-format"
+      const { createBeatSlicedPti } = await import("@/pti-file-format")
+      buffer = createBeatSlicedPti(
+        audio.getChannelData(0),
+        slicesStore.slicesList,
+        instrumentName.value,
       )
-      buffer = createBeatSlicedPtiFromSamples(audio, instrumentName.value)
     } else {
       const { createWaveFileWithCuePoints } = await import(
         "@/audio-tools/wavfile"
       )
-      buffer = createWaveFileWithCuePoints(audio)
+      buffer = createWaveFileWithCuePoints(
+        audio.getChannelData(0),
+        slicesStore.slicesList,
+      )
     }
 
     const blob = new Blob([buffer], { type: "application/octet-stream" })

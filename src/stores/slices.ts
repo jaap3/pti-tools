@@ -242,6 +242,18 @@ export const useSlices = defineStore("slices", () => {
   /* Actions */
 
   /**
+   * Renders the audio of the list of slices in sequence.
+   *
+   * @returns A promise that resolves to the rendered audio buffer.
+   */
+  async function renderSlices(): Promise<AudioBuffer> {
+    const buffers = slicesList.value.map((slice) =>
+      createAudioBuffer(slice.audio, offlineCtx),
+    )
+    return await combineAudio(buffers, true)
+  }
+
+  /**
    * Attempts to load an audio file and add it to the store.
    *
    * @param file - A File object.
@@ -500,6 +512,7 @@ export const useSlices = defineStore("slices", () => {
     activeSliceLayers,
     maxLayersReached,
     // Actions
+    renderSlices,
     addSlice,
     moveSliceUp,
     moveSliceDown,

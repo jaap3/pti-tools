@@ -1,12 +1,12 @@
 import {
   float32ToInt16,
-  mergeFloat32Arrays,
 } from "@/audio-tools/typedarray-tools"
 import {
   defaultPtiHeader,
   headerFieldOffset,
   samplePlayback,
 } from "@/pti-file-format/constants"
+import type { Slice } from "@/stores/slices"
 
 const asciiEncoder: TextEncoder = new TextEncoder()
 
@@ -36,32 +36,30 @@ export function getPtiFile(audio: Float32Array): ArrayBuffer {
 
 /**
  * Creates a new Polyend Tracker Instrument file (.pti), containing the
- * given audio data concatenated sequentially. Playback mode of the instrument
- * is set to "Beat Slice" and slice markers are set at the start of each
- * audio clip (up to a maximum of 48 slices).
+ * given audio data.
  *
- * If the number of entries in the audio array is greater than 48, the audio
- * will still be concatenated, but slice markers for only the first 48 clips
- * will be set. This is a limitation of the PTI file format.
+ * Playback mode of the instrument is set to "Beat Slice" and slice markers are
+ * set at the start of each audio clip (up to a maximum of 48 slices).
  *
- * The values in the input arrays are assumed to be in the range
+ * The values in the input array are assumed to be in the range
  * [-1, 1] and are scaled/clipped to fit in a signed 16-bit integer.
  * Values outside this range will be clipped (meaning that the output
  * audio will be distorted).
  *
- * @param audio - An array of Float32Arrays containing the audio data to encode.
+ * @param audio - A Float32Array containing the audio data to encode.
+ * @param slices - An array of slices, used to set the slice markers.
  * @param instrumentName - The name of the instrument, max 31 characters
  *    (default: "stitched").
  * @returns ArrayBuffer containing the PTI file.
  */
-export function createBeatSlicedPtiFromSamples(
-  audio: Float32Array[],
+export function createBeatSlicedPti(
+  audio: Float32Array,
+  slices: Slice[],
   instrumentName: string,
 ): ArrayBuffer {
-  const mergedAudio = mergeFloat32Arrays(audio)
-  const totalLength = mergedAudio.length
+  const totalDuration = slices.reduce((sum, slice) => sum + slice.duration, 0)
 
-  const buffer = getPtiFile(mergedAudio)
+  const buffer = getPtiFile(audio)
 
   // Write instrument name to header
   asciiEncoder.encodeInto(
@@ -74,26 +72,23 @@ export function createBeatSlicedPtiFromSamples(
   // Set sample playback to beat sliced
   view.setUint8(headerFieldOffset.samplePlayback, samplePlayback.BEAT_SLICE)
 
-  // Limit the number of slices to 48
-  const slices = audio.slice(0, 48)
-
   // Set the amount of slices to the total number of entries in the slices array
   // (or 1, if the array is empty).
   view.setUint8(headerFieldOffset.totalSlices, Math.max(1, slices.length))
 
-  let offset = 0 // Slice offset
-  for (const [idx, slice] of audio.slice(0, 48).entries()) {
+  let start = 0 // Slice start
+  for (const [idx, slice] of slices.slice(0, 48).entries()) {
     view.setUint16(
       // Slice 1 is 280, slice 2 is 282, slice 3 is 284, etc.
       headerFieldOffset.slices + idx * 2,
       // Slice offsets are relative to the length of the audio,
       // i.e. slice 1 is at 0%, slice 2 is at 25%, etc.
-      (offset / totalLength) * 65535,
+      (start / totalDuration) * 65535,
       true,
     )
     // the next slice starts immediately after the current slice
     // (plus any preceding slices)
-    offset += slice.length
+    start += slice.duration
   }
   return buffer
 }

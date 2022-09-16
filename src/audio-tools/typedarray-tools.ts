@@ -1,22 +1,4 @@
 /**
- * Appends multiple Float32Arrays sequentially into a single Float32Array.
- *
- * @param arrays - The arrays to append.
- * @returns A new array containing the data from all the arrays in
- *     sequential order.
- */
-export function mergeFloat32Arrays(arrays: Float32Array[]): Float32Array {
-  const length = arrays.reduce((sum, array) => sum + array.length, 0)
-  const result = new Float32Array(length)
-  let offset = 0
-  for (const array of arrays) {
-    result.set(array, offset)
-    offset += array.length
-  }
-  return result
-}
-
-/**
  * Converts a Float32Array to a Int16Array. The values are scaled to fit in
  * the range of a signed 16-bit integer (i.e. [-32768, 32767]). The input
  * array is assumed to be in the range [-1, 1], values outside this range will
