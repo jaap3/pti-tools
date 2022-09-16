@@ -117,7 +117,7 @@ export async function applyGain(
  *  - If no inputs are provided, an empty buffer is returned.
  *
  * @param input - The input AudioBuffers.
- * @param inSequence
+ * @param inSequence - Combine buffers in sequence (default: false).
  * @returns A new AudioBuffer, or the first input if there is only one.
  */
 export async function combineAudio(
