@@ -11,9 +11,9 @@
     "lint:eslint": "eslint . --ext .ts,.vue",
     "lint:css": "stylelint '**/*.vue'",
     "lint": "npm run lint:prettier && npm run lint:css && npm run lint:eslint",
-    "lintfix:prettier": "npm run lint:prettier -- --write",
-    "lintfix:eslint": "npm run lint:eslint -- --fix",
-    "lintfix:css": "npm run lint:css -- --fix",
+    "lintfix:prettier": "npm run lint:prettier -- --write --cache",
+    "lintfix:eslint": "npm run lint:eslint -- --cache --fix",
+    "lintfix:css": "npm run lint:css -- --cache --fix",
     "lintfix": "npm run lintfix:prettier && npm run lintfix:css && npm run lintfix:eslint",
     "test": "jest --coverage"
   },
