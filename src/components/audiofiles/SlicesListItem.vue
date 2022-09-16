@@ -5,7 +5,7 @@
   import ButtonControl from "@/components/audiofiles/ButtonControl.vue"
   import EffectControls from "@/components/audiofiles/EffectControls.vue"
   import SamplePlayer from "@/components/audiofiles/SamplePlayer.vue"
-  import type { Slice } from "@/stores/slices"
+  import type { Slice } from "@/lib/app/types"
   import { useSlices } from "@/stores/slices"
 
   const props = defineProps<{

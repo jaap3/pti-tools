@@ -5,8 +5,8 @@
   import ButtonControl from "@/components/audiofiles/ButtonControl.vue"
   import EffectControls from "@/components/audiofiles/EffectControls.vue"
   import SamplePlayer from "@/components/audiofiles/SamplePlayer.vue"
+  import type { Layer } from "@/lib/app/types"
   import { useMessages } from "@/stores/messages"
-  import type { Layer } from "@/stores/slices"
   import { useSlices } from "@/stores/slices"
 
   const messagesStore = useMessages()
@@ -27,7 +27,8 @@
     samplePlayer.value?.stop()
     const error = await slicesStore.removeLayer(layer)
     if (error) {
-      messagesStore.addMessage(error.message, error.level, { timeout: 8500 })
+      const { text, level } = error
+      messagesStore.addMessage(text, level, { timeout: 8500 })
     }
   }
 </script>

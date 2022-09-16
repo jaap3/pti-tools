@@ -1,6 +1,6 @@
 import { WaveFile } from "wavefile"
 
-import type { Slice } from "@/stores/slices"
+import type { Slice } from "@/lib/app/types"
 
 /**
 /**

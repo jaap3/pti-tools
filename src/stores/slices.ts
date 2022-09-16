@@ -8,39 +8,14 @@ import {
   getOfflineAudioContext,
   sumChannels,
   trimSilence,
-} from "@/audio-tools"
-
-/* Types */
-
-export interface ErrorMessage {
-  message: string
-  level: "error" | "warning"
-  isError: true
-}
-
-export type TrimOption = "none" | "start" | "end" | "both"
-
-interface AudioFileOptions {
-  trim: TrimOption
-  gain: number // Gain in dB.
-}
-
-export interface AudioFile {
-  name: string
-  originalAudio: Float32Array
-  audio: Float32Array
-  duration: number
-  options: AudioFileOptions
-}
-
-export interface Slice extends AudioFile {
-  id: string
-}
-
-export interface Layer extends AudioFile {
-  id: string
-  sliceId: Slice["id"]
-}
+} from "@/helpers/audio"
+import type {
+  AudioFile,
+  ErrorMessage,
+  Layer,
+  Slice,
+  TrimOption,
+} from "@/lib/app/types"
 
 /* Constants */
 
@@ -69,16 +44,16 @@ const offlineCtx = getOfflineAudioContext()
 /**
  * Creates an error message object.
  *
- * @param message - The error message.
+ * @param text - The error message.
  * @param level - The error level.
  * @returns The error message object.
  */
 function errorMessage(
-  message: string,
+  text: string,
   level: "error" | "warning" = "error",
 ): ErrorMessage {
   return {
-    message,
+    text,
     level,
     isError: true,
   }

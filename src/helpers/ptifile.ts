@@ -1,9 +1,9 @@
+import type { Slice } from "@/lib/app/types"
 import {
   defaultPtiHeader,
   headerFieldOffset,
   samplePlayback,
-} from "@/pti-file-format/constants"
-import type { Slice } from "@/stores/slices"
+} from "@/lib/pti-file-format/constants"
 
 const asciiEncoder: TextEncoder = new TextEncoder()
 

@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import { computed } from "vue"
 
-  import { displayDuration } from "@/audio-tools/numberformat"
+  import { displayDuration } from "@/helpers/numberformat"
 
   /**
    * Shorten the given text the requested number of characters, keeping the

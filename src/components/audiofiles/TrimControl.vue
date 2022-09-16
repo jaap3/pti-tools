@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import { computed } from "vue"
 
-  import type { AudioFile } from "@/stores/slices"
+  import type { AudioFile } from "@/lib/app/types"
   import { useSlices } from "@/stores/slices"
 
   const slicesStore = useSlices()

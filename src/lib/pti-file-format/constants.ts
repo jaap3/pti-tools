@@ -1,4 +1,4 @@
-import type { HeaderData } from "@/pti-file-format/types"
+import type { HeaderData } from "./types"
 
 export const samplePlayback = {
   ONE_SHOT: 0,

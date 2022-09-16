@@ -2,7 +2,7 @@
   import { computed, onMounted, onUnmounted } from "vue"
   import { ref, watch } from "vue"
 
-  import type { Layer, Slice } from "@/stores/slices"
+  import type { Layer, Slice } from "@/lib/app/types"
   import { useSlices } from "@/stores/slices"
 
   const slicesStore = useSlices()

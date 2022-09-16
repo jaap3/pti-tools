@@ -2,7 +2,7 @@
   import { computed } from "vue"
 
   import MessageItem from "@/components/messages/MessageItem.vue"
-  import type { Message } from "@/stores/messages"
+  import type { Message } from "@/lib/app/types"
   import { useMessages } from "@/stores/messages"
 
   const store = useMessages()

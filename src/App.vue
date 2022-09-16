@@ -74,7 +74,8 @@
   async function handleFileInput(file: File) {
     const error = await slicesStore.addSlice(file)
     if (error) {
-      messagesStore.addMessage(error.message, error.level, { timeout: 8500 })
+      const { text, level } = error
+      messagesStore.addMessage(text, level, { timeout: 8500 })
     }
   }
 

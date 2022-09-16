@@ -2,7 +2,7 @@
   import ControlsHolder from "@/components/audiofiles/ControlsHolder.vue"
   import GainControl from "@/components/audiofiles/GainControl.vue"
   import TrimControl from "@/components/audiofiles/TrimControl.vue"
-  import type { Layer, Slice } from "@/stores/slices"
+  import type { Layer, Slice } from "@/lib/app/types"
 
   defineProps<{
     file: Layer | Slice

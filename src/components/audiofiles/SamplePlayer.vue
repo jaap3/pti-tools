@@ -4,7 +4,7 @@
   import ButtonControl from "@/components/audiofiles/ButtonControl.vue"
   import ControlsHolder from "@/components/audiofiles/ControlsHolder.vue"
   import SampleWaveform from "@/components/audiofiles/SampleWaveform.vue"
-  import type { AudioFile } from "@/stores/slices"
+  import type { AudioFile } from "@/lib/app/types"
   import { useSlices } from "@/stores/slices"
 
   const slicesStore = useSlices()

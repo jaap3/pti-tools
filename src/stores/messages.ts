@@ -1,17 +1,7 @@
 import { acceptHMRUpdate, defineStore } from "pinia"
 import { ref } from "vue"
 
-export interface MessageOptions {
-  id: string
-  timeout: number | undefined
-}
-
-export type PartialMessageOptions = Partial<MessageOptions>
-
-export interface Message extends MessageOptions {
-  text: string
-  level: "info" | "success" | "warning" | "error"
-}
+import type { Message, MessageOptions } from "@/lib/app/types"
 
 export const useMessages = defineStore("messages", () => {
   const messages = ref<Message[]>([])
@@ -26,7 +16,7 @@ export const useMessages = defineStore("messages", () => {
   function addMessage(
     text: string,
     level: Message["level"],
-    options?: PartialMessageOptions,
+    options?: Partial<MessageOptions>,
   ) {
     const id = options?.id ?? crypto.randomUUID()
     messages.value.push({

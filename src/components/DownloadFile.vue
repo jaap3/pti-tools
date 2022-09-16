@@ -3,8 +3,8 @@
   import type { Ref } from "vue"
   import { computed, ref } from "vue"
 
-  import { toInt16 } from "@/audio-tools"
-  import { displayDuration } from "@/audio-tools/numberformat"
+  import { toInt16 } from "@/helpers/audio"
+  import { displayDuration } from "@/helpers/numberformat"
   import { useSlices } from "@/stores/slices"
 
   const slicesStore = useSlices()
@@ -36,16 +36,14 @@
     let buffer: ArrayBufferLike
 
     if (fileType.value === "pti") {
-      const { createBeatSlicedPti } = await import("@/pti-file-format")
+      const { createBeatSlicedPti } = await import("@/helpers/ptifile")
       buffer = createBeatSlicedPti(
         audio,
         slicesStore.slicesList,
         instrumentName.value,
       )
     } else {
-      const { createWaveFileWithCuePoints } = await import(
-        "@/audio-tools/wavfile"
-      )
+      const { createWaveFileWithCuePoints } = await import("@/helpers/wavfile")
       buffer = createWaveFileWithCuePoints(audio, slicesStore.slicesList)
     }
 

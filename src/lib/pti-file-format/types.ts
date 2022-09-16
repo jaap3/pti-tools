@@ -3,7 +3,7 @@ import type {
   granularLoopMode,
   granularShape,
   samplePlayback,
-} from "@/pti-file-format/constants"
+} from "./constants"
 
 export type SamplePlayback = typeof samplePlayback[keyof typeof samplePlayback]
 
