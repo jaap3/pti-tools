@@ -1,13 +1,6 @@
 <script setup lang="ts">
   import { storeToRefs } from "pinia"
-  import {
-    computed,
-    onActivated,
-    onMounted,
-    onUnmounted,
-    ref,
-    watch,
-  } from "vue"
+  import { computed, onMounted, onUnmounted, ref, watch } from "vue"
 
   import AudioFieldset from "@/components/audiofiles/AudioFieldset.vue"
   import AudioFileInput from "@/components/audiofiles/AudioFileInput.vue"
