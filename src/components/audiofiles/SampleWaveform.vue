@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { computed, onMounted, ref, watch } from "vue"
+  import { ref, watch } from "vue"
 
   const canvas = ref<HTMLCanvasElement | null>(null)
 
@@ -12,24 +12,22 @@
     { height: 150, width: null },
   )
 
-  const audioData = computed(() => {
-    if (canvas.value === null) return null
-    return props.audio
-  })
-
   /**
    * Creates the rendering contexts and draws the waveform of the audio file.
    */
   function drawInstrument() {
-    if (canvas.value == null || audioData.value === null) return
+    const el = canvas.value
+    if (!el) return
+    el.height = props.height
+    el.width = props.width || el.clientWidth || 300
 
-    const { ownerDocument: d, width, height } = canvas.value
+    const { ownerDocument: d, width, height } = el
 
     const offscreenCanvas = d.createElement("canvas")
     offscreenCanvas.width = width
     offscreenCanvas.height = height
 
-    const ctx = canvas.value.getContext("2d", {
+    const ctx = el.getContext("2d", {
       alpha: false,
       desynchronized: true,
     }) as CanvasRenderingContext2D
@@ -106,21 +104,18 @@
     ctx.restore()
   }
 
-  onMounted(() => {
-    const el = canvas.value
-    if (!el) return
-    el.height = props.height
-    el.width = props.width || el.clientWidth || 300
-  })
-
   let debounce: ReturnType<typeof requestAnimationFrame> | null = null
-  watch(audioData, () => {
-    if (debounce !== null) cancelAnimationFrame(debounce)
-    debounce = requestAnimationFrame(() => {
-      debounce = null
-      drawInstrument()
-    })
-  })
+  watch(
+    props,
+    () => {
+      if (debounce !== null) cancelAnimationFrame(debounce)
+      debounce = requestAnimationFrame(() => {
+        debounce = null
+        drawInstrument()
+      })
+    },
+    { immediate: true },
+  )
 </script>
 
 <template>
