@@ -8,12 +8,12 @@
     watch,
   } from "vue"
 
-  import AudioFileInput from "@/components/audiofiles/AudioFileInput.vue"
+  import AudioFileInput from "@/components/audio/AudioFileInput.vue"
   import { useMessages } from "@/stores/messages"
   import { useSlices } from "@/stores/slices"
 
   const DownloadFile = defineAsyncComponent(
-    () => import("@/components/audiofiles/DownloadFile.vue"),
+    () => import("@/components/audio/DownloadFile.vue"),
   )
   const SlicesList = defineAsyncComponent(() => import("./SlicesList.vue"))
 

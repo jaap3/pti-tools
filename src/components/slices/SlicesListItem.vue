@@ -1,10 +1,10 @@
 <script setup lang="ts">
   import { ref } from "vue"
 
-  import AudioFieldset from "@/components/audiofiles/AudioFieldset.vue"
-  import ButtonControl from "@/components/audiofiles/ButtonControl.vue"
-  import EffectControls from "@/components/audiofiles/EffectControls.vue"
-  import SamplePlayer from "@/components/audiofiles/SamplePlayer.vue"
+  import AudioFieldset from "@/components/audio/AudioFieldset.vue"
+  import ButtonControl from "@/components/audio/ButtonControl.vue"
+  import EffectControls from "@/components/audio/EffectControls.vue"
+  import SamplePlayer from "@/components/audio/SamplePlayer.vue"
   import type { Slice } from "@/lib/app/types"
   import { useSlices } from "@/stores/slices"
 

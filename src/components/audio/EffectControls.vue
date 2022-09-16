@@ -1,7 +1,7 @@
 <script setup lang="ts">
-  import ControlsHolder from "@/components/audiofiles/ControlsHolder.vue"
-  import GainControl from "@/components/audiofiles/GainControl.vue"
-  import TrimControl from "@/components/audiofiles/TrimControl.vue"
+  import ControlsHolder from "@/components/audio/ControlsHolder.vue"
+  import GainControl from "@/components/audio/GainControl.vue"
+  import TrimControl from "@/components/audio/TrimControl.vue"
   import type { Layer, Slice } from "@/lib/app/types"
 
   defineProps<{

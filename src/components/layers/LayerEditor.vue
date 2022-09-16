@@ -2,11 +2,11 @@
   import { storeToRefs } from "pinia"
   import { computed, onMounted, onUnmounted, ref, watch } from "vue"
 
-  import AudioFieldset from "@/components/audiofiles/AudioFieldset.vue"
-  import AudioFileInput from "@/components/audiofiles/AudioFileInput.vue"
-  import ControlsHolder from "@/components/audiofiles/ControlsHolder.vue"
-  import EffectControls from "@/components/audiofiles/EffectControls.vue"
-  import SamplePlayer from "@/components/audiofiles/SamplePlayer.vue"
+  import AudioFieldset from "@/components/audio/AudioFieldset.vue"
+  import AudioFileInput from "@/components/audio/AudioFileInput.vue"
+  import ControlsHolder from "@/components/audio/ControlsHolder.vue"
+  import EffectControls from "@/components/audio/EffectControls.vue"
+  import SamplePlayer from "@/components/audio/SamplePlayer.vue"
   import { useMessages } from "@/stores/messages"
   import { useSlices } from "@/stores/slices"
 
