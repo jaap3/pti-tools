@@ -10,6 +10,22 @@ export function getOfflineAudioContext(length = 1): OfflineAudioContext {
 }
 
 /**
+ * Creates a new mono AudioBuffer with the given data as the channel data.
+ *
+ * @param data - The audio data to use as the channel data.
+ * @param ctx - The audio context to use to create the buffer.
+ * @returns A new AudioBuffer
+ */
+export function createAudioBuffer(
+  data: Float32Array,
+  ctx: BaseAudioContext = getOfflineAudioContext(),
+): AudioBuffer {
+  const buffer = ctx.createBuffer(1, data.length, ctx.sampleRate)
+  buffer.copyToChannel(data, 0)
+  return buffer
+}
+
+/**
  * Sums all channels of an AudioBuffer into a single channel.
  * I.e. if the input has 2 channels, the output will have 1 channel.
  * The original input is returned if it has only 1 channel.

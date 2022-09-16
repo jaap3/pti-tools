@@ -4,6 +4,8 @@ import { computed, ref, watch } from "vue"
 import {
   applyGain,
   combineAudio,
+  createAudioBuffer,
+  getOfflineAudioContext,
   sumChannels,
   trimSilence,
 } from "@/audio-tools"
@@ -25,8 +27,8 @@ interface AudioFileOptions {
 
 export interface AudioFile {
   name: string
-  originalAudio: AudioBuffer
-  audio: AudioBuffer
+  originalAudio: Float32Array
+  audio: Float32Array
   duration: number
   options: AudioFileOptions
 }
@@ -59,6 +61,8 @@ const maxDuration = 45
 // There's no real reason to limit the number of layers. Twelve seems to
 // work well, though.
 const maxLayers = 12
+
+const offlineCtx = getOfflineAudioContext()
 
 /* Utilities */
 
@@ -100,13 +104,12 @@ function displayName(fileName: string) {
  *     to an object with a message that can be displayed to the user.
  */
 async function loadAudio(file: File): Promise<AudioFile | ErrorMessage> {
-  const ctx = new OfflineAudioContext(1, 1, 44100)
   const name = file.name
   const buffer = await file.arrayBuffer()
 
   let audio: AudioBuffer
   try {
-    audio = await ctx.decodeAudioData(buffer)
+    audio = await offlineCtx.decodeAudioData(buffer)
   } catch (e) {
     return errorMessage(
       `Could not load "${name}", invalid audio file.`,
@@ -120,7 +123,7 @@ async function loadAudio(file: File): Promise<AudioFile | ErrorMessage> {
     )
   }
 
-  const monoAudio = await sumChannels(audio)
+  const monoAudio = (await sumChannels(audio)).getChannelData(0)
   return {
     name: displayName(name),
     audio: monoAudio,
@@ -140,7 +143,7 @@ async function loadAudio(file: File): Promise<AudioFile | ErrorMessage> {
  */
 async function applyEffects(file: AudioFile | Slice | Layer) {
   const { originalAudio, options: audioOptions } = file
-  let audio = originalAudio
+  let audio = createAudioBuffer(originalAudio, offlineCtx)
   switch (audioOptions.trim) {
     case "start":
       audio = trimSilence(audio, true, false)
@@ -153,7 +156,7 @@ async function applyEffects(file: AudioFile | Slice | Layer) {
       break
   }
   audio = await applyGain(audio, audioOptions.gain)
-  file.audio = audio
+  file.audio = audio.getChannelData(0)
   file.duration = audio.duration
 }
 
@@ -415,7 +418,10 @@ export const useSlices = defineStore("slices", () => {
     const slice = activeSlice.value
     const layers = activeSliceLayers.value
     if (!slice || !layers.length) return
-    slice.originalAudio = await combineAudio(layers.map((layer) => layer.audio))
+    const buffers = layers.map((layer) =>
+      createAudioBuffer(layer.audio, offlineCtx),
+    )
+    slice.originalAudio = (await combineAudio(buffers)).getChannelData(0)
     await applyEffects(slice)
     slice.name = layers.map((layer) => layer.name).join(" + ")
   }
@@ -459,7 +465,8 @@ export const useSlices = defineStore("slices", () => {
    */
   function getAudioBufferSourceNode(file: AudioFile): AudioBufferSourceNode {
     stopPlayback()
-    const { audio: buffer } = file
+    const { audio } = file
+    const buffer = createAudioBuffer(audio, ctx)
     source = new AudioBufferSourceNode(ctx, { buffer })
     return source
   }

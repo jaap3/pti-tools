@@ -15,9 +15,6 @@
   }>()
 
   const isPlaying = ref<boolean>(false)
-  const audioData = computed(() => {
-    return props.file.audio.getChannelData(0)
-  })
 
   const buttonTitle = computed(() => {
     return isPlaying.value
@@ -65,7 +62,11 @@
 </script>
 
 <template>
-  <SampleWaveform :audio="audioData" class="waveform" @click="togglePlayback" />
+  <SampleWaveform
+    :audio="props.file.audio"
+    class="waveform"
+    @click="togglePlayback"
+  />
   <ControlsHolder class="controls">
     <ButtonControl
       :title="buttonTitle"

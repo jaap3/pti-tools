@@ -30,9 +30,7 @@
    * a download prompt.
    */
   async function handleDownload() {
-    const audio = slicesStore.slicesList.map((slice) =>
-      slice.audio.getChannelData(0),
-    )
+    const audio = slicesStore.slicesList.map((slice) => slice.audio)
 
     let buffer: ArrayBufferLike
 
