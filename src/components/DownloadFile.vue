@@ -3,6 +3,7 @@
   import type { Ref } from "vue"
   import { computed, ref } from "vue"
 
+  import { toInt16 } from "@/audio-tools"
   import { displayDuration } from "@/audio-tools/numberformat"
   import { useSlices } from "@/stores/slices"
 
@@ -30,14 +31,14 @@
    * a download prompt.
    */
   async function handleDownload() {
-    const audio = await slicesStore.renderSlices()
+    const audio = toInt16(await slicesStore.renderSlices())
 
     let buffer: ArrayBufferLike
 
     if (fileType.value === "pti") {
       const { createBeatSlicedPti } = await import("@/pti-file-format")
       buffer = createBeatSlicedPti(
-        audio.getChannelData(0),
+        audio,
         slicesStore.slicesList,
         instrumentName.value,
       )
@@ -45,10 +46,7 @@
       const { createWaveFileWithCuePoints } = await import(
         "@/audio-tools/wavfile"
       )
-      buffer = createWaveFileWithCuePoints(
-        audio.getChannelData(0),
-        slicesStore.slicesList,
-      )
+      buffer = createWaveFileWithCuePoints(audio, slicesStore.slicesList)
     }
 
     const blob = new Blob([buffer], { type: "application/octet-stream" })

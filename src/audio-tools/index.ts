@@ -146,3 +146,19 @@ export async function combineAudio(
   }
   return await offline.startRendering()
 }
+
+/**
+ * Converts a (mono) AudioBuffer to an Int16Array. The channel data is scaled
+ * to fit in the range of a signed 16-bit integer (i.e. [-32768, 32767]).
+ * The channel data is assumed to be in the range [-1, 1], values outside this
+ * range will be clipped (i.e. -1.1 becomes -1, 1.1 becomes 1).
+ *
+ * @param input - The AudioBuffer to convert.
+ * @returns A new Int16Array containing the data from the Float32Array
+ *     scaled/clipped to fit in a 16-bit integer.
+ */
+export function toInt16(input: AudioBuffer): Int16Array {
+  return Int16Array.from(input.getChannelData(0), (v) =>
+    v < 0 ? Math.max(-1, v) * 0x8000 : Math.min(v, 1) * 0x7fff,
+  )
+}
