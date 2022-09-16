@@ -1,7 +1,17 @@
 # Stich & Slice
 
-Create drum kits for the Polyend Tracker in the browser.
+Create beat sliced instruments for the Polyend Tracker in the browser.
 Load audio files and export a perfectly sliced `.pti` file.
+
+## Features
+
+- Load audio files and concatenate
+- Layer multiple samples per slice
+- Remove silence from the beginning and end of samples (per slice/layer)
+- Control volume of samples (per slice/layer)
+- Export `.pti` files with slice markers
+- Export `.wav` files with cue points
+  (usable on other devices/software, e.g. the Dirtywave M8)
 
 [![Screenshot](https://raw.githubusercontent.com/jaap3/pti-tools/main/public/images/screenshot.png)](https://jaap3.github.io/pti-tools/)
 
