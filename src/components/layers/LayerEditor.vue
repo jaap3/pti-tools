@@ -114,7 +114,7 @@
       :duration="slice.duration"
       class="slice"
     >
-      <SamplePlayer :file="slice" />
+      <SamplePlayer :audio="slice.audio" :name="slice.name" />
       <EffectControls :file="slice" />
     </AudioFieldset>
     <fieldset class="layers">

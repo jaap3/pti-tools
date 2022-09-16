@@ -429,16 +429,17 @@ export const useSlices = defineStore("slices", () => {
   }
 
   /**
-   * Creates a new AudioBufferSourceNode from the given audio file.
+   * Creates a new AudioBufferSourceNode from the given audio data.
    * Any previous AudioBufferSourceNode created by this function
    * is disconnected and disposed.
    *
-   * @param file - The audio file to create the node from.
+   * @param audio - The audio data to create the node from.
    * @returns The new AudioBufferSourceNode.
    */
-  function getAudioBufferSourceNode(file: AudioFile): AudioBufferSourceNode {
+  function getAudioBufferSourceNode(
+    audio: Float32Array,
+  ): AudioBufferSourceNode {
     stopPlayback()
-    const { audio } = file
     const buffer = createAudioBuffer(audio, ctx)
     source = new AudioBufferSourceNode(ctx, { buffer })
     return source

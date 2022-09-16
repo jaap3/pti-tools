@@ -1,7 +1,6 @@
 <script setup lang="ts">
-  import { computed, ref } from "vue"
+  import { computed, ref, withDefaults } from "vue"
 
-  import type { AudioFile } from "@/lib/app/types"
   import { useSlices } from "@/stores/slices"
 
   import ButtonControl from "./ButtonControl.vue"
@@ -11,16 +10,21 @@
   const slicesStore = useSlices()
   const ctx = slicesStore.audioContext
 
-  const props = defineProps<{
-    file: AudioFile
-  }>()
+  const props = withDefaults(
+    defineProps<{
+      audio: Float32Array
+      name: string
+      showWaveform?: boolean
+    }>(),
+    { showWaveform: true },
+  )
 
   const isPlaying = ref<boolean>(false)
 
   const buttonTitle = computed(() => {
     return isPlaying.value
-      ? `Stop playing "${props.file.name}"`
-      : `Play "${props.file.name}"`
+      ? `Stop playing "${props.name}"`
+      : `Play "${props.name}"`
   })
 
   const buttonIcon = computed(() => {
@@ -32,7 +36,7 @@
    */
   function play() {
     isPlaying.value = true
-    const source = slicesStore.getAudioBufferSourceNode(props.file)
+    const source = slicesStore.getAudioBufferSourceNode(props.audio)
     source.addEventListener("ended", () => (isPlaying.value = false))
     source.connect(ctx.destination)
     source.start(0)
@@ -64,7 +68,8 @@
 
 <template>
   <SampleWaveform
-    :audio="props.file.audio"
+    v-if="showWaveform"
+    :audio="audio"
     class="waveform"
     @click="togglePlayback"
   />

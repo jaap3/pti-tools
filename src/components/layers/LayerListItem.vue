@@ -35,7 +35,7 @@
 
 <template>
   <AudioFieldset :name="layer.name" :duration="layer.duration">
-    <SamplePlayer ref="samplePlayer" :file="layer">
+    <SamplePlayer ref="samplePlayer" :audio="layer.audio" :name="layer.name">
       <template #controls>
         <ButtonControl
           :disabled="!canDelete"
@@ -58,6 +58,7 @@
   .controls .delete {
     margin-left: auto;
   }
+
   .controls .delete:not(:disabled) {
     background-color: tomato;
   }

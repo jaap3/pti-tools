@@ -27,7 +27,7 @@
 </script>
 <template>
   <AudioFieldset :name="slice.name" :duration="slice.duration">
-    <SamplePlayer ref="samplePlayer" :file="slice">
+    <SamplePlayer ref="samplePlayer" :audio="slice.audio" :name="slice.name">
       <template #controls>
         <ButtonControl
           class="layers"
