@@ -2,8 +2,9 @@
   import { storeToRefs } from "pinia"
   import draggable from "vuedraggable"
 
-  import SlicesListItem from "@/components/audiofiles/SlicesListItem.vue"
   import { useSlices } from "@/stores/slices"
+
+  import SlicesListItem from "./SlicesListItem.vue"
 
   const slicesStore = useSlices()
   const { slicesList, totalSlices } = storeToRefs(slicesStore)

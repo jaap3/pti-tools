@@ -1,20 +1,27 @@
 <script setup lang="ts">
   import { storeToRefs } from "pinia"
-  import { computed, onMounted, onUnmounted, ref, watch } from "vue"
+  import {
+    computed,
+    onActivated,
+    onMounted,
+    onUnmounted,
+    ref,
+    watch,
+  } from "vue"
 
-  import AppContainer from "@/components/AppContainer.vue"
   import AudioFieldset from "@/components/audiofiles/AudioFieldset.vue"
   import AudioFileInput from "@/components/audiofiles/AudioFileInput.vue"
   import ControlsHolder from "@/components/audiofiles/ControlsHolder.vue"
   import EffectControls from "@/components/audiofiles/EffectControls.vue"
-  import LayerListItem from "@/components/audiofiles/LayerListItem.vue"
   import SamplePlayer from "@/components/audiofiles/SamplePlayer.vue"
   import { useMessages } from "@/stores/messages"
   import { useSlices } from "@/stores/slices"
 
+  import LayerListItem from "./LayerListItem.vue"
+
   const messagesStore = useMessages()
   const slicesStore = useSlices()
-  const dialog = ref<HTMLDialogElement | null>(null)
+  const container = ref<HTMLElement | null>(null)
   const visible = ref(false)
   const { maxLayers } = slicesStore
   const {
@@ -28,10 +35,19 @@
   )
 
   /**
-   * Closes the dialog.
+   * Stop editing the current slice's layers.
    */
   function close() {
-    dialog.value?.close()
+    slicesStore.setActiveSlice(null)
+  }
+
+  /**
+   * Closes the layer editor when the user presses the Escape key.
+   *
+   * @param evt - The keydown event.
+   */
+  function handleKeyDown(evt: KeyboardEvent) {
+    if (evt.key === "Escape") close()
   }
 
   /**
@@ -40,20 +56,14 @@
    * @param evt - The click event.
    */
   function handleClickOutside(evt: Event) {
-    if (evt.target === dialog.value?.firstElementChild) close()
+    if (
+      evt.target instanceof Node &&
+      container.value &&
+      !container.value.contains(evt.target)
+    ) {
+      close()
+    }
   }
-
-  /**
-   * Handles the closing of the dialog.
-   *
-   *  - Cancels the edit of the slice.
-   *  - (Re-)enables scrolling on the root element.
-   */
-  function handleClose() {
-    slicesStore.setActiveSlice(null)
-    document.documentElement.style.overflowY = "auto"
-  }
-
   /**
    * Attempts to load the audio file and add it to the list of layers.
    *
@@ -85,70 +95,51 @@
   )
 
   onMounted(() => {
-    // Stop any audio playback when the dialog is opened.
+    // Stop any audio playback when the editor is opened.
     slicesStore.stopPlayback()
-    const el = dialog.value
-    if (!el) return
-    // Focus the modal dialog.
-    el.tabIndex = -1
-    el.focus()
-    el.showModal()
-    el.addEventListener("close", handleClose)
-    // Trigger CSS animation.
-    el.classList.add("show")
-    // Disable scrolling on the root element.
-    document.documentElement.style.overflowY = "hidden"
-    // Delay rendering of some of the dialog content to allow for correct
-    // DOM measurements.
-    setTimeout(() => (visible.value = true))
+    addEventListener("keydown", handleKeyDown)
+    // Attach the click handler after a short delay to avoid closing the editor
+    // immediately after opening it.
+    setTimeout(() => addEventListener("click", handleClickOutside))
   })
 
   onUnmounted(() => {
-    // Stop any audio playback when the dialog is closed.
+    // Stop any audio playback when the editor is closed.
     slicesStore.stopPlayback()
-    const el = dialog.value
-    if (!el) return
-    el.removeEventListener("close", handleClose)
+    removeEventListener("keydown", handleKeyDown)
+    removeEventListener("click", handleClickOutside)
   })
 </script>
 
 <template>
-  <dialog ref="dialog">
-    <AppContainer
-      tag="div"
-      :show-appreciation="true"
-      @click="handleClickOutside"
+  <form v-if="slice" ref="container" @submit.prevent>
+    <ControlsHolder class="back">
+      <button type="button" @click="close">Back</button>
+    </ControlsHolder>
+    <AudioFieldset
+      :name="slice.name"
+      :truncate-name-at="100"
+      :duration="slice.duration"
+      class="slice"
     >
-      <form v-if="slice" @submit.prevent>
-        <ControlsHolder class="back">
-          <button type="button" @click="close">Back</button>
-        </ControlsHolder>
-        <AudioFieldset
-          :name="slice.name"
-          :truncate-name-at="100"
-          :duration="slice.duration"
-          class="slice"
-        >
-          <SamplePlayer v-if="visible" :file="slice" />
-          <EffectControls :file="slice" />
-        </AudioFieldset>
-        <fieldset class="layers">
-          <legend>Layers</legend>
-          <ol>
-            <li v-for="layer in layers" :key="layer.id">
-              <LayerListItem :layer="layer" :can-delete="layers.length > 1" />
-            </li>
-          </ol>
+      <SamplePlayer v-if="visible" :file="slice" />
+      <EffectControls :file="slice" />
+    </AudioFieldset>
+    <fieldset class="layers">
+      <legend>Layers</legend>
+      <ol>
+        <li v-for="layer in layers" :key="layer.id">
+          <LayerListItem :layer="layer" :can-delete="layers.length > 1" />
+        </li>
+      </ol>
 
-          <AudioFileInput
-            :disabled="fileLoaderDisabled"
-            class="file-input"
-            @input="handleFileInput"
-          />
-        </fieldset>
-      </form>
-    </AppContainer>
-  </dialog>
+      <AudioFileInput
+        :disabled="fileLoaderDisabled"
+        class="file-input"
+        @input="handleFileInput"
+      />
+    </fieldset>
+  </form>
 </template>
 
 <style scoped>
