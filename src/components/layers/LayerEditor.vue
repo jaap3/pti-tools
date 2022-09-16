@@ -7,6 +7,7 @@
   import ControlsHolder from "@/components/audio/ControlsHolder.vue"
   import EffectControls from "@/components/audio/EffectControls.vue"
   import SamplePlayer from "@/components/audio/SamplePlayer.vue"
+  import { maxLayers } from "@/lib/app/constants"
   import { useMessages } from "@/stores/messages"
   import { useSlices } from "@/stores/slices"
 
@@ -15,7 +16,6 @@
   const messagesStore = useMessages()
   const slicesStore = useSlices()
   const container = ref<HTMLElement | null>(null)
-  const { maxLayers } = slicesStore
   const {
     activeSlice: slice,
     activeSliceLayers: layers,

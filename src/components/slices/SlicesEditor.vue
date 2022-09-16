@@ -9,6 +9,7 @@
   } from "vue"
 
   import AudioFileInput from "@/components/audio/AudioFileInput.vue"
+  import { maxDuration, maxSlices } from "@/lib/app/constants"
   import { useMessages } from "@/stores/messages"
   import { useSlices } from "@/stores/slices"
 
@@ -20,7 +21,6 @@
   const slicesStore = useSlices()
   const messagesStore = useMessages()
 
-  const { maxSlices, maxDuration } = slicesStore
   const { totalSlices, maxSlicesReached, durationExceeded } =
     storeToRefs(slicesStore)
 

@@ -1,3 +1,5 @@
+import { sampleRate } from "@/lib/app/constants"
+
 /**
  * Creates a new mono offline audio context of the given lenght,
  * with the sample rate set to 44.1 kHz.
@@ -6,7 +8,7 @@
  * @returns A new OfflineAudioContext
  */
 export function getOfflineAudioContext(length = 1): OfflineAudioContext {
-  return new OfflineAudioContext(1, length, 44100)
+  return new OfflineAudioContext(1, length, sampleRate)
 }
 
 /**
@@ -72,7 +74,7 @@ export function trimSilence(
     data.reverse()
   }
   const offline = getOfflineAudioContext()
-  const output = offline.createBuffer(1, end - start, 44100)
+  const output = offline.createBuffer(1, end - start, sampleRate)
   output.copyToChannel(data.slice(start, end), 0)
   return output
 }
@@ -125,7 +127,7 @@ export async function combineAudio(
   inSequence = false,
 ): Promise<AudioBuffer> {
   if (input.length <= 1) {
-    return input[0] || new AudioBuffer({ length: 0, sampleRate: 44100 })
+    return input[0] || new AudioBuffer({ length: 0, sampleRate })
   }
   let length = 0
   if (inSequence) {

@@ -1,3 +1,4 @@
+import { maxSlices } from "@/lib/app/constants"
 import type { Slice } from "@/lib/app/types"
 import {
   defaultPtiHeader,
@@ -66,7 +67,7 @@ export function createBeatSlicedPti(
   view.setUint8(headerFieldOffset.totalSlices, Math.max(1, slices.length))
 
   let start = 0 // Slice start
-  for (const [idx, slice] of slices.slice(0, 48).entries()) {
+  for (const [idx, slice] of slices.slice(0, maxSlices).entries()) {
     view.setUint16(
       // Slice 1 is 280, slice 2 is 282, slice 3 is 284, etc.
       headerFieldOffset.slices + idx * 2,

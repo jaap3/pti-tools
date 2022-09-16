@@ -1,5 +1,6 @@
 import { WaveFile } from "wavefile"
 
+import { maxSlices, sampleRate } from "@/lib/app/constants"
 import type { Slice } from "@/lib/app/types"
 
 /**
@@ -17,9 +18,9 @@ export function createWaveFileWithCuePoints(
   slices: Slice[],
 ): ArrayBufferLike {
   const waveFile = new WaveFile()
-  waveFile.fromScratch(1, 44100, "16", audio)
+  waveFile.fromScratch(1, sampleRate, "16", audio)
   let offset = 0
-  for (const slice of slices.slice(0, 48)) {
+  for (const slice of slices.slice(0, maxSlices)) {
     waveFile.setCuePoint({ position: offset })
     offset += slice.duration * 1000
   }
