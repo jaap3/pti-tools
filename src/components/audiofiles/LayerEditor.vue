@@ -125,7 +125,7 @@
         <AudioFieldset
           :name="slice.name"
           :truncate-name-at="100"
-          :duration="slice.audio.duration"
+          :duration="slice.duration"
           class="slice"
         >
           <SamplePlayer v-if="visible" :file="slice" />

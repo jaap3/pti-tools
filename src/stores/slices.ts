@@ -27,6 +27,7 @@ export interface AudioFile {
   name: string
   originalAudio: AudioBuffer
   audio: AudioBuffer
+  duration: number
   options: AudioFileOptions
 }
 
@@ -124,6 +125,7 @@ async function loadAudio(file: File): Promise<AudioFile | ErrorMessage> {
     name: displayName(name),
     audio: monoAudio,
     originalAudio: monoAudio,
+    duration: audio.duration,
     options: {
       trim: "none",
       gain: 0,
@@ -152,6 +154,7 @@ async function applyEffects(file: AudioFile | Slice | Layer) {
   }
   audio = await applyGain(audio, audioOptions.gain)
   file.audio = audio
+  file.duration = audio.duration
 }
 
 /* Store */
@@ -209,10 +212,7 @@ export const useSlices = defineStore("slices", () => {
   const maxSlicesReached = computed(() => totalSlices.value >= maxSlices)
 
   const totalDuration = computed(() =>
-    Object.values(slices.value).reduce(
-      (sum, file) => sum + file.audio.duration,
-      0,
-    ),
+    Object.values(slices.value).reduce((sum, file) => sum + file.duration, 0),
   )
 
   const durationExceeded = computed(() => totalDuration.value > maxDuration)

@@ -33,7 +33,7 @@
 </script>
 
 <template>
-  <AudioFieldset :name="layer.name" :duration="layer.audio.duration">
+  <AudioFieldset :name="layer.name" :duration="layer.duration">
     <SamplePlayer ref="samplePlayer" :file="layer">
       <template #controls>
         <ButtonControl
