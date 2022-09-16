@@ -15,7 +15,6 @@
   const messagesStore = useMessages()
   const slicesStore = useSlices()
   const container = ref<HTMLElement | null>(null)
-  const visible = ref(false)
   const { maxLayers } = slicesStore
   const {
     activeSlice: slice,
@@ -115,7 +114,7 @@
       :duration="slice.duration"
       class="slice"
     >
-      <SamplePlayer v-if="visible" :file="slice" />
+      <SamplePlayer :file="slice" />
       <EffectControls :file="slice" />
     </AudioFieldset>
     <fieldset class="layers">
