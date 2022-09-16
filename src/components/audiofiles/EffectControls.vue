@@ -18,14 +18,16 @@
 
 <style scoped>
   :is(.controls > *) {
-    margin: 0 4px;
+    padding: 0 4px;
+    border-right: 1px solid #767677;
   }
 
   :is(.controls :first-child) {
-    margin-left: 0;
+    padding-left: 0;
   }
 
   :is(.controls :last-child) {
-    margin-right: 0;
+    padding-right: 0;
+    border-right: none;
   }
 </style>

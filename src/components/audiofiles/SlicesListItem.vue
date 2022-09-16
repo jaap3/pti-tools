@@ -37,21 +37,21 @@
         />
         <ButtonControl
           :disabled="!canMoveUp"
-          :title="`Move ${slice.name} up one position`"
+          :title="`Move \&quot;${slice.name}\&quot; up one position`"
           icon="arrow_back"
           class="move-up"
           @click="slicesStore.moveSliceUp(slice)"
         />
         <ButtonControl
           :disabled="!canMoveDown"
-          :title="`Move ${slice.name} down one position`"
+          :title="`Move \&quot;${slice.name}\&quot; down one position`"
           icon="arrow_forward"
           class="move-down"
           @click="slicesStore.moveSliceDown(slice)"
         />
         <ButtonControl
           class="delete"
-          :title="`Remove ${slice.name} from the list of slices`"
+          :title="`Remove &quot;${slice.name}&quot; from the list of slices`"
           icon="delete"
           @click.once="handleRemove"
         />

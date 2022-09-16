@@ -69,7 +69,7 @@
 
 <template>
   <label>
-    <span>Gain:</span>
+    <span>Gain</span>
     <input
       :id="inputId"
       v-model.number="gain"
@@ -87,16 +87,14 @@
 <style scoped>
   label {
     display: flex;
-  }
-
-  span {
-    padding-right: 8px;
+    align-items: center;
   }
 
   input[type="range"] {
     flex: 0 1 calc(100% - 8px);
     width: 112px;
-    height: 1.5em;
+    height: 1.4em;
+    margin-left: 4px;
     cursor: pointer;
     background-color: #101010;
     border: 1px solid #777;

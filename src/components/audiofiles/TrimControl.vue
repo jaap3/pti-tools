@@ -29,17 +29,40 @@
 
 <template>
   <label
-    ><span>Trim: </span
-    ><input :checked="checked" type="checkbox" @input="handleInput"
-  /></label>
+    ><input
+      :checked="checked"
+      type="checkbox"
+      title="Trim silence from start and end"
+      @input="handleInput"
+    />
+    <span>Trim</span>
+    <span class="material-icons">{{
+      checked ? "check_box" : "check_box_outline_blank"
+    }}</span></label
+  >
 </template>
 
 <style scoped>
   label {
+    position: relative;
     display: flex;
+    align-items: center;
   }
 
-  input {
-    margin-left: 4px;
+  .material-icons {
+    margin-left: 2px;
+    font-size: 1.2em;
+  }
+
+  input,
+  input:checked {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    appearance: none;
+    cursor: pointer;
+    border: none;
   }
 </style>

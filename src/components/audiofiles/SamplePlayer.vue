@@ -18,8 +18,8 @@
 
   const buttonTitle = computed(() => {
     return isPlaying.value
-      ? `Stop playing ${props.file.name}`
-      : `Play ${props.file.name}`
+      ? `Stop playing "${props.file.name}"`
+      : `Play "${props.file.name}"`
   })
 
   const buttonIcon = computed(() => {
