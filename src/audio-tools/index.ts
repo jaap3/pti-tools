@@ -1,8 +1,19 @@
 /**
+ * Creates a new mono offline audio context of the given lenght,
+ * with the sample rate set to 44.1 kHz.
+ *
+ * @param length - The length of the render buffer in seconds
+ * @returns A new OfflineAudioContext
+ */
+export function getOfflineAudioContext(length = 1): OfflineAudioContext {
+  return new OfflineAudioContext(1, length, 44100)
+}
+
+/**
  * Sums all channels of an AudioBuffer into a single channel.
  * I.e. if the input has 2 channels, the output will have 1 channel.
  * The original input is returned if it has only 1 channel.
- * The output sample rate is the same as the input.
+ *
  * Note: Phase cancellation may occur when summing channels.
  *
  * @param input - The input AudioBuffer.
@@ -10,8 +21,7 @@
  */
 export async function sumChannels(input: AudioBuffer): Promise<AudioBuffer> {
   if (input.numberOfChannels === 1) return input
-  const { length, sampleRate } = input
-  const offline = new OfflineAudioContext(1, length, sampleRate)
+  const offline = getOfflineAudioContext(input.length)
   const source = offline.createBufferSource()
   source.buffer = input
   source.connect(offline.destination)
@@ -45,9 +55,8 @@ export function trimSilence(
     end -= data.findIndex((v) => Math.abs(v) > threshold)
     data.reverse()
   }
-  const { sampleRate } = input
-  const offline = new OfflineAudioContext(1, 1, sampleRate)
-  const output = offline.createBuffer(1, end - start, sampleRate)
+  const offline = getOfflineAudioContext()
+  const output = offline.createBuffer(1, end - start, 44100)
   output.copyToChannel(data.slice(start, end), 0)
   return output
 }
@@ -55,8 +64,7 @@ export function trimSilence(
 /**
  * Applies gain to an AudioBuffer.
  *
- *  - The output sample rate is the same as the input.
- *  - The output will have a single channel (mono).
+ * - The output will have a single channel (mono).
  *
  * @param input - The input AudioBuffer.
  * @param gain - The gain to apply, in dB (must be between -24 and 24).
@@ -67,39 +75,38 @@ export async function applyGain(
   gain: number,
 ): Promise<AudioBuffer> {
   if (gain === 1) return input
-  const { length, sampleRate } = input
-  const offline = new OfflineAudioContext(1, length, sampleRate)
+  const offline = getOfflineAudioContext(input.length)
+  const { min, max, pow } = Math
   const gainNode = new GainNode(offline, {
     // Convert from dB to linear gain, clamp gain to [-24, 24] dB
-    gain: Math.pow(10, Math.min(Math.max(gain, -24), 24) / 20),
+    gain: pow(10, min(max(gain, -24), 24) / 20),
   })
-  gainNode.connect(offline.destination)
   const source = offline.createBufferSource()
   source.buffer = input
   source.connect(gainNode)
+  gainNode.connect(offline.destination)
   source.start()
   return await offline.startRendering()
 }
 
 /**
  * Combines multiple AudioBuffers into a single AudioBuffer.
+ * All inputs will be "played" simultaneously resulting in a single
+ * output buffer.
  *
- *  - The output sample rate is the same as the first input, all other inputs
- *    are assumed to have the same sample rate.
  *  - The output will have a single channel (mono).
  *  - The length of the output buffer is the same as the longest input buffer.
  *  - If no inputs are provided, an empty buffer is returned.
  *
  * @param input - The input AudioBuffers.
- * @returns The combined AudioBuffer, or the first input if there is only one.
+ * @returns A new AudioBuffer, or the first input if there is only one.
  */
 export async function combineAudio(input: AudioBuffer[]): Promise<AudioBuffer> {
   if (input.length <= 1) {
     return input[0] || new AudioBuffer({ length: 0, sampleRate: 44100 })
   }
   const length = Math.max(...input.map((buffer) => buffer.length))
-  const sampleRate = (input[0] as AudioBuffer).sampleRate
-  const offline = new OfflineAudioContext(1, length, sampleRate)
+  const offline = getOfflineAudioContext(length)
   for (const file of input) {
     const source = offline.createBufferSource()
     source.buffer = file
