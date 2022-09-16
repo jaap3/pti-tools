@@ -68,13 +68,13 @@ export function trimSilence(
  *
  * @param input - The input AudioBuffer.
  * @param gain - The gain to apply, in dB (must be between -24 and 24).
- * @returns The gain-adjusted AudioBuffer, or the original buffer if gain is 1.
+ * @returns The gain-adjusted AudioBuffer, or the original buffer if gain is 0.
  */
 export async function applyGain(
   input: AudioBuffer,
   gain: number,
 ): Promise<AudioBuffer> {
-  if (gain === 1) return input
+  if (gain === 0) return input
   const offline = getOfflineAudioContext(input.length)
   const { min, max, pow } = Math
   const gainNode = new GainNode(offline, {
