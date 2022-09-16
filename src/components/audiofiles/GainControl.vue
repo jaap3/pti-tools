@@ -57,13 +57,13 @@
   }
 
   onMounted(() => {
-    document.addEventListener("keydown", handleKeyDown)
-    document.addEventListener("keyup", handleKeyUp)
+    addEventListener("keydown", handleKeyDown)
+    addEventListener("keyup", handleKeyUp)
   })
 
   onUnmounted(() => {
-    document.removeEventListener("keydown", handleKeyDown)
-    document.removeEventListener("keyup", handleKeyUp)
+    removeEventListener("keydown", handleKeyDown)
+    removeEventListener("keyup", handleKeyUp)
   })
 </script>
 
