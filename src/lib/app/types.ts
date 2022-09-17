@@ -30,17 +30,18 @@ interface AudioFileOptions {
 
 export interface AudioFile {
   name: string
-  originalAudio: Float32Array
   audio: Float32Array
   duration: number
+}
+
+export interface EditableAudioFile extends AudioFile {
+  id: string
+  originalAudio: Float32Array
   options: AudioFileOptions
 }
 
-export interface Slice extends AudioFile {
-  id: string
-}
+export interface Slice extends EditableAudioFile {}
 
-export interface Layer extends AudioFile {
-  id: string
+export interface Layer extends EditableAudioFile {
   sliceId: Slice["id"]
 }

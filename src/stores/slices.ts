@@ -17,6 +17,7 @@ import {
 } from "@/lib/app/constants"
 import type {
   AudioFile,
+  EditableAudioFile,
   ErrorMessage,
   Layer,
   Slice,
@@ -86,14 +87,71 @@ async function loadAudio(file: File): Promise<AudioFile | ErrorMessage> {
 
   const monoAudio = (await sumChannels(audio)).getChannelData(0)
   return {
-    name: displayName(name),
     audio: monoAudio,
-    originalAudio: monoAudio,
     duration: audio.duration,
-    options: {
-      trim: "none",
-      gain: 0,
-    },
+    name: displayName(name),
+  }
+}
+
+/**
+ * Turns an audio file object into an editable audio file.
+ *
+ * @param file - An audio file, slice or layer object.
+ * @param file.audio - The audio data.
+ * @param file.name - The file name.
+ * @param file.duration - The audio duration.
+ * @param options - The audio options.
+ * @returns A new editable audio file object.
+ */
+function createEditableAudioFile(
+  { audio, name, duration }: AudioFile,
+  options: EditableAudioFile["options"] = {
+    trim: "none",
+    gain: 0,
+  },
+): EditableAudioFile {
+  return {
+    audio,
+    name,
+    duration,
+    id: crypto.randomUUID(),
+    originalAudio: audio,
+    options: { ...options },
+  }
+}
+
+/**
+ * Creates a slice object.
+ *
+ * @param file - An audio file object.
+ * @returns A new slice object.
+ */
+function createSlice(file: AudioFile | EditableAudioFile): Slice {
+  return {
+    ...createEditableAudioFile(
+      file,
+      "options" in file ? file.options : undefined,
+    ),
+  }
+}
+
+/**
+ * Creates a layer object.
+ *
+ * @param sliceId - The slice ID.
+ * @param file - An audio file object.
+ * @returns A new layer object.
+ */
+function createLayer(
+  sliceId: Slice["id"],
+  file: AudioFile | EditableAudioFile,
+): Layer {
+  return {
+    ...createEditableAudioFile(
+      file,
+      "options" in file ? file.options : undefined,
+    ),
+    sliceId,
   }
 }
 
@@ -221,7 +279,9 @@ export const useSlices = defineStore("slices", () => {
    * @returns A promise containing an object with a message to display
    *     to the user if the operation failed, nothing otherwise.
    */
-  async function addSlice(file: File): Promise<ErrorMessage | void> {
+  async function addSlice(
+    file: File | EditableAudioFile,
+  ): Promise<ErrorMessage | void> {
     const name = file.name
 
     if (maxSlicesReached.value) {
@@ -234,27 +294,26 @@ export const useSlices = defineStore("slices", () => {
         `Rejected "${name}", total duration > ${maxDuration}.`,
         "warning",
       )
-    } else {
-      const audioFileOrError = await loadAudio(file)
-      if ("isError" in audioFileOrError && audioFileOrError.isError) {
-        return audioFileOrError
-      } else if ("audio" in audioFileOrError) {
-        const audioFile = audioFileOrError
-        const slice = {
-          id: crypto.randomUUID(),
-          ...audioFile,
-        }
-        const layer = {
-          ...audioFile,
-          options: { ...audioFile.options },
-          id: crypto.randomUUID(),
-          sliceId: slice.id,
-        }
-        layers.value[layer.id] = layer
-        slices.value[slice.id] = slice
-        sliceIdList.value.push(slice.id)
-      }
     }
+
+    let audioFile: AudioFile | EditableAudioFile
+    if (file instanceof File) {
+      // Load the audio file.
+      const audioFileOrError = await loadAudio(file)
+      if ("isError" in audioFileOrError) {
+        return audioFileOrError
+      }
+      audioFile = audioFileOrError
+    } else {
+      // An existing slice or layer was passed.
+      audioFile = file
+    }
+
+    const slice = createSlice(audioFile)
+    const layer = createLayer(slice.id, audioFile)
+    layers.value[layer.id] = layer
+    slices.value[slice.id] = slice
+    sliceIdList.value.push(slice.id)
   }
 
   /**
@@ -327,28 +386,36 @@ export const useSlices = defineStore("slices", () => {
    * @returns A promise containing an object with a message to display
    *     to the user if the operation failed, nothing otherwise.
    */
-  async function addLayer(file: File): Promise<ErrorMessage | void> {
+  async function addLayer(
+    file: File | EditableAudioFile,
+  ): Promise<ErrorMessage | void> {
     if (!activeSliceId.value) return
+
     const name = file.name
+
     if (maxLayersReached.value) {
       return errorMessage(
         `Rejected "${name}", max. layers reached (${maxLayers}).`,
         "warning",
       )
-    } else {
-      const audioFileOrError = await loadAudio(file)
-      if ("isError" in audioFileOrError && audioFileOrError.isError) {
-        return audioFileOrError
-      } else if ("audio" in audioFileOrError) {
-        const audioFile = audioFileOrError
-        const layer = {
-          ...audioFile,
-          id: crypto.randomUUID(),
-          sliceId: activeSliceId.value,
-        }
-        layers.value[layer.id] = layer
-      }
     }
+
+    let audioFile: AudioFile | EditableAudioFile
+
+    if (file instanceof File) {
+      // Load the audio file.
+      const audioFileOrError = await loadAudio(file)
+      if ("isError" in audioFileOrError) {
+        return audioFileOrError
+      }
+      audioFile = audioFileOrError
+    } else {
+      // An existing layer or slice was passed.
+      audioFile = file
+    }
+
+    const layer = createLayer(activeSliceId.value, audioFile)
+    layers.value[layer.id] = layer
   }
 
   /**
