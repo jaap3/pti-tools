@@ -62,19 +62,20 @@
 
 <template>
   <fieldset v-if="totalSlices > 0">
-    <span
-      ><label>Slices: <output :value="totalSlices" /></label
-    ></span>
-    <span
-      ><label
+    <div>
+      <label>Slices: <output :value="totalSlices" /></label>
+    </div>
+    <div>
+      <label
         >Duration:
         <output
           :class="{ error: durationExceeded }"
-          :value="displayDuration(totalDuration)" /></label
-    ></span>
-    <span>
-      <label
-        >Instrument name:
+          :value="displayDuration(totalDuration)"
+      /></label>
+    </div>
+    <div>
+      <label>
+        <span>Instrument name: </span>
         <input
           ref="instrumentNameInput"
           v-model="instrumentName"
@@ -98,7 +99,7 @@
           <span class="material-icons">download</span>
         </button>
       </label>
-    </span>
+    </div>
   </fieldset>
 </template>
 
@@ -115,11 +116,15 @@
     border: 0;
   }
 
-  fieldset > span {
+  fieldset > div {
     display: flex;
     flex-basis: 100%;
     align-items: flex-end;
     padding: 8px;
+  }
+
+  input {
+    width: 100%;
   }
 
   input:invalid {
@@ -131,7 +136,6 @@
   }
 
   button {
-    width: 40px;
     height: 34px;
     vertical-align: middle;
   }
@@ -141,11 +145,15 @@
       justify-content: center;
     }
 
-    fieldset > span {
+    fieldset > div {
       flex-basis: auto;
     }
 
-    fieldset > span:not(:last-of-type) {
+    input {
+      width: auto;
+    }
+
+    fieldset > div:not(:last-of-type) {
       border-right: 1px solid #767677;
     }
   }
