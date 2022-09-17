@@ -33,7 +33,7 @@
           class="layers"
           :title="`Layers (${slicesStore.getLayerCount(slice)})`"
           icon="layers"
-          @click="slicesStore.setActiveSlice(slice)"
+          @click.stop="slicesStore.setActiveSlice(slice)"
         />
         <ButtonControl
           :disabled="!canMoveUp"

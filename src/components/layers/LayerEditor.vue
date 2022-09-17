@@ -90,9 +90,7 @@
     // Stop any audio playback when the editor is opened.
     slicesStore.stopPlayback()
     addEventListener("keydown", handleKeyDown)
-    // Attach the click handler after a short delay to avoid closing the editor
-    // immediately after opening it.
-    setTimeout(() => addEventListener("click", handleClickOutside))
+    addEventListener("click", handleClickOutside)
   })
 
   onUnmounted(() => {

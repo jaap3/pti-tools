@@ -42,7 +42,7 @@
           title="Remove"
           icon="delete"
           class="delete"
-          @click="handleDelete(layer)"
+          @click.stop="handleDelete(layer)"
         />
       </template>
     </SamplePlayer>
