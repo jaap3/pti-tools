@@ -1,12 +1,12 @@
 <script setup lang="ts">
-  import type { Layer, Slice } from "@/lib/app/types"
+  import type { EditableAudioFile } from "@/lib/app/types"
 
   import ControlsHolder from "./ControlsHolder.vue"
   import GainControl from "./GainControl.vue"
   import TrimControl from "./TrimControl.vue"
 
   defineProps<{
-    file: Layer | Slice
+    file: EditableAudioFile
   }>()
 </script>
 

@@ -2,13 +2,13 @@
   import { computed, onMounted, onUnmounted } from "vue"
   import { ref, watch } from "vue"
 
-  import type { Layer, Slice } from "@/lib/app/types"
+  import type { EditableAudioFile } from "@/lib/app/types"
   import { useSlices } from "@/stores/slices"
 
   const slicesStore = useSlices()
 
   const props = defineProps<{
-    file: Layer | Slice
+    file: EditableAudioFile
   }>()
 
   const inputId = computed(() => `gain-control-${props.file.id}`)

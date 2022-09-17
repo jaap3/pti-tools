@@ -160,7 +160,7 @@ function createLayer(
  *
  * @param file - A AudioFile object.
  */
-async function applyEffects(file: AudioFile | Slice | Layer) {
+async function applyEffects(file: EditableAudioFile) {
   const { originalAudio, options: audioOptions } = file
   let audio = createAudioBuffer(originalAudio, offlineCtx)
   switch (audioOptions.trim) {
@@ -475,10 +475,7 @@ export const useSlices = defineStore("slices", () => {
    * @param file - The file to trim.
    * @param option - The trim option to apply.
    */
-  async function trimAudio(
-    file: AudioFile | Slice | Layer,
-    option: TrimOption,
-  ) {
+  async function trimAudio(file: EditableAudioFile, option: TrimOption) {
     if (ctx === undefined) return
     file.options.trim = option
     await applyEffects(file)
@@ -490,7 +487,7 @@ export const useSlices = defineStore("slices", () => {
    * @param file - The file to update.
    * @param gain - The gain to apply.
    */
-  async function setGain(file: AudioFile | Slice | Layer, gain: number) {
+  async function setGain(file: EditableAudioFile, gain: number) {
     file.options.gain = Math.min(Math.max(gain, -24), 24)
     await applyEffects(file)
   }
