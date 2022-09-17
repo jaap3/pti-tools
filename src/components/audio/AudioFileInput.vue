@@ -3,7 +3,7 @@
 
   const props = withDefaults(
     defineProps<{
-      disabled: boolean
+      disabled?: boolean
       onInput?: (file: File) => Promise<unknown>
     }>(),
     {
@@ -71,7 +71,6 @@
    * @param evt - The dragover event.
    */
   function handleDragOver(evt: DragEvent) {
-    evt.preventDefault()
     if (!evt.dataTransfer) return
     evt.dataTransfer.dropEffect = "copy"
   }
@@ -149,7 +148,11 @@
 </script>
 
 <template>
-  <label :class="{ disabled }" @dragover="handleDragOver" @drop="handleDrop">
+  <label
+    :class="{ disabled }"
+    @dragover.prevent="handleDragOver"
+    @drop="handleDrop"
+  >
     Choose / drop audio file(s) / folders
     <small
       >(<code>.wav</code>,&nbsp;<code>.mp3</code>,&nbsp;<code>.flac</code>,
@@ -159,7 +162,7 @@
       multiple
       type="file"
       accept="audio/*"
-      :disabled="disabled"
+      :disabled="props.disabled"
       @input="handleInput"
     />
   </label>
