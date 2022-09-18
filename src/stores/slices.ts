@@ -127,12 +127,19 @@ function createEditableAudioFile(
  * @returns A new slice object.
  */
 function createSlice(file: AudioFile | EditableAudioFile): Slice {
-  return {
+  const newSlice = {
     ...createEditableAudioFile(
       file,
       "options" in file ? file.options : undefined,
     ),
   }
+  if ("originalAudio" in file) {
+    // When creating a slice from an existing slice or layer, the original
+    // audio data needs to be preserved in order to be able to undo/redo the
+    // applied effects.
+    newSlice.originalAudio = file.originalAudio
+  }
+  return newSlice
 }
 
 /**
@@ -146,13 +153,20 @@ function createLayer(
   sliceId: Slice["id"],
   file: AudioFile | EditableAudioFile,
 ): Layer {
-  return {
+  const newLayer = {
     ...createEditableAudioFile(
       file,
       "options" in file ? file.options : undefined,
     ),
     sliceId,
   }
+  if ("originalAudio" in file) {
+    // When creating a layer from an existing slice or layer, the original
+    // audio data needs to be preserved in order to be able to undo/redo the
+    // applied effects.
+    newLayer.originalAudio = file.originalAudio
+  }
+  return newLayer
 }
 
 /**
@@ -314,6 +328,38 @@ export const useSlices = defineStore("slices", () => {
     layers.value[layer.id] = layer
     slices.value[slice.id] = slice
     sliceIdList.value.push(slice.id)
+  }
+
+  /**
+   * Duplicate an existing slice.
+   *
+   * @param slice - A slice object.
+   * @returns A error message object if the operation failed, nothing otherwise.
+   */
+  function duplicateSlice(slice: Slice): ErrorMessage | undefined {
+    const name = slice.name
+
+    if (maxSlicesReached.value) {
+      return errorMessage(
+        `Unable to duplicate "${name}", max. ${maxSlices} slices reached.`,
+        "warning",
+      )
+    } else if (durationExceeded.value) {
+      return errorMessage(
+        `Unable to duplicate "${name}", total duration > ${maxDuration}.`,
+        "warning",
+      )
+    }
+
+    const newSlice = createSlice(slice)
+    getLayers(slice.id).forEach((layer: Layer) => {
+      const newLayer = createLayer(newSlice.id, layer)
+      layers.value[newLayer.id] = newLayer
+    })
+    slices.value[newSlice.id] = newSlice
+    sliceIdList.value.push(newSlice.id)
+
+    return
   }
 
   /**
@@ -536,6 +582,7 @@ export const useSlices = defineStore("slices", () => {
     // Actions
     renderSlices,
     addSlice,
+    duplicateSlice,
     moveSliceUp,
     moveSliceDown,
     removeSlice,

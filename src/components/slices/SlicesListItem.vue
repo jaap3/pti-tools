@@ -8,11 +8,17 @@
   import type { Slice } from "@/lib/app/types"
   import { useSlices } from "@/stores/slices"
 
-  const props = defineProps<{
-    slice: Slice
-    canMoveUp: boolean
-    canMoveDown: boolean
-  }>()
+  const props = withDefaults(
+    defineProps<{
+      slice: Slice
+      canMoveUp: boolean
+      canMoveDown: boolean
+      canDuplicate: boolean
+    }>(),
+    {
+      canDuplicate: true,
+    },
+  )
 
   const slicesStore = useSlices()
   const samplePlayer = ref<InstanceType<typeof SamplePlayer> | null>(null)
@@ -30,7 +36,6 @@
     <SamplePlayer ref="samplePlayer" :audio="slice.audio" :name="slice.name">
       <template #controls>
         <ButtonControl
-          class="layers"
           :title="`Layers (${slicesStore.getLayerCount(slice)})`"
           icon="layers"
           @click.stop="slicesStore.setActiveSlice(slice)"
@@ -50,6 +55,12 @@
           @click="slicesStore.moveSliceDown(slice)"
         />
         <ButtonControl
+          :title="`Copy &quot;${slice.name}&quot;`"
+          icon="library_add"
+          :disabled="!canDuplicate"
+          @click="slicesStore.duplicateSlice(slice)"
+        ></ButtonControl>
+        <ButtonControl
           class="delete"
           :title="`Remove &quot;${slice.name}&quot; from the list of slices`"
           icon="delete"
@@ -66,20 +77,15 @@
     width: 300px;
   }
 
-  .controls .layers {
-    margin-right: auto;
-  }
-
   .controls .move-up {
-    margin-right: 4px;
+    margin-left: auto;
   }
 
   .controls .move-down {
-    margin-left: 4px;
+    margin-right: auto;
   }
 
   .controls .delete {
-    margin-left: auto;
     background-color: tomato;
   }
 </style>

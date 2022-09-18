@@ -10,9 +10,16 @@
 
 <style scoped>
   :is(button) {
-    width: 40px;
-    height: 40px;
+    margin: 0 4px;
     line-height: 1;
     user-select: none;
+  }
+
+  :is(button:first-child) {
+    margin-left: 0;
+  }
+
+  :is(button:last-child) {
+    margin-right: 0;
   }
 </style>

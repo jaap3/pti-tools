@@ -86,7 +86,7 @@
 <template>
   <form @submit.prevent>
     <DownloadFile v-if="totalSlices > 0" />
-    <SlicesList v-if="totalSlices > 0" />
+    <SlicesList v-if="totalSlices > 0" :can-duplicate="!fileLoaderDisabled" />
     <AudioFileInput
       :disabled="fileLoaderDisabled"
       class="file-input"

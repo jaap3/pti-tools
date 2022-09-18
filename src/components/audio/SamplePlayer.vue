@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { computed, ref, withDefaults } from "vue"
+  import { computed, ref } from "vue"
 
   import { useSlices } from "@/stores/slices"
 
@@ -86,17 +86,5 @@
 <style scoped>
   .waveform {
     cursor: pointer;
-  }
-
-  :is(.controls button) {
-    margin: 0 8px;
-  }
-
-  :is(.controls :first-child) {
-    margin-left: 0;
-  }
-
-  :is(.controls :last-child) {
-    margin-right: 0;
   }
 </style>
