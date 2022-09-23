@@ -7,13 +7,15 @@ Load audio files and export a perfectly sliced `.pti` file.
 
 - Load audio files and concatenate
 - Layer multiple samples per slice
-- Remove silence from the beginning and end of samples (per slice/layer)
-- Control volume of samples (per slice/layer)
+- Trim silence from the beginning and end of samples (per slice/layer)
+- Control volume per slice/layer
 - Export `.pti` files with slice markers
-- Export `.wav` files with cue points
-  (usable on other devices/software, e.g. the Dirtywave M8)
+- Export `.wav` files with cue points (usable on other devices/software, e.g.
+  the Dirtywave M8 or the 1010music Blackbox)
 
 [![Screenshot](https://raw.githubusercontent.com/jaap3/pti-tools/main/public/images/screenshot.png)](https://jaap3.github.io/pti-tools/)
+
+Try it now: [jaap3.github.io/pti-tools](https://jaap3.github.io/pti-tools/).
 
 Written in Vue 3 and TypeScript.
 
