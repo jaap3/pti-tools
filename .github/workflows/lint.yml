@@ -1,4 +1,4 @@
-name: Build
+name: Lint
 
 on:
   # Runs on pull requests targeting the default branch
