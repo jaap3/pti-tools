@@ -1,0 +1,27 @@
+name: Build
+
+on:
+  # Runs on pull requests targeting the default branch
+  pull_request:
+    branches:
+      - main
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+  # Allow this workflow to be called by other workflows
+  workflow_call:
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup app
+        uses: ./.github/actions/setup
+
+      - name: Run linters
+        run: npm run lint
