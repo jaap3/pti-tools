@@ -16,7 +16,9 @@ import {
   sampleRate,
 } from "@/lib/app/constants"
 import type {
+  Audio,
   AudioFile,
+  AudioFileOptions,
   EditableAudioFile,
   ErrorMessage,
   Layer,
@@ -43,6 +45,20 @@ function errorMessage(
     text,
     level,
     isError: true,
+  }
+}
+
+/**
+ * Creates audio object from the given audio data.
+ *
+ * @param audio - The audio data.
+ * @param duration
+ * @returns A signed audio object.
+ */
+function getAudio(audio: Float32Array, duration: number): Audio {
+  return {
+    audio,
+    duration,
   }
 }
 
@@ -85,10 +101,9 @@ async function loadAudio(file: File): Promise<AudioFile | ErrorMessage> {
     )
   }
 
-  const monoAudio = (await sumChannels(audio)).getChannelData(0)
+  const data = (await sumChannels(audio)).getChannelData(0)
   return {
-    audio: monoAudio,
-    duration: audio.duration,
+    ...getAudio(data, audio.duration),
     name: displayName(name),
   }
 }
@@ -105,7 +120,7 @@ async function loadAudio(file: File): Promise<AudioFile | ErrorMessage> {
  */
 function createEditableAudioFile(
   { audio, name, duration }: AudioFile,
-  options: EditableAudioFile["options"] = {
+  options: AudioFileOptions = {
     trim: "none",
     gain: 0,
   },
@@ -170,14 +185,20 @@ function createLayer(
 }
 
 /**
- * Applies the audio file options.
+ * Applies audio file options to the given audio data.
  *
- * @param file - A AudioFile object.
+ * @param audio - Audio data.
+ * @param data
+ * @param options - The audio options.
+ * @returns A promise that resolves to an SignedAudio object
+ *     of the processed audio data.
  */
-async function applyEffects(file: EditableAudioFile) {
-  const { originalAudio, options: audioOptions } = file
-  let audio = createAudioBuffer(originalAudio, offlineCtx)
-  switch (audioOptions.trim) {
+async function applyEffects(
+  data: Float32Array,
+  options: AudioFileOptions,
+): Promise<Audio> {
+  let audio = createAudioBuffer(data, offlineCtx)
+  switch (options.trim) {
     case "start":
       audio = trimSilence(audio, true, false)
       break
@@ -188,9 +209,8 @@ async function applyEffects(file: EditableAudioFile) {
       audio = trimSilence(audio)
       break
   }
-  audio = await applyGain(audio, audioOptions.gain)
-  file.audio = audio.getChannelData(0)
-  file.duration = audio.duration
+  audio = await applyGain(audio, options.gain)
+  return getAudio(audio.getChannelData(0), audio.duration)
 }
 
 /* Store */
@@ -270,7 +290,7 @@ export const useSlices = defineStore("slices", () => {
   })
 
   /* Watchers */
-  watch(activeSliceLayers, handleLayerChange, { deep: true })
+  watch(activeSliceLayers, handleLayerChange)
 
   /* Actions */
 
@@ -497,6 +517,25 @@ export const useSlices = defineStore("slices", () => {
   }
 
   /**
+   * Update the audio data of a slice or layer.
+   * Does nothing if the slice or layer is not in the store.
+   *
+   * @param sliceOrLayer - The slice or layer to update.
+   * @param audio - The new audio data.
+   */
+  function updateSliceOrLayerAudio(sliceOrLayer: Slice | Layer, audio: Audio) {
+    if ("sliceId" in sliceOrLayer) {
+      const layer = sliceOrLayer
+      if (!layers.value[layer.id]) return
+      layers.value[layer.id] = { ...layer, ...audio }
+    } else {
+      const slice = sliceOrLayer
+      if (!slices.value[slice.id]) return
+      slices.value[slice.id] = { ...slice, ...audio }
+    }
+  }
+
+  /**
    * Replaces the slice's audio with the combined audio of all its layers.
    * Updates the slice's name to reflect the names of its layers.
    */
@@ -508,8 +547,10 @@ export const useSlices = defineStore("slices", () => {
       createAudioBuffer(layer.audio, offlineCtx),
     )
     slice.originalAudio = (await combineAudio(buffers)).getChannelData(0)
-    await applyEffects(slice)
     slice.name = layers.map((layer) => layer.name).join(" + ")
+    updateSliceOrLayerAudio(slice, {
+      ...(await applyEffects(slice.originalAudio, slice.options)),
+    })
   }
 
   /**
@@ -521,10 +562,13 @@ export const useSlices = defineStore("slices", () => {
    * @param file - The file to trim.
    * @param option - The trim option to apply.
    */
-  async function trimAudio(file: EditableAudioFile, option: TrimOption) {
+  async function trimAudio(file: Slice | Layer, option: TrimOption) {
     if (ctx === undefined) return
     file.options.trim = option
-    await applyEffects(file)
+    updateSliceOrLayerAudio(
+      file,
+      await applyEffects(file.originalAudio, file.options),
+    )
   }
 
   /**
@@ -535,7 +579,10 @@ export const useSlices = defineStore("slices", () => {
    */
   async function setGain(file: EditableAudioFile, gain: number) {
     file.options.gain = Math.min(Math.max(gain, -24), 24)
-    await applyEffects(file)
+    updateSliceOrLayerAudio(
+      file,
+      await applyEffects(file.originalAudio, file.options),
+    )
   }
 
   /**

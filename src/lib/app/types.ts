@@ -23,15 +23,18 @@ export interface ErrorMessage extends BaseMessage {
 
 export type TrimOption = "none" | "start" | "end" | "both"
 
-interface AudioFileOptions {
+export interface AudioFileOptions {
   trim: TrimOption
   gain: number // Gain in dB.
 }
 
-export interface AudioFile {
+export interface Audio {
+  audio: Readonly<Float32Array>
+  duration: Readonly<number>
+}
+
+export interface AudioFile extends Audio {
   name: string
-  audio: Float32Array
-  duration: number
 }
 
 export interface EditableAudioFile extends AudioFile {
@@ -43,5 +46,5 @@ export interface EditableAudioFile extends AudioFile {
 export interface Slice extends EditableAudioFile {}
 
 export interface Layer extends EditableAudioFile {
-  sliceId: Slice["id"]
+  sliceId: Readonly<Slice["id"]>
 }
