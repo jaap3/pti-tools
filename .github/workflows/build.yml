@@ -1,0 +1,45 @@
+name: Build
+
+on:
+  # Runs on pull requests targeting the default branch
+  pull_request:
+    branches:
+      - main
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+  # Allow this workflow to be called by other workflows
+  workflow_call:
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup app
+        uses: ./.github/actions/setup
+
+      - name: Restore cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            dist
+          key: ${{ runner.os }}-build-${{ hashFiles('dist') }}
+          restore-keys: |
+            ${{ runner.os }}-build-
+
+      - name: Setup Pages
+        id: pages
+        uses: actions/configure-pages@v2
+
+      - name: Static HTML export
+        run: npm run build -- --base=${{ steps.pages.outputs.base_url }}/
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: ./dist
