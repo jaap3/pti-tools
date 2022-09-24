@@ -1,7 +1,7 @@
 <script setup lang="ts">
+  import ControlsHolder from "@/components/base/ControlsHolder.vue"
   import type { EditableAudioFile } from "@/lib/app/types"
 
-  import ControlsHolder from "./ControlsHolder.vue"
   import GainControl from "./GainControl.vue"
   import TrimControl from "./TrimControl.vue"
 
@@ -11,7 +11,7 @@
 </script>
 
 <template>
-  <ControlsHolder>
+  <ControlsHolder title="">
     <TrimControl :file="file" />
     <GainControl :file="file" />
   </ControlsHolder>

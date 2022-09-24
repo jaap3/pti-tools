@@ -10,6 +10,7 @@
 
   import AudioFileInput from "@/components/audio/AudioFileInput.vue"
   import DownloadFile from "@/components/audio/DownloadFile.vue"
+  import AppLayout from "@/components/base/AppLayout.vue"
   import { maxDuration, maxSlices } from "@/lib/app/constants"
   import { useAudioContext } from "@/stores/audiocontext"
   import { useMessages } from "@/stores/messages"
@@ -21,8 +22,7 @@
   const messagesStore = useMessages()
   const { stopPlayback } = useAudioContext()
 
-  const { totalSlices, maxSlicesReached, durationExceeded } =
-    storeToRefs(slicesStore)
+  const { maxSlicesReached, durationExceeded } = storeToRefs(slicesStore)
 
   const fileLoaderDisabled = computed(
     () => maxSlicesReached.value || durationExceeded.value,
@@ -84,21 +84,15 @@
 </script>
 
 <template>
-  <form @submit.prevent>
-    <DownloadFile />
-    <SlicesList v-if="totalSlices > 0" :can-duplicate="!fileLoaderDisabled" />
-    <AudioFileInput
-      :disabled="fileLoaderDisabled"
-      class="file-input"
-      @input="handleFileInput"
-    />
-  </form>
+  <AppLayout>
+    <template #top>
+      <DownloadFile />
+    </template>
+    <template #main>
+      <SlicesList :can-duplicate="!fileLoaderDisabled" />
+    </template>
+    <template #bottom>
+      <AudioFileInput :disabled="fileLoaderDisabled" @input="handleFileInput" />
+    </template>
+  </AppLayout>
 </template>
-
-<style scoped>
-  form {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-  }
-</style>

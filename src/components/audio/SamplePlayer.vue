@@ -1,10 +1,10 @@
 <script setup lang="ts">
   import { computed, ref } from "vue"
 
+  import ControlsHolder from "@/components/base/ControlsHolder.vue"
   import { useAudioContext } from "@/stores/audiocontext"
 
   import ButtonControl from "./ButtonControl.vue"
-  import ControlsHolder from "./ControlsHolder.vue"
   import SampleWaveform from "./SampleWaveform.vue"
 
   const { ctx, stopPlayback, getAudioBufferSourceNode } = useAudioContext()
@@ -70,9 +70,10 @@
     v-if="showWaveform"
     :audio="audio"
     class="waveform"
+    :title="`Play &quot;${name}&quot;`"
     @click="togglePlayback"
   />
-  <ControlsHolder class="controls">
+  <ControlsHolder class="controls" title="">
     <ButtonControl
       :title="buttonTitle"
       :icon="buttonIcon"

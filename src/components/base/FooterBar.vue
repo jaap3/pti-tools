@@ -54,7 +54,7 @@
     bottom: 0;
     display: flex;
     padding: 8px 16px;
-    background-color: #0a0a0a;
+    background-color: #0a0a0af0;
   }
 
   footer .appreciate {

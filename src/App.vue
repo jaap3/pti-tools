@@ -89,7 +89,8 @@
   @import "@fontsource/manrope/latin-400.css";
 
   html,
-  body {
+  body,
+  #app {
     height: 100%;
   }
 
@@ -98,10 +99,6 @@
     font-weight: 300;
     color: #fffefe;
     background: #0a0a0a;
-  }
-
-  #app {
-    height: 100%;
   }
 
   input[type="text"],

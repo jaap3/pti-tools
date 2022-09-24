@@ -6,6 +6,8 @@
   import { displayDuration } from "@/helpers/numberformat"
   import { useSlices } from "@/stores/slices"
 
+  import ButtonControl from "./ButtonControl.vue"
+
   const slicesStore = useSlices()
   const { totalSlices, totalDuration, durationExceeded } =
     storeToRefs(slicesStore)
@@ -64,69 +66,69 @@
 </script>
 
 <template>
-  <fieldset>
+  <div class="toolbar">
     <div>
       <label>Slices: <output :value="totalSlices" /></label>
     </div>
     <div>
-      <label
-        >Duration:
+      <label>
+        Duration:
         <output
           :class="{ error: durationExceeded }"
           :value="displayDuration(totalDuration)"
       /></label>
     </div>
-    <div>
+    <div class="download">
       <label>
-        <span>Instrument name: </span>
+        Instrument name:
         <input
           ref="instrumentNameInput"
           v-model="instrumentName"
           type="text"
           maxlength="31"
           pattern="^[\x20-\x7E]+$"
-      /></label>
-      <div aria-label="File type">
+        />
+      </label>
+      <label aria-label="File type">
         <select v-model="fileType">
           <option value="pti" title="Polyend Tracker Instrument">.pti</option>
           <option value="wav" title="Wave file (with cue points)">.wav</option>
         </select>
-      </div>
-      <label>
-        <button
+      </label>
+      <label aria-label="Download">
+        <ButtonControl
+          icon="download"
           :disabled="downloadDisabled"
           :title="`Download ${fileName}`"
-          type="button"
           @click="handleDownload"
-        >
-          <span class="material-icons">download</span>
-        </button>
+        />
       </label>
     </div>
-  </fieldset>
+  </div>
 </template>
 
 <style scoped>
-  fieldset {
+  .toolbar {
     display: flex;
+    flex-grow: 1;
     flex-wrap: wrap;
     align-items: center;
-    padding: 0;
-    padding-top: 4px;
-    margin: 0 0 16px;
-    color: #fefefe;
-    background: #121212;
-    border: 0;
   }
 
-  fieldset > div {
+  .toolbar > div {
     display: flex;
-    flex-basis: 100%;
-    align-items: flex-end;
-    padding: 8px;
+    align-items: center;
+    padding: 0 8px;
   }
 
-  input {
+  .toolbar > .download {
+    flex-basis: 100%;
+    flex-shrink: 0;
+    align-items: flex-end;
+    margin: 8px 0;
+  }
+
+  .download input {
     width: 100%;
   }
 
@@ -143,21 +145,23 @@
     vertical-align: middle;
   }
 
+  .toolbar > div:not(:last-child) {
+    border-right: 1px solid #767677;
+  }
+
   @media only screen and (min-width: 748px) {
-    fieldset {
+    .toolbar {
       justify-content: center;
     }
 
-    fieldset > div {
+    .toolbar > .download {
       flex-basis: auto;
+      align-items: center;
+      margin: 0;
     }
 
-    input {
+    .download input {
       width: auto;
-    }
-
-    fieldset > div:not(:last-of-type) {
-      border-right: 1px solid #767677;
     }
   }
 </style>
