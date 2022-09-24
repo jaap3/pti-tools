@@ -10,6 +10,7 @@
 
   import AudioFileInput from "@/components/audio/AudioFileInput.vue"
   import { maxDuration, maxSlices } from "@/lib/app/constants"
+  import { useAudioContext } from "@/stores/audiocontext"
   import { useMessages } from "@/stores/messages"
   import { useSlices } from "@/stores/slices"
 
@@ -20,6 +21,7 @@
 
   const slicesStore = useSlices()
   const messagesStore = useMessages()
+  const { stopPlayback } = useAudioContext()
 
   const { totalSlices, maxSlicesReached, durationExceeded } =
     storeToRefs(slicesStore)
@@ -74,12 +76,12 @@
 
   onMounted(() => {
     // Stop any audio playback when the dialog is opened.
-    slicesStore.stopPlayback()
+    stopPlayback()
   })
 
   onUnmounted(() => {
     // Stop any audio playback when the dialog is closed.
-    slicesStore.stopPlayback()
+    stopPlayback()
   })
 </script>
 

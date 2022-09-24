@@ -4,6 +4,7 @@
 
   import AppContainer from "@/components/AppContainer.vue"
   import SlicesEditor from "@/components/slices/SlicesEditor.vue"
+  import { useAudioContext } from "@/stores/audiocontext"
   import { useMessages } from "@/stores/messages"
   import { useSlices } from "@/stores/slices"
 
@@ -13,9 +14,10 @@
 
   const slicesStore = useSlices()
   const messagesStore = useMessages()
-  const audioContext = slicesStore.audioContext
+  const audioContextStore = useAudioContext()
 
   const { totalSlices, activeSliceId } = storeToRefs(slicesStore)
+  const { ctx: audioContext } = audioContextStore
 
   /**
    * Handles state changes in the audio context.
@@ -24,11 +26,11 @@
    */
   function handleAudioContextStateChange() {
     messagesStore.removeMessage("audio-context-state")
-    if (audioContext?.state === "suspended") {
+    if (audioContext.state === "suspended") {
       messagesStore.addMessage("Load a file to enable audio.", "info", {
         id: "audio-context-state",
       })
-    } else if (audioContext?.state === "running") {
+    } else if (audioContext.state === "running") {
       messagesStore.addMessage("Audio enabled.", "success", {
         id: "audio-context-state",
         timeout: 950,
@@ -44,12 +46,12 @@
     }
   }
 
-  audioContext?.addEventListener("statechange", handleAudioContextStateChange)
+  audioContext.addEventListener("statechange", handleAudioContextStateChange)
   handleAudioContextStateChange()
 
   const activateAudioContext = () => {
-    if (audioContext?.state === "suspended") {
-      audioContext?.resume()
+    if (audioContext.state === "suspended") {
+      audioContext.resume()
     }
   }
 

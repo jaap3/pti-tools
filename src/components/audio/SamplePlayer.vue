@@ -1,14 +1,13 @@
 <script setup lang="ts">
   import { computed, ref } from "vue"
 
-  import { useSlices } from "@/stores/slices"
+  import { useAudioContext } from "@/stores/audiocontext"
 
   import ButtonControl from "./ButtonControl.vue"
   import ControlsHolder from "./ControlsHolder.vue"
   import SampleWaveform from "./SampleWaveform.vue"
 
-  const slicesStore = useSlices()
-  const ctx = slicesStore.audioContext
+  const { ctx, stopPlayback, getAudioBufferSourceNode } = useAudioContext()
 
   const props = withDefaults(
     defineProps<{
@@ -36,7 +35,7 @@
    */
   function play() {
     isPlaying.value = true
-    const source = slicesStore.getAudioBufferSourceNode(props.audio)
+    const source = getAudioBufferSourceNode(props.audio)
     source.addEventListener("ended", () => (isPlaying.value = false))
     source.connect(ctx.destination)
     source.start(0)
@@ -47,7 +46,7 @@
    */
   function stop() {
     if (!isPlaying.value) return
-    slicesStore.stopPlayback()
+    stopPlayback()
     isPlaying.value = false
   }
 

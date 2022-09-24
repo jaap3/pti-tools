@@ -9,12 +9,7 @@ import {
   sumChannels,
   trimSilence,
 } from "@/helpers/audio"
-import {
-  maxDuration,
-  maxLayers,
-  maxSlices,
-  sampleRate,
-} from "@/lib/app/constants"
+import { maxDuration, maxLayers, maxSlices } from "@/lib/app/constants"
 import type {
   Audio,
   AudioFile,
@@ -235,12 +230,6 @@ export const useSlices = defineStore("slices", () => {
       (layer) => layer.sliceId === sliceId,
     )
   }
-
-  const ctx = new AudioContext({
-    latencyHint: "interactive",
-    sampleRate,
-  })
-  let source: AudioBufferSourceNode | null = null
 
   /* Computed */
   const slicesList = computed({
@@ -563,7 +552,6 @@ export const useSlices = defineStore("slices", () => {
    * @param option - The trim option to apply.
    */
   async function trimAudio(file: Slice | Layer, option: TrimOption) {
-    if (ctx === undefined) return
     file.options.trim = option
     updateSliceOrLayerAudio(
       file,
@@ -585,39 +573,11 @@ export const useSlices = defineStore("slices", () => {
     )
   }
 
-  /**
-   * Creates a new AudioBufferSourceNode from the given audio data.
-   * Any previous AudioBufferSourceNode created by this function
-   * is disconnected and disposed.
-   *
-   * @param audio - The audio data to create the node from.
-   * @returns The new AudioBufferSourceNode.
-   */
-  function getAudioBufferSourceNode(
-    audio: Float32Array,
-  ): AudioBufferSourceNode {
-    stopPlayback()
-    const buffer = createAudioBuffer(audio, ctx)
-    source = new AudioBufferSourceNode(ctx, { buffer })
-    return source
-  }
-
-  /**
-   * Stops the playback of the AudioBufferSourceNode most recently created
-   * by getAudioBufferSourceNode (if any).
-   */
-  function stopPlayback() {
-    source?.stop()
-    source?.disconnect()
-    source = null
-  }
-
   return {
     // State
     slices,
     activeSliceId,
     activeSlice,
-    audioContext: ctx,
     // Computed
     slicesList,
     totalSlices,
@@ -640,8 +600,6 @@ export const useSlices = defineStore("slices", () => {
     removeLayer,
     trimAudio,
     setGain,
-    getAudioBufferSourceNode,
-    stopPlayback,
   }
 })
 

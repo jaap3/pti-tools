@@ -9,6 +9,7 @@
   import SamplePlayer from "@/components/audio/SamplePlayer.vue"
   import StyledFieldset from "@/components/base/StyledFieldset.vue"
   import { maxLayers } from "@/lib/app/constants"
+  import { useAudioContext } from "@/stores/audiocontext"
   import { useMessages } from "@/stores/messages"
   import { useSlices } from "@/stores/slices"
 
@@ -16,6 +17,8 @@
 
   const messagesStore = useMessages()
   const slicesStore = useSlices()
+  const { stopPlayback } = useAudioContext()
+
   const container = ref<HTMLElement | null>(null)
   const {
     activeSlice: slice,
@@ -89,14 +92,14 @@
 
   onMounted(() => {
     // Stop any audio playback when the editor is opened.
-    slicesStore.stopPlayback()
+    stopPlayback()
     addEventListener("keydown", handleKeyDown)
     addEventListener("click", handleClickOutside)
   })
 
   onUnmounted(() => {
     // Stop any audio playback when the editor is closed.
-    slicesStore.stopPlayback()
+    stopPlayback()
     removeEventListener("keydown", handleKeyDown)
     removeEventListener("click", handleClickOutside)
   })
