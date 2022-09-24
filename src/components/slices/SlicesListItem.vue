@@ -55,6 +55,7 @@
           @click="slicesStore.moveSliceDown(slice)"
         />
         <ButtonControl
+          v-show="false"
           :title="`Copy &quot;${slice.name}&quot;`"
           icon="library_add"
           :disabled="!canDuplicate"
