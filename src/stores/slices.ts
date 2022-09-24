@@ -47,7 +47,7 @@ function errorMessage(
  * Creates audio object from the given audio data.
  *
  * @param audio - The audio data.
- * @param duration
+ * @param duration - The audio duration in seconds.
  * @returns A signed audio object.
  */
 function getAudio(audio: Float32Array, duration: number): Audio {
@@ -182,8 +182,7 @@ function createLayer(
 /**
  * Applies audio file options to the given audio data.
  *
- * @param audio - Audio data.
- * @param data
+ * @param data - Audio data.
  * @param options - The audio options.
  * @returns A promise that resolves to an SignedAudio object
  *     of the processed audio data.
