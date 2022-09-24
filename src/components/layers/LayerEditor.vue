@@ -13,7 +13,7 @@
   import { useMessages } from "@/stores/messages"
   import { useSlices } from "@/stores/slices"
 
-  import LayerListItem from "./LayerListItem.vue"
+  import LayerList from "./LayerList.vue"
 
   const messagesStore = useMessages()
   const slicesStore = useSlices()
@@ -22,7 +22,6 @@
   const container = ref<HTMLElement | null>(null)
   const {
     activeSlice: slice,
-    activeSliceLayers: layers,
     durationExceeded,
     maxLayersReached,
   } = storeToRefs(slicesStore)
@@ -119,14 +118,9 @@
       <SamplePlayer :audio="slice.audio" :name="slice.name" />
       <EffectControls :file="slice" />
     </AudioFieldset>
-    <StyledFieldset class="layers">
+    <StyledFieldset>
       <template #legend>Layers</template>
-      <ol>
-        <li v-for="layer in layers" :key="layer.id">
-          <LayerListItem :layer="layer" :can-delete="layers.length > 1" />
-        </li>
-      </ol>
-
+      <LayerList />
       <AudioFileInput
         :disabled="fileLoaderDisabled"
         class="file-input"
@@ -137,30 +131,6 @@
 </template>
 
 <style scoped>
-  dialog::backdrop {
-    background-color: rgb(0 0 0 / 75%);
-  }
-
-  dialog {
-    position: fixed;
-    width: 100%;
-    max-width: 100%;
-    height: 100%;
-    max-height: 100%;
-    padding: 0;
-    margin: 0;
-    background: transparent;
-    border: 0;
-    opacity: 0;
-    transition: all 0.3s ease-in;
-    transform: scale(0.5) translateY(100%);
-  }
-
-  .show {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
-
   form {
     flex-grow: 1;
     color: #fffefe;
@@ -168,9 +138,7 @@
   }
 
   form,
-  .slice,
-  .layers,
-  ol {
+  .slice {
     display: flex;
     flex: 1 1 0;
     flex-direction: column;
@@ -186,51 +154,8 @@
     padding-bottom: 24px;
   }
 
-  .layers {
-    margin: -12px 0 0;
-  }
-
-  .file-input {
-    width: calc(100% - 32px);
-    margin: 16px;
-  }
-
-  ol {
-    flex-flow: row wrap;
-    align-content: flex-start;
-    width: 100%;
-    max-width: 300px;
-    padding: 0;
-    margin: 0 auto;
-    list-style: none;
-  }
-
-  li {
-    margin: 8px 0;
-  }
-
-  li fieldset {
-    margin: 0 -1px;
-  }
-
-  @media only screen and (min-width: 655px) {
-    ol {
-      max-width: 608px;
-    }
-  }
-
-  @media only screen and (min-width: 976px) {
-    ol {
-      max-width: 960px;
-    }
-
-    li:nth-child(3n + 2) {
-      margin: 8px 16px;
-    }
-  }
-
   .back {
-    padding-bottom: 24px;
+    margin-bottom: 24px;
   }
 
   .back button {
