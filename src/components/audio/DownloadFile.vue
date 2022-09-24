@@ -3,7 +3,6 @@
   import type { Ref } from "vue"
   import { computed, ref } from "vue"
 
-  import { toInt16 } from "@/helpers/audio"
   import { displayDuration } from "@/helpers/numberformat"
   import { useSlices } from "@/stores/slices"
 
@@ -23,7 +22,10 @@
     () => `${instrumentName.value || "stitched"}.${fileType.value}`,
   )
   const downloadDisabled = computed(
-    () => !instrumentNameValid.value || durationExceeded.value,
+    () =>
+      totalSlices.value < 1 ||
+      !instrumentNameValid.value ||
+      durationExceeded.value,
   )
 
   /**
@@ -31,6 +33,7 @@
    * a download prompt.
    */
   async function handleDownload() {
+    const { toInt16 } = await import("@/helpers/audio")
     const audio = toInt16(await slicesStore.renderSlices())
 
     let buffer: ArrayBufferLike
@@ -61,7 +64,7 @@
 </script>
 
 <template>
-  <fieldset v-if="totalSlices > 0">
+  <fieldset>
     <div>
       <label>Slices: <output :value="totalSlices" /></label>
     </div>

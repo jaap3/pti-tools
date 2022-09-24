@@ -9,14 +9,12 @@
   } from "vue"
 
   import AudioFileInput from "@/components/audio/AudioFileInput.vue"
+  import DownloadFile from "@/components/audio/DownloadFile.vue"
   import { maxDuration, maxSlices } from "@/lib/app/constants"
   import { useAudioContext } from "@/stores/audiocontext"
   import { useMessages } from "@/stores/messages"
   import { useSlices } from "@/stores/slices"
 
-  const DownloadFile = defineAsyncComponent(
-    () => import("@/components/audio/DownloadFile.vue"),
-  )
   const SlicesList = defineAsyncComponent(() => import("./SlicesList.vue"))
 
   const slicesStore = useSlices()
@@ -87,7 +85,7 @@
 
 <template>
   <form @submit.prevent>
-    <DownloadFile v-if="totalSlices > 0" />
+    <DownloadFile />
     <SlicesList v-if="totalSlices > 0" :can-duplicate="!fileLoaderDisabled" />
     <AudioFileInput
       :disabled="fileLoaderDisabled"
