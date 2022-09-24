@@ -1,22 +1,16 @@
 <script setup lang="ts">
-  import { storeToRefs } from "pinia"
-  import { computed, defineAsyncComponent } from "vue"
+  import { defineAsyncComponent, ref } from "vue"
 
-  import AppContainer from "@/components/AppContainer.vue"
-  import SlicesEditor from "@/components/slices/SlicesEditor.vue"
+  import AudioFileInput from "@/components/audio/AudioFileInput.vue"
+  import AppContainer from "@/components/base/AppContainer.vue"
   import { useAudioContext } from "@/stores/audiocontext"
   import { useMessages } from "@/stores/messages"
-  import { useSlices } from "@/stores/slices"
 
-  const LayerEditor = defineAsyncComponent(
-    () => import("@/components/layers/LayerEditor.vue"),
-  )
+  const LazyApp = defineAsyncComponent(() => import("./LazyApp.vue"))
 
-  const slicesStore = useSlices()
   const messagesStore = useMessages()
   const audioContextStore = useAudioContext()
 
-  const { totalSlices, activeSliceId } = storeToRefs(slicesStore)
   const { ctx: audioContext } = audioContextStore
 
   /**
@@ -55,22 +49,34 @@
     }
   }
 
-  const fileSelected = computed(() => {
-    if (!fileSelected.value && totalSlices.value === 0) {
-      return false
+  /**
+   * Loads the audio file(s) selected/dropped by the user.
+   *
+   * @param file - The audio file to load.
+   */
+  async function handleFileInput(file: File) {
+    const { useSlices } = await import("@/stores/slices")
+    const error = await useSlices().addSlice(file)
+    if (error) {
+      const { text, level } = error
+      messagesStore.addMessage(text, level, { timeout: 8500 })
+    } else {
+      activateAudioContext()
+      audioLoaded.value = true
     }
-    return true
-  })
+  }
+
+  const audioLoaded = ref(false)
 </script>
 
 <template>
   <AppContainer
     tag="main"
-    :show-appreciation="fileSelected"
+    :show-appreciation="audioLoaded"
     @click="activateAudioContext"
   >
-    <SlicesEditor v-if="activeSliceId === null" />
-    <LayerEditor v-else />
+    <LazyApp v-if="audioLoaded" />
+    <AudioFileInput v-else @input="handleFileInput" />
   </AppContainer>
 </template>
 

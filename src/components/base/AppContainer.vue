@@ -1,6 +1,7 @@
 <script setup lang="ts">
-  import FooterBar from "@/components/FooterBar.vue"
   import ShowMessages from "@/components/messages/ShowMessages.vue"
+
+  import FooterBar from "./FooterBar.vue"
 
   withDefaults(defineProps<{ tag: string; showAppreciation: boolean }>(), {
     tag: "main",
