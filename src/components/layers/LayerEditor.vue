@@ -7,6 +7,7 @@
   import ControlsHolder from "@/components/audio/ControlsHolder.vue"
   import EffectControls from "@/components/audio/EffectControls.vue"
   import SamplePlayer from "@/components/audio/SamplePlayer.vue"
+  import StyledFieldset from "@/components/base/StyledFieldset.vue"
   import { maxLayers } from "@/lib/app/constants"
   import { useMessages } from "@/stores/messages"
   import { useSlices } from "@/stores/slices"
@@ -115,8 +116,8 @@
       <SamplePlayer :audio="slice.audio" :name="slice.name" />
       <EffectControls :file="slice" />
     </AudioFieldset>
-    <fieldset class="layers">
-      <legend>Layers</legend>
+    <StyledFieldset class="layers">
+      <template #legend>Layers</template>
       <ol>
         <li v-for="layer in layers" :key="layer.id">
           <LayerListItem :layer="layer" :can-delete="layers.length > 1" />
@@ -128,7 +129,7 @@
         class="file-input"
         @input="handleFileInput"
       />
-    </fieldset>
+    </StyledFieldset>
   </form>
 </template>
 
@@ -183,19 +184,7 @@
   }
 
   .layers {
-    padding: 8px 0;
     margin: -12px 0 0;
-  }
-
-  .layers legend {
-    display: flex;
-    width: 100%;
-    max-width: calc(100% - 16px);
-    padding: 0 4px;
-    margin: 0 auto;
-    font-weight: 400;
-    color: #000;
-    background-color: #fff;
   }
 
   .file-input {

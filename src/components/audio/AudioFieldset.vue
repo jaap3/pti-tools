@@ -1,6 +1,7 @@
 <script setup lang="ts">
   import { computed } from "vue"
 
+  import StyledFieldset from "@/components/base/StyledFieldset.vue"
   import { displayDuration } from "@/helpers/numberformat"
 
   /**
@@ -29,33 +30,16 @@
 </script>
 
 <template>
-  <fieldset :title="`${name} - ${formattedDuration}`">
-    <legend>
+  <StyledFieldset :title="`${name} - ${formattedDuration}`">
+    <template #legend>
       <span class="name">{{ shortenString(name, props.truncateNameAt) }}</span>
       <time :datetime="duration.toFixed(3)">{{ formattedDuration }}</time>
-    </legend>
+    </template>
     <slot />
-  </fieldset>
+  </StyledFieldset>
 </template>
 
 <style scoped>
-  :is(fieldset) {
-    padding: 8px 0 0;
-    margin: 0;
-    overflow: hidden;
-  }
-
-  :is(legend) {
-    display: flex;
-    width: 100%;
-    max-width: calc(100% - 16px);
-    padding: 0 4px;
-    margin: 0 auto;
-    font-weight: 400;
-    color: #000;
-    background-color: #fff;
-  }
-
   :is(legend span) {
     max-width: calc(100vw - 128px);
     margin-right: 4px;
