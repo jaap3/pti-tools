@@ -12,42 +12,16 @@
 <style scoped>
   fieldset {
     flex-grow: 1;
-    padding-bottom: 8px;
+    padding-bottom: 24px;
   }
 
-  :deep(ol) {
-    display: flex;
-    flex-grow: 1;
-    flex-wrap: wrap;
-    align-content: flex-start;
-    width: 100%;
-    max-width: 300px;
-    padding: 0;
-    margin: 0 auto;
+  fieldset > :deep(ol) {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 300px);
+    padding: 0 8px;
+    margin: 0;
     list-style: none;
-  }
-
-  :deep(li) {
-    margin: 8px 0;
-  }
-
-  @media only screen and (min-width: 655px) {
-    :deep(ol) {
-      max-width: 608px;
-    }
-  }
-
-  @media only screen and (min-width: 976px) {
-    :deep(li fieldset) {
-      margin: 0 -1px;
-    }
-
-    :deep(ol) {
-      max-width: 960px;
-    }
-
-    :deep(li:nth-child(3n + 2)) {
-      margin: 8px 16px;
-    }
+    gap: 16px;
+    justify-content: center;
   }
 </style>

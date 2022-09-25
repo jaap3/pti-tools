@@ -76,7 +76,7 @@
     @click="activateAudioContext"
   >
     <LazyApp v-if="audioLoaded" />
-    <AudioFileInput v-else @input="handleFileInput" />
+    <AudioFileInput v-else style="margin-top: 16px" @input="handleFileInput" />
   </AppContainer>
 </template>
 

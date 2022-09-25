@@ -53,7 +53,7 @@
     position: sticky;
     bottom: 0;
     display: flex;
-    padding: 8px 16px;
+    padding: 8px;
     background-color: #0a0a0af0;
   }
 
@@ -73,7 +73,7 @@
     }
 
     footer > div > *:not(:first-child) {
-      margin-left: 16px;
+      margin-left: 8px;
     }
   }
 </style>

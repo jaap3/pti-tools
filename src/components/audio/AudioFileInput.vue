@@ -1,4 +1,5 @@
 <script setup lang="ts">
+  import StyledFieldset from "@/components/base/StyledFieldset.vue"
   import { useMessages } from "@/stores/messages"
 
   const props = withDefaults(
@@ -148,32 +149,41 @@
 </script>
 
 <template>
-  <label
-    :class="{ disabled }"
-    @dragover.prevent="handleDragOver"
-    @drop="handleDrop"
-  >
-    Choose / drop audio file(s) / folders
-    <small
-      >(<code>.wav</code>,&nbsp;<code>.mp3</code>,&nbsp;<code>.flac</code>,
-      etc.)</small
+  <StyledFieldset>
+    <template #legend>
+      <span>Sample loader</span>
+    </template>
+    <label
+      :class="{ disabled }"
+      @dragover.prevent="handleDragOver"
+      @drop="handleDrop"
     >
-    <input
-      multiple
-      type="file"
-      accept="audio/*"
-      :disabled="props.disabled"
-      @input="handleInput"
-    />
-  </label>
+      Choose / drop audio file(s) / folders
+      <small
+        >(<code>.wav</code>,&nbsp;<code>.mp3</code>,&nbsp;<code>.flac</code>,
+        etc.)</small
+      >
+      <input
+        multiple
+        type="file"
+        accept="audio/*"
+        :disabled="props.disabled"
+        @input="handleInput"
+      />
+    </label>
+  </StyledFieldset>
 </template>
 
 <style scoped>
+  fieldset {
+    margin-top: -12px;
+  }
+
   label {
     position: relative;
     display: block;
     padding: 2rem;
-    margin: 16px 0;
+    margin: 16px 8px;
     text-align: center;
     border-radius: 2rem;
     outline: 1px dashed var(--almost-white);
