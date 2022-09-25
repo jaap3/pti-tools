@@ -67,7 +67,7 @@ export function trimSilence(
   if (!fromStart && !fromEnd) return input
   const data = input.getChannelData(0)
   const start = fromStart ? data.findIndex((v) => Math.abs(v) > threshold) : 0
-  let end = data.length - 1
+  let end = data.length
   if (fromEnd) {
     data.reverse()
     end -= data.findIndex((v) => Math.abs(v) > threshold)
