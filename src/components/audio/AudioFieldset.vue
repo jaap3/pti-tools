@@ -50,5 +50,7 @@
 
   :is(legend time) {
     margin-left: auto;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.5px;
   }
 </style>

@@ -136,6 +136,11 @@
     outline: 2px solid var(--medium-dark-red);
   }
 
+  output {
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.5px;
+  }
+
   output.error {
     color: var(--medium-dark-red);
   }
