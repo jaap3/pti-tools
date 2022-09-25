@@ -192,6 +192,7 @@ async function applyEffects(
   options: AudioFileOptions,
 ): Promise<Audio> {
   let audio = createAudioBuffer(data, offlineCtx)
+  audio = await applyGain(audio, options.gain)
   switch (options.trim) {
     case "start":
       audio = trimSilence(audio, true, false)
@@ -203,7 +204,6 @@ async function applyEffects(
       audio = trimSilence(audio)
       break
   }
-  audio = await applyGain(audio, options.gain)
   return getAudio(audio.getChannelData(0), audio.duration)
 }
 
