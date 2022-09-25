@@ -96,6 +96,7 @@
     --medium-dark-red: #731414;
     background-color: var(--almost-black);
     color: var(--almost-white);
+    scrollbar-gutter: stable both-edges;
   }
 
   html,
