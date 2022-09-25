@@ -88,6 +88,16 @@
   @import "@fontsource/manrope/latin-300.css";
   @import "@fontsource/manrope/latin-400.css";
 
+  :root {
+    --almost-black: #0a0a0a;
+    --near-black: #121212;
+    --almost-white: #fefefe;
+    --medium-gray: #767676;
+    --medium-dark-red: #731414;
+    background-color: var(--almost-black);
+    color: var(--almost-white);
+  }
+
   html,
   body,
   #app {
@@ -97,16 +107,14 @@
   body {
     font-family: Manrope, sans-serif;
     font-weight: 300;
-    color: #fffefe;
-    background: #0a0a0a;
   }
 
   input[type="text"],
   input[type="number"],
   button,
   select {
-    background-color: #0a0a0a;
-    border: 1px solid #767677;
+    background-color: var(--almost-black);
+    border: 1px solid var(--medium-gray);
   }
 
   button:not(:disabled) {
@@ -114,6 +122,6 @@
   }
 
   button:disabled {
-    color: #767677;
+    color: var(--medium-gray);
   }
 </style>

@@ -21,7 +21,7 @@
     padding: 0 4px;
     margin: 0 auto;
     font-weight: 400;
-    color: #000;
-    background-color: #fff;
+    color: var(--almost-black);
+    background-color: var(--almost-white);
   }
 </style>

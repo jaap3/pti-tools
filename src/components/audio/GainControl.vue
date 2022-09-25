@@ -96,8 +96,8 @@
     height: 1.4em;
     margin-left: 4px;
     cursor: pointer;
-    background-color: #101010;
-    border: 1px solid #777;
+    background-color: var(--almost-black);
+    border: 1px solid var(--medium-gray);
     appearance: none;
   }
 
@@ -109,13 +109,13 @@
     appearance: none;
     width: 16px;
     height: 100%;
-    background: #fff;
+    background: var(--almost-white);
   }
 
   input[type="range"]::-moz-range-thumb {
     width: 16px;
     height: 100%;
-    background: #fff;
+    background: var(--almost-white);
     border: 0;
     border-radius: 0;
     appearance: none;

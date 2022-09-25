@@ -133,11 +133,11 @@
   }
 
   input:invalid {
-    outline: 2px solid #731414;
+    outline: 2px solid var(--medium-dark-red);
   }
 
   output.error {
-    color: #731414;
+    color: var(--medium-dark-red);
   }
 
   button {

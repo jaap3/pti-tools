@@ -175,14 +175,13 @@
     padding: 2rem;
     margin: 16px 0;
     text-align: center;
-    background: #0a0a0a;
     border-radius: 2rem;
-    outline: 1px dashed #fffefe;
+    outline: 1px dashed var(--almost-white);
   }
 
   label:focus,
   label:focus-within {
-    outline: 1px solid #731414;
+    outline: 1px solid var(--medium-dark-red);
   }
 
   input {

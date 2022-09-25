@@ -10,8 +10,7 @@
     align-items: center;
     padding: 8px;
     margin: 0;
-    color: #fefefe;
-    background: #121212;
+    background-color: var(--near-black);
     border: 0;
   }
 </style>

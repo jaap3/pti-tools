@@ -22,7 +22,7 @@
   .top {
     padding-bottom: 12px;
     margin-bottom: -12px;
-    background: #121212;
+    background-color: var(--near-black);
   }
 
   .container {
