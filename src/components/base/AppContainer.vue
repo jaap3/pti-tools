@@ -32,8 +32,8 @@
     flex-grow: 1;
     width: 100%;
     max-width: 954px;
-    padding: 0 1px;
     height: 100%;
+    padding: 0 1px;
     margin: 0 auto;
   }
 </style>

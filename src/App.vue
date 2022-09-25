@@ -94,8 +94,9 @@
     --almost-white: #fefefe;
     --medium-gray: #767676;
     --medium-dark-red: #731414;
-    background-color: var(--almost-black);
+
     color: var(--almost-white);
+    background-color: var(--almost-black);
     scrollbar-gutter: stable both-edges;
   }
 

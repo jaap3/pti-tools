@@ -18,10 +18,10 @@
   fieldset > :deep(ol) {
     display: grid;
     grid-template-columns: repeat(auto-fill, 300px);
+    gap: 16px;
+    justify-content: center;
     padding: 0 8px;
     margin: 0;
     list-style: none;
-    gap: 16px;
-    justify-content: center;
   }
 </style>
