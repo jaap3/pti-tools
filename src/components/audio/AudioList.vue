@@ -5,7 +5,9 @@
 <template>
   <StyledFieldset>
     <template #legend><slot name="title" /></template>
-    <slot />
+    <div class="list">
+      <slot />
+    </div>
   </StyledFieldset>
 </template>
 
@@ -15,7 +17,7 @@
     padding-bottom: 24px;
   }
 
-  fieldset > :deep(ol) {
+  .list > :deep(ol) {
     display: grid;
     grid-template-columns: repeat(auto-fill, 300px);
     gap: 16px;
