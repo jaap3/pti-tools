@@ -104,7 +104,7 @@
       </div>
     </template>
     <template #main>
-      <SlicesList :can-duplicate="!fileLoaderDisabled" />
+      <SlicesList />
     </template>
     <template #bottom>
       <AudioFileInput :disabled="fileLoaderDisabled" @input="handleFileInput" />
