@@ -174,6 +174,11 @@
     background: var(--almost-black);
   }
 
+  fieldset :deep(> legend) {
+    position: relative;
+    z-index: 25;
+  }
+
   label {
     position: relative;
     display: block;
