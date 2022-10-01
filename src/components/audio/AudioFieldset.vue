@@ -40,7 +40,7 @@
 </template>
 
 <style scoped>
-  :is(legend span) {
+  :where(legend > span) {
     max-width: calc(100vw - 128px);
     margin-right: 4px;
     overflow: hidden;
@@ -48,7 +48,7 @@
     white-space: nowrap;
   }
 
-  :is(legend time) {
+  :where(legend > time) {
     margin-left: auto;
     font-variant-numeric: tabular-nums;
     letter-spacing: -0.5px;

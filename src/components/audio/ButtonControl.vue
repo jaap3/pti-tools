@@ -9,17 +9,17 @@
 </template>
 
 <style scoped>
-  :is(button) {
+  :where(button) {
     margin: 0 4px;
     line-height: 1;
     user-select: none;
   }
 
-  :is(button:first-child) {
+  :where(button:first-child) {
     margin-left: 0;
   }
 
-  :is(button:last-child) {
+  :where(button:last-child) {
     margin-right: 0;
   }
 </style>

@@ -5,7 +5,7 @@
 </template>
 
 <style scoped>
-  :is(fieldset) {
+  :where(.controls) {
     display: flex;
     align-items: center;
     padding: 8px;

@@ -8,14 +8,14 @@
 </template>
 
 <style scoped>
-  :is(fieldset) {
+  :where(fieldset) {
     padding: 8px 0 0;
     margin: 0;
     overflow: hidden;
     border: 1px solid var(--medium-gray);
   }
 
-  :is(legend) {
+  :where(legend) {
     display: flex;
     width: 100%;
     width: calc(100% - 16px);
