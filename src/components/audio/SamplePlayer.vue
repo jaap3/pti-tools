@@ -69,11 +69,11 @@
   <SampleWaveform
     v-if="showWaveform"
     :audio="audio"
-    class="waveform"
+    :class="['waveform', $attrs['class']]"
     :title="`Play &quot;${name}&quot;`"
     @click="togglePlayback"
   />
-  <ControlsHolder class="controls" title="">
+  <ControlsHolder :class="$attrs['class']" title="">
     <ButtonControl
       :title="buttonTitle"
       :icon="buttonIcon"
