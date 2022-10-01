@@ -3,23 +3,7 @@
 
   import StyledFieldset from "@/components/base/StyledFieldset.vue"
   import { displayDuration } from "@/helpers/numberformat"
-
-  /**
-   * Shorten the given text the requested number of characters, keeping the
-   * first and last characters and replacing the middle with an ellipsis.
-   *
-   * @param str - The string to shorten.
-   * @param maxLength - The maximum length of the string.
-   * @returns The shortened string.
-   */
-  function shortenString(str: string, maxLength: number): string {
-    const { length } = str
-    if (length <= maxLength) return str
-    const halfLength = Math.floor(maxLength / 2)
-    return (
-      str.substring(0, halfLength) + "…" + str.substring(length - halfLength)
-    )
-  }
+  import { shortenString } from "@/helpers/stringformat"
 
   const props = withDefaults(
     defineProps<{ name: string; truncateNameAt?: number; duration: number }>(),
