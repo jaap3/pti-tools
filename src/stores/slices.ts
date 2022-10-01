@@ -48,7 +48,7 @@ function errorMessage(
  *
  * @param audio - The audio data.
  * @param duration - The audio duration in seconds.
- * @returns A signed audio object.
+ * @returns An audio object.
  */
 function getAudio(audio: Float32Array, duration: number): Audio {
   return {
@@ -108,13 +108,13 @@ async function loadAudio(file: File): Promise<AudioFile | ErrorMessage> {
  *
  * @param file - An audio file, slice or layer object.
  * @param file.audio - The audio data.
- * @param file.name - The file name.
  * @param file.duration - The audio duration.
+ * @param file.name - The file name.
  * @param options - The audio options.
  * @returns A new editable audio file object.
  */
 function createEditableAudioFile(
-  { audio, name, duration }: AudioFile,
+  { audio, duration, name }: AudioFile,
   options: AudioFileOptions = {
     trim: "none",
     gain: 0,
@@ -122,8 +122,8 @@ function createEditableAudioFile(
 ): EditableAudioFile {
   return {
     audio,
-    name,
     duration,
+    name,
     id: crypto.randomUUID(),
     originalAudio: audio,
     options: { ...options },
@@ -184,7 +184,7 @@ function createLayer(
  *
  * @param data - Audio data.
  * @param options - The audio options.
- * @returns A promise that resolves to an SignedAudio object
+ * @returns A promise that resolves to an Audio object
  *     of the processed audio data.
  */
 async function applyEffects(
