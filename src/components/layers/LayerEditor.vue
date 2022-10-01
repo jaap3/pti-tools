@@ -3,11 +3,12 @@
   import { computed, onMounted, onUnmounted, ref, watch } from "vue"
 
   import AudioFieldset from "@/components/audio/AudioFieldset.vue"
-  import AudioFileInput from "@/components/audio/AudioFileInput.vue"
+  import AudioLoader from "@/components/audio/AudioLoader.vue"
   import EffectControls from "@/components/audio/EffectControls.vue"
   import SamplePlayer from "@/components/audio/SamplePlayer.vue"
   import AppLayout from "@/components/base/AppLayout.vue"
   import { maxLayers } from "@/lib/app/constants"
+  import type { EditableAudioFile } from "@/lib/app/types"
   import { useAudioContext } from "@/stores/audiocontext"
   import { useMessages } from "@/stores/messages"
   import { useSlices } from "@/stores/slices"
@@ -51,7 +52,7 @@
    *
    * @param file - The audio file to load.
    */
-  async function handleFileInput(file: File) {
+  async function handleFileInput(file: File | EditableAudioFile) {
     if (fileLoaderDisabled.value) return
     const error = await slicesStore.addLayer(file)
     if (error) {
@@ -106,7 +107,7 @@
       <LayerList />
     </template>
     <template #bottom>
-      <AudioFileInput :disabled="fileLoaderDisabled" @input="handleFileInput" />
+      <AudioLoader :disabled="fileLoaderDisabled" @input="handleFileInput" />
     </template>
   </AppLayout>
 </template>
