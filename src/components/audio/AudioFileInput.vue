@@ -177,13 +177,14 @@
 <style scoped>
   fieldset {
     margin-top: -12px;
+    background: var(--almost-black);
   }
 
   label {
     position: relative;
     display: block;
-    padding: 2rem;
-    margin: 16px 8px;
+    padding: 24px;
+    margin: 8px 8px 16px;
     text-align: center;
     border-radius: 2rem;
     outline: 1px dashed var(--almost-white);

@@ -97,13 +97,7 @@
 
     color: var(--almost-white);
     background-color: var(--almost-black);
-    scrollbar-gutter: stable both-edges;
-  }
-
-  html,
-  body,
-  #app {
-    height: 100%;
+    scrollbar-gutter: stable;
   }
 
   body {

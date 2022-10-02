@@ -10,30 +10,34 @@
 </script>
 
 <template>
-  <div class="wrapper">
-    <component :is="tag" class="main">
-      <ShowMessages />
-      <slot />
-    </component>
-    <FooterBar :show-appreciation="showAppreciation" />
-  </div>
+  <component :is="tag" class="main">
+    <slot />
+    <ShowMessages />
+  </component>
+  <FooterBar :show-appreciation="showAppreciation" />
 </template>
 
 <style scoped>
-  .wrapper {
-    display: flex;
-    flex-direction: column;
-    min-height: 100%;
-  }
-
   .main {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
+    position: sticky;
+    top: 0;
     width: 100%;
     max-width: 954px;
-    height: 100%;
-    padding: 0 1px;
+    height: calc(100vh - 24px);
     margin: 0 auto;
+  }
+
+  @media only screen and (min-width: 748px) {
+    footer {
+      position: sticky;
+    }
+
+    footer :deep(> div) {
+      flex-direction: row;
+    }
+
+    footer :deep(> div > *:not(:first-child)) {
+      margin-left: 8px;
+    }
   }
 </style>

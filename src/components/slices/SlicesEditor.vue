@@ -11,6 +11,7 @@
   import AudioFileInput from "@/components/audio/AudioFileInput.vue"
   import DownloadFile from "@/components/audio/DownloadFile.vue"
   import AppLayout from "@/components/base/AppLayout.vue"
+  import { displayDuration } from "@/helpers/numberformat"
   import { maxDuration, maxSlices } from "@/lib/app/constants"
   import { useAudioContext } from "@/stores/audiocontext"
   import { useMessages } from "@/stores/messages"
@@ -22,7 +23,8 @@
   const messagesStore = useMessages()
   const { stopPlayback } = useAudioContext()
 
-  const { maxSlicesReached, durationExceeded } = storeToRefs(slicesStore)
+  const { durationExceeded, maxSlicesReached, totalDuration, totalSlices } =
+    storeToRefs(slicesStore)
 
   const fileLoaderDisabled = computed(
     () => maxSlicesReached.value || durationExceeded.value,
@@ -86,7 +88,19 @@
 <template>
   <AppLayout>
     <template #top>
-      <DownloadFile />
+      <div class="toolbar">
+        <label
+          >Slices:
+          <output :value="totalSlices" :class="{ error: maxSlicesReached }"
+        /></label>
+        <label>
+          Duration:
+          <output
+            :class="{ error: durationExceeded }"
+            :value="displayDuration(totalDuration)"
+        /></label>
+        <DownloadFile class="download" />
+      </div>
     </template>
     <template #main>
       <SlicesList :can-duplicate="!fileLoaderDisabled" />
@@ -96,3 +110,29 @@
     </template>
   </AppLayout>
 </template>
+
+<style scoped>
+  .toolbar {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .toolbar > label {
+    display: flex;
+    align-items: center;
+    min-height: 34px;
+    padding: 0 8px 0 0;
+    margin-right: 8px;
+    border-right: 1px solid #767677;
+  }
+
+  output {
+    margin-left: 4px;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.5px;
+  }
+
+  output.error {
+    color: var(--medium-dark-red);
+  }
+</style>

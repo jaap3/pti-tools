@@ -112,6 +112,7 @@
 
 <style scoped>
   .slice {
+    flex-shrink: 0;
     margin-bottom: -12px;
   }
 

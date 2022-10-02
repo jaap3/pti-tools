@@ -66,7 +66,22 @@
 
 <style scoped>
   [role="log"] {
-    position: relative;
+    position: sticky;
+    bottom: 0;
+    z-index: 30;
+    background-color: #0a0a0af0;
+  }
+
+  @media only screen and (min-width: 748px) {
+    [role="log"] {
+      bottom: 50px;
+    }
+  }
+
+  @media only screen and (min-width: 1488px) {
+    [role="log"] {
+      bottom: 0;
+    }
   }
 
   .level {

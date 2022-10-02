@@ -50,8 +50,6 @@
 
 <style scoped>
   footer {
-    position: sticky;
-    bottom: 0;
     display: flex;
     padding: 8px;
     background-color: #0a0a0af0;
@@ -65,15 +63,5 @@
   footer > div {
     display: flex;
     flex-direction: column;
-  }
-
-  @media only screen and (min-width: 490px) {
-    footer > div {
-      flex-direction: row;
-    }
-
-    footer > div > *:not(:first-child) {
-      margin-left: 8px;
-    }
   }
 </style>

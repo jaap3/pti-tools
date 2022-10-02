@@ -21,7 +21,7 @@
 </script>
 
 <template>
-  <AudioList>
+  <AudioList class="container">
     <template #title>Slices</template>
     <draggable
       v-model="slicesList"
