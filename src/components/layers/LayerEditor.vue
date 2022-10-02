@@ -45,20 +45,6 @@
   }
 
   /**
-   * Closes the dialog when the user clicks outside of it.
-   *
-   * @param evt - The click event.
-   */
-  function handleClickOutside(evt: Event) {
-    if (
-      evt.target instanceof Node &&
-      container.value &&
-      !container.value.$el.contains(evt.target)
-    ) {
-      close()
-    }
-  }
-  /**
    * Attempts to load the audio file and add it to the list of layers.
    *
    * Does nothing if the input is disabled.
@@ -92,14 +78,12 @@
     // Stop any audio playback when the editor is opened.
     stopPlayback()
     addEventListener("keydown", handleKeyDown)
-    addEventListener("click", handleClickOutside)
   })
 
   onUnmounted(() => {
     // Stop any audio playback when the editor is closed.
     stopPlayback()
     removeEventListener("keydown", handleKeyDown)
-    removeEventListener("click", handleClickOutside)
   })
 </script>
 
