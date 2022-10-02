@@ -32,7 +32,7 @@
   }
 </script>
 <template>
-  <AudioFieldset :name="slice.name" :duration="slice.duration">
+  <AudioFieldset :name="slice.name" :duration="slice.duration" tabindex="0">
     <SamplePlayer ref="samplePlayer" :audio="slice.audio" :name="slice.name">
       <template #controls>
         <ButtonControl

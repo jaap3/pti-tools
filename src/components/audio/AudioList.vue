@@ -3,7 +3,7 @@
 </script>
 
 <template>
-  <StyledFieldset>
+  <StyledFieldset tabindex="0">
     <template #legend><slot name="title" /></template>
     <div class="list">
       <slot />
