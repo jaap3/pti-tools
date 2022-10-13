@@ -37,6 +37,7 @@
    * @param file - The audio file to load.
    */
   async function handleFileInput(file: File) {
+    if (fileLoaderDisabled.value) return
     const error = await slicesStore.addSlice(file)
     if (error) {
       const { text, level } = error

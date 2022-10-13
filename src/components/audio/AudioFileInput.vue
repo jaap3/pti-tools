@@ -43,7 +43,8 @@
       )
       return
     }
-    await props.onInput(file)
+
+    if (!props.disabled) await props.onInput(file)
   }
 
   /**
@@ -57,10 +58,7 @@
   async function handleInput(evt: Event) {
     const input = evt.target as HTMLInputElement
     for (const file of Array.from(input.files ?? [])) {
-      const wasDisabled = props.disabled
       await emitInput(file)
-      // The input was disabled in the previous iteration, break.
-      if (wasDisabled && props.disabled) return
     }
     input.value = ""
   }
@@ -112,9 +110,7 @@
         return 0
       })
       for (const entry of entries) {
-        const wasDisabled = props.disabled
         await collectFiles(entry)
-        if (wasDisabled && props.disabled) return
       }
     }
   }
@@ -141,9 +137,7 @@
       })
       .filter((entry): entry is FileSystemEntry => entry !== null)
     for (const entry of entries) {
-      const wasDisabled = props.disabled
       await collectFiles(entry)
-      if ((wasDisabled || entry.isDirectory) && props.disabled) return
     }
   }
 </script>
