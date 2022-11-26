@@ -8,17 +8,11 @@
   import type { Slice } from "@/lib/app/types"
   import { useSlices } from "@/stores/slices"
 
-  const props = withDefaults(
-    defineProps<{
-      slice: Slice
-      canMoveUp: boolean
-      canMoveDown: boolean
-      canDuplicate: boolean
-    }>(),
-    {
-      canDuplicate: true,
-    },
-  )
+  const props = defineProps<{
+    slice: Slice
+    canMoveUp: boolean
+    canMoveDown: boolean
+  }>()
 
   const slicesStore = useSlices()
   const samplePlayer = ref<InstanceType<typeof SamplePlayer> | null>(null)
@@ -54,13 +48,6 @@
           class="move-down"
           @click="slicesStore.moveSliceDown(slice)"
         />
-        <ButtonControl
-          v-show="false"
-          :title="`Copy &quot;${slice.name}&quot;`"
-          icon="library_add"
-          :disabled="!canDuplicate"
-          @click="slicesStore.duplicateSlice(slice)"
-        ></ButtonControl>
         <ButtonControl
           class="delete"
           :title="`Remove &quot;${slice.name}&quot; from the list of slices`"

@@ -7,15 +7,6 @@
 
   import SlicesListItem from "./SlicesListItem.vue"
 
-  const props = withDefaults(
-    defineProps<{
-      canDuplicate: boolean
-    }>(),
-    {
-      canDuplicate: true,
-    },
-  )
-
   const slicesStore = useSlices()
   const { slicesList, totalSlices } = storeToRefs(slicesStore)
 </script>
@@ -38,7 +29,6 @@
             :slice="element"
             :can-move-up="index > 0"
             :can-move-down="index < totalSlices - 1"
-            :can-duplicate="props.canDuplicate"
           />
         </li>
       </template>

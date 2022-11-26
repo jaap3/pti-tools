@@ -8,11 +8,12 @@
     watch,
   } from "vue"
 
-  import AudioFileInput from "@/components/audio/AudioFileInput.vue"
+  import AudioLoader from "@/components/audio/AudioLoader.vue"
   import DownloadFile from "@/components/audio/DownloadFile.vue"
   import AppLayout from "@/components/base/AppLayout.vue"
   import { displayDuration } from "@/helpers/numberformat"
   import { maxDuration, maxSlices } from "@/lib/app/constants"
+  import type { EditableAudioFile } from "@/lib/app/types"
   import { useAudioContext } from "@/stores/audiocontext"
   import { useMessages } from "@/stores/messages"
   import { useSlices } from "@/stores/slices"
@@ -36,9 +37,15 @@
    *
    * @param file - The audio file to load.
    */
-  async function handleFileInput(file: File) {
+  async function handleFileInput(file: File | EditableAudioFile) {
     if (fileLoaderDisabled.value) return
-    const error = await slicesStore.addSlice(file)
+    let error
+    if (file instanceof File) {
+      error = await slicesStore.addSlice(file)
+    } else {
+      error = slicesStore.duplicateSlice(file)
+    }
+
     if (error) {
       const { text, level } = error
       messagesStore.addMessage(text, level, { timeout: 8500 })
@@ -104,10 +111,10 @@
       </div>
     </template>
     <template #main>
-      <SlicesList :can-duplicate="!fileLoaderDisabled" />
+      <SlicesList />
     </template>
     <template #bottom>
-      <AudioFileInput :disabled="fileLoaderDisabled" @input="handleFileInput" />
+      <AudioLoader :disabled="fileLoaderDisabled" @input="handleFileInput" />
     </template>
   </AppLayout>
 </template>
