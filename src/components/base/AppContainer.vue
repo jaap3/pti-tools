@@ -3,6 +3,10 @@
 
   import FooterBar from "./FooterBar.vue"
 
+  defineEmits<{
+    (e: "click"): void
+  }>()
+
   withDefaults(defineProps<{ tag: string; showAppreciation: boolean }>(), {
     tag: "main",
     showAppreciation: false,
@@ -10,7 +14,7 @@
 </script>
 
 <template>
-  <component :is="tag" class="main">
+  <component :is="tag" class="main" @click="$emit('click')">
     <slot />
     <ShowMessages />
   </component>
