@@ -81,12 +81,12 @@
 </template>
 
 <style>
-  @import "sanitize.css";
-  @import "sanitize.css/typography.css";
-  @import "sanitize.css/forms.css";
-  @import "material-icons/iconfont/filled.css";
-  @import "@fontsource/manrope/latin-300.css";
-  @import "@fontsource/manrope/latin-400.css";
+  @import url("sanitize.css");
+  @import url("sanitize.css/typography.css");
+  @import url("sanitize.css/forms.css");
+  @import url("material-icons/iconfont/filled.css");
+  @import url("@fontsource/manrope/latin-300.css");
+  @import url("@fontsource/manrope/latin-400.css");
 
   :root {
     --almost-black: #0a0a0a;
