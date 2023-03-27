@@ -30,7 +30,7 @@
     "wavefile": "~11.0.0"
   },
   "devDependencies": {
-    "@tsconfig/strictest": "~1.0.1",
+    "@tsconfig/strictest": "~2.0.0",
     "@types/ejs": "~3.1.1",
     "@types/jest": "~28.1.6",
     "@typescript-eslint/eslint-plugin": "~5.55.0",
