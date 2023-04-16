@@ -603,5 +603,6 @@ export const useSlices = defineStore("slices", () => {
 })
 
 if (import.meta.hot) {
-  import.meta.hot.accept(acceptHMRUpdate(useSlices, import.meta.hot))
+  // Using as any to workaround https://github.com/vuejs/pinia/issues/2098
+  import.meta.hot.accept(acceptHMRUpdate(useSlices as any, import.meta.hot))
 }

@@ -44,5 +44,6 @@ export const useMessages = defineStore("messages", () => {
 })
 
 if (import.meta.hot) {
-  import.meta.hot.accept(acceptHMRUpdate(useMessages, import.meta.hot))
+  // Using as any to workaround https://github.com/vuejs/pinia/issues/2098
+  import.meta.hot.accept(acceptHMRUpdate(useMessages as any, import.meta.hot))
 }
