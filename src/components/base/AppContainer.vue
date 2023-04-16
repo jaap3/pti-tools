@@ -31,7 +31,7 @@
     margin: 0 auto;
   }
 
-  @media only screen and (min-width: 748px) {
+  @media only screen and (width >= 748px) {
     footer {
       position: sticky;
     }

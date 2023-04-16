@@ -72,13 +72,13 @@
     background-color: #0a0a0af0;
   }
 
-  @media only screen and (min-width: 748px) {
+  @media only screen and (width >= 748px) {
     [role="log"] {
       bottom: 50px;
     }
   }
 
-  @media only screen and (min-width: 1488px) {
+  @media only screen and (width >= 1488px) {
     [role="log"] {
       bottom: 0;
     }
