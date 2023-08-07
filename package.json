@@ -48,7 +48,7 @@
     "stylelint": "^15.5.0",
     "stylelint-config-recess-order": "~4.0.0",
     "stylelint-config-standard-vue": "~1.0.0",
-    "terser": "~5.18.1",
+    "terser": "~5.19.2",
     "ts-jest": "~28.0.7",
     "ts-node": "~10.9.1",
     "ts-node-dev": "~2.0.0",
