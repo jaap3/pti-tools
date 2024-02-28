@@ -20,7 +20,6 @@
 
   /**
    * Stop the playback of this layer and removes it from its slice.
-   *
    * @param layer - The layer to remove.
    */
   async function handleDelete(layer: Layer) {

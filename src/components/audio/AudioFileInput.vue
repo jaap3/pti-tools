@@ -20,7 +20,6 @@
   /**
    * Converts the given number of bytes to a string representing the size
    * in megabytes (e.g. 1024 -> "1MB").
-   *
    * @param bytes - The number of bytes to convert.
    * @returns A string representing the size in megabytes.
    */
@@ -31,7 +30,6 @@
   /**
    * Emits an input event with the given file; unless the file is too large,
    * in which case an error message is displayed.
-   *
    * @param file - The file to emit.
    */
   async function emitInput(file: File) {
@@ -52,7 +50,6 @@
    * for each file in the input. If the input is disabled while emitting,
    * one final input event is emitted allowing the listener to keep track
    * of the first file that must be ignored.
-   *
    * @param evt - The input event.
    */
   async function handleInput(evt: Event) {
@@ -66,7 +63,6 @@
   /**
    * Handles the dragover event from the file input element. Prevents the
    * default action to allow the drop event to be fired.
-   *
    * @param evt - The dragover event.
    */
   function handleDragOver(evt: DragEvent) {
@@ -81,7 +77,6 @@
    * in the directory. If the input is disabled while emitting,
    * one final input event is emitted allowing the listener to keep track
    * of the first file that must be ignored.
-   *
    * @param entry - The dropped entry.
    */
   async function collectFiles(entry: FileSystemEntry) {
@@ -117,7 +112,6 @@
 
   /**
    * Handles the drop event from the file input element.
-   *
    * @param evt - The drop event.
    */
   async function handleDrop(evt: DragEvent) {

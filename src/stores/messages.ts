@@ -8,7 +8,6 @@ export const useMessages = defineStore("messages", () => {
 
   /**
    * Adds a message to the store.
-   *
    * @param text - The message text.
    * @param level - The message level (one of "info", "success", "warning", or "error").
    * @param options - Additional options (id and/or timeout).
@@ -29,7 +28,6 @@ export const useMessages = defineStore("messages", () => {
 
   /**
    * Removes a message from the store.
-   *
    * @param id - The message id.
    */
   function removeMessage(id: string) {
@@ -44,6 +42,5 @@ export const useMessages = defineStore("messages", () => {
 })
 
 if (import.meta.hot) {
-  // Using as any to workaround https://github.com/vuejs/pinia/issues/2098
-  import.meta.hot.accept(acceptHMRUpdate(useMessages as any, import.meta.hot))
+  import.meta.hot.accept(acceptHMRUpdate(useMessages, import.meta.hot))
 }

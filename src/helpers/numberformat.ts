@@ -6,7 +6,6 @@
  * denoting the number of milliseconds (e.g. "123ms").
  * Otherwise, the result is a string denoting the number of seconds
  * with millisecond precision (e.g. "1.234s", no rounding is performed).
- *
  * @param seconds - The duration of in seconds.
  * @returns A string denoting the duration.
  */

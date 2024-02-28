@@ -38,7 +38,6 @@
 
   /**
    * Closes the layer editor when the user presses the Escape key.
-   *
    * @param evt - The keydown event.
    */
   function handleKeyDown(evt: KeyboardEvent) {
@@ -49,7 +48,6 @@
    * Attempts to load the audio file and add it to the list of layers.
    *
    * Does nothing if the input is disabled.
-   *
    * @param file - The audio file to load.
    */
   async function handleFileInput(file: File | EditableAudioFile) {

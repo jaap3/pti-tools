@@ -10,7 +10,6 @@
 
   /**
    * Removes all messages from the store. Can be limited to a specific level.
-   *
    * @param level - The level of the message (one of "info", "warning", "error")
    *     (optional).
    */

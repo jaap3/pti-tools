@@ -3,7 +3,6 @@ import { sampleRate } from "@/lib/app/constants"
 /**
  * Creates a new mono offline audio context of the given lenght,
  * with the sample rate set to 44.1 kHz.
- *
  * @param length - The length of the render buffer in seconds
  * @returns A new OfflineAudioContext
  */
@@ -13,7 +12,6 @@ export function getOfflineAudioContext(length = 1): OfflineAudioContext {
 
 /**
  * Creates a new mono AudioBuffer with the given data as the channel data.
- *
  * @param data - The audio data to use as the channel data.
  * @param ctx - The audio context to use to create the buffer.
  * @returns A new AudioBuffer
@@ -33,7 +31,6 @@ export function createAudioBuffer(
  * The original input is returned if it has only 1 channel.
  *
  * Note: Phase cancellation may occur when summing channels.
- *
  * @param input - The input AudioBuffer.
  * @returns The summed AudioBuffer.
  */
@@ -49,7 +46,6 @@ export async function sumChannels(input: AudioBuffer): Promise<AudioBuffer> {
 
 /**
  * Trims silence from the start and/or end of an AudioBuffer.
- *
  * @param input - The input AudioBuffer.
  * @param fromStart - Trim silence from the start of the buffer (default: true).
  * @param fromEnd - Trim silence from the end of the buffer (default: true).
@@ -83,7 +79,6 @@ export function trimSilence(
  * Applies gain to an AudioBuffer.
  *
  * - The output will have a single channel (mono).
- *
  * @param input - The input AudioBuffer.
  * @param gain - The gain to apply, in dB (must be between -24 and 24).
  * @returns The gain-adjusted AudioBuffer, or the original buffer if gain is 0.
@@ -115,9 +110,8 @@ export async function applyGain(
  * input buffer lengths) or in parallel (i.e. the output will be the same
  * length as the longest input buffer).
  *
- *  - The output will have a single channel (mono).
- *  - If no inputs are provided, an empty buffer is returned.
- *
+ * - The output will have a single channel (mono).
+ * - If no inputs are provided, an empty buffer is returned.
  * @param input - The input AudioBuffers.
  * @param inSequence - Combine buffers in sequence (default: false).
  * @returns A new AudioBuffer, or the first input if there is only one.
@@ -154,7 +148,6 @@ export async function combineAudio(
  * to fit in the range of a signed 16-bit integer (i.e. [-32768, 32767]).
  * The channel data is assumed to be in the range [-1, 1], values outside this
  * range will be clipped (i.e. -1.1 becomes -1, 1.1 becomes 1).
- *
  * @param input - The AudioBuffer to convert.
  * @returns A new Int16Array containing the data from the Float32Array
  *     scaled/clipped to fit in a 16-bit integer.

@@ -45,7 +45,6 @@
 
   /**
    * Draws the waveform of the audio file.
-   *
    * @param ctx - The canvas context.
    * @param buffer - The audio buffer.
    * @param width - The width of the canvas.
