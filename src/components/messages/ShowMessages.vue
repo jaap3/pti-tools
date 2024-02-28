@@ -102,7 +102,10 @@
   .list-move,
   .list-enter-active,
   .list-leave-active {
-    transition: opacity 0.5s linear, transform 0.5s ease-in-out, all 0.5s ease;
+    transition:
+      opacity 0.5s linear,
+      transform 0.5s ease-in-out,
+      all 0.5s ease;
   }
 
   .list-enter-from,

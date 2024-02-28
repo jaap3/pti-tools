@@ -9,7 +9,7 @@ updates:
     groups:
       typescript-eslint:
         patterns:
-          - '@typescript-eslint/*'
+          - "@typescript-eslint/*"
 
   - package-ecosystem: "github-actions"
     directory: "/"

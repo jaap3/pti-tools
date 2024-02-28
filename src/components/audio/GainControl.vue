@@ -95,10 +95,10 @@
     width: 112px;
     height: 1.4em;
     margin-left: 4px;
+    appearance: none;
     cursor: pointer;
     background-color: var(--almost-black);
     border: 1px solid var(--medium-gray);
-    appearance: none;
   }
 
   input[type="range"]::-webkit-slider-runnable-track {
@@ -106,19 +106,19 @@
   }
 
   input[type="range"]::-webkit-slider-thumb {
-    appearance: none;
     width: 16px;
     height: 100%;
+    appearance: none;
     background: var(--almost-white);
   }
 
   input[type="range"]::-moz-range-thumb {
     width: 16px;
     height: 100%;
+    appearance: none;
     background: var(--almost-white);
     border: 0;
     border-radius: 0;
-    appearance: none;
   }
 
   output {
