@@ -10,6 +10,11 @@ updates:
       typescript-eslint:
         patterns:
           - "@typescript-eslint/*"
+      prettier:
+        patterns:
+          - "prettier"
+          - "eslint-config-prettier"
+          - "eslint-plugin-prettier"
 
   - package-ecosystem: "github-actions"
     directory: "/"
