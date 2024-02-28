@@ -51,7 +51,6 @@
 
   /**
    * Loads the audio file(s) selected/dropped by the user.
-   *
    * @param file - The audio file to load.
    */
   async function handleFileInput(file: File) {

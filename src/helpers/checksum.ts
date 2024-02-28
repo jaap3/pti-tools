@@ -4,7 +4,6 @@ const cache = new WeakMap<ArrayBufferLike, number>()
 
 /**
  * Calculate the checksum of a buffer
- *
  * @param buffer The input buffer
  * @returns The checksum of the buffer as a number
  */

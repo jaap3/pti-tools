@@ -25,7 +25,6 @@ export const useAudioContext = defineStore("audiocontext", () => {
    * Creates a new AudioBufferSourceNode from the given audio data.
    * Any previous AudioBufferSourceNode created by this function
    * is disconnected and disposed.
-   *
    * @param audio - The audio data to create the node from.
    * @returns The new AudioBufferSourceNode.
    */

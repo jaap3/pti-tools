@@ -22,7 +22,6 @@
 
   /**
    * Emits an input event with the given file
-   *
    * @param file - The file to emit.
    */
   async function emitInput(file: Slice | Layer) {

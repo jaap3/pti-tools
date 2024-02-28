@@ -14,7 +14,6 @@
    * Handles the toggling of the trim control checkbox.
    * Sets the trim flag to "both" or "none" depending on whether the checkbox
    * is checked or not.
-   *
    * @param evt - The input event.
    */
   async function handleInput(evt: Event) {

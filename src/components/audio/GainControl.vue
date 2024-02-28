@@ -30,7 +30,6 @@
   /**
    * Handles scrolling on the gain control.
    * Updates the gain value.
-   *
    * @param evt - The scroll event.
    */
   function handleWheel(evt: WheelEvent) {
@@ -40,7 +39,6 @@
 
   /**
    * Updates the step size when the shift key is pressed.
-   *
    * @param evt - The keydown event.
    */
   function handleKeyDown(evt: KeyboardEvent) {
@@ -49,7 +47,6 @@
 
   /**
    * Updates the step size when the shift key is released.
-   *
    * @param evt - The keyup event.
    */
   function handleKeyUp(evt: KeyboardEvent) {

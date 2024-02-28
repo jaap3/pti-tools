@@ -27,7 +27,6 @@ const offlineCtx = getOfflineAudioContext()
 
 /**
  * Creates an error message object.
- *
  * @param text - The error message.
  * @param level - The error level.
  * @returns The error message object.
@@ -45,7 +44,6 @@ function errorMessage(
 
 /**
  * Creates audio object from the given audio data.
- *
  * @param audio - The audio data.
  * @param duration - The audio duration in seconds.
  * @returns An audio object.
@@ -59,7 +57,6 @@ function getAudio(audio: Float32Array, duration: number): Audio {
 
 /**
  * Strips the extension from a filename.
- *
  * @param fileName - The filename.
  * @returns The filename without the extension.
  */
@@ -69,7 +66,6 @@ function displayName(fileName: string) {
 
 /**
  * Attempts to load an audio file.
- *
  * @param file - A File object.
  * @returns A promise that resolves to an object containing the audio buffer,
  *     file name and other metadata. This data can then be augmented to
@@ -105,7 +101,6 @@ async function loadAudio(file: File): Promise<AudioFile | ErrorMessage> {
 
 /**
  * Turns an audio file object into an editable audio file.
- *
  * @param file - An audio file, slice or layer object.
  * @param file.audio - The audio data.
  * @param file.duration - The audio duration.
@@ -132,7 +127,6 @@ function createEditableAudioFile(
 
 /**
  * Creates a slice object.
- *
  * @param file - An audio file object.
  * @returns A new slice object.
  */
@@ -154,7 +148,6 @@ function createSlice(file: AudioFile | EditableAudioFile): Slice {
 
 /**
  * Creates a layer object.
- *
  * @param sliceId - The slice ID.
  * @param file - An audio file object.
  * @returns A new layer object.
@@ -181,7 +174,6 @@ function createLayer(
 
 /**
  * Applies audio file options to the given audio data.
- *
  * @param data - Audio data.
  * @param options - The audio options.
  * @returns A promise that resolves to an Audio object
@@ -220,7 +212,6 @@ export const useSlices = defineStore("slices", () => {
 
   /**
    * Returns the layers of the slice with the given ID.
-   *
    * @param sliceId - The slice ID.
    * @returns The layers of the slice.
    */
@@ -284,7 +275,6 @@ export const useSlices = defineStore("slices", () => {
 
   /**
    * Renders the audio of the list of slices in sequence.
-   *
    * @returns A promise that resolves to the rendered audio buffer.
    */
   async function renderSlices(): Promise<AudioBuffer> {
@@ -296,7 +286,6 @@ export const useSlices = defineStore("slices", () => {
 
   /**
    * Attempts to load an audio file and add it to the store.
-   *
    * @param file - A File object.
    * @returns A promise containing an object with a message to display
    *     to the user if the operation failed, nothing otherwise.
@@ -340,7 +329,6 @@ export const useSlices = defineStore("slices", () => {
 
   /**
    * Duplicate an existing slice.
-   *
    * @param slice - A slice object.
    * @returns A error message object if the operation failed, nothing otherwise.
    */
@@ -375,7 +363,6 @@ export const useSlices = defineStore("slices", () => {
    *
    * Does nothing if the slice is already at the top, or if it is not in the
    * list of slices.
-   *
    * @param slice - The slice to move.
    */
   function moveSliceUp(slice: Slice) {
@@ -390,7 +377,6 @@ export const useSlices = defineStore("slices", () => {
    *
    * Does nothing if the slice is already at the bottom, or if it is not in the
    * list of slices.
-   *
    * @param slice - The slice to move.
    */
   function moveSliceDown(slice: Slice) {
@@ -405,7 +391,6 @@ export const useSlices = defineStore("slices", () => {
    * the edit is cancelled.
    *
    * Does nothing if the slice is not in the list of slices.
-   *
    * @param slice - The slice to remove.
    */
   function removeSlice(slice: Slice) {
@@ -421,7 +406,6 @@ export const useSlices = defineStore("slices", () => {
    * current edit.
    *
    * Does nothing if the slice is not in the list of slices.
-   *
    * @param slice - The slice to edit (or `null` to cancel the edit).
    */
   function setActiveSlice(slice: Slice | null) {
@@ -435,7 +419,6 @@ export const useSlices = defineStore("slices", () => {
    *
    * Does nothing if there is no slice being edited, or if the maximum number
    * of layers for that slice has been reached.
-   *
    * @param file - A File object.
    * @returns A promise containing an object with a message to display
    *     to the user if the operation failed, nothing otherwise.
@@ -474,7 +457,6 @@ export const useSlices = defineStore("slices", () => {
 
   /**
    * Get the number of layers for a given slice.
-   *
    * @param slice - Slice to get the layer count for.
    * @returns The number of layers for the slice.
    */
@@ -486,7 +468,6 @@ export const useSlices = defineStore("slices", () => {
    * Removes a layer from the slice that is currently being edited.
    * Does nothing if the slice has only one layer, or if the given
    * layer is not in the slice.
-   *
    * @param layer - The layer to remove.
    * @returns A promise containing an object with a message to display
    *     to the user if the operation failed, nothing otherwise.
@@ -507,7 +488,6 @@ export const useSlices = defineStore("slices", () => {
   /**
    * Update the audio data of a slice or layer.
    * Does nothing if the slice or layer is not in the store.
-   *
    * @param sliceOrLayer - The slice or layer to update.
    * @param audio - The new audio data.
    */
@@ -546,7 +526,6 @@ export const useSlices = defineStore("slices", () => {
    * Updates the file's trim option to reflect the requested trim.
    *
    * If the given file is a layer, the slice's audio is also updated.
-   *
    * @param file - The file to trim.
    * @param option - The trim option to apply.
    */
@@ -560,7 +539,6 @@ export const useSlices = defineStore("slices", () => {
 
   /**
    * Sets the gain of the file's audio.
-   *
    * @param file - The file to update.
    * @param gain - The gain to apply.
    */

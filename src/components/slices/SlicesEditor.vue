@@ -34,7 +34,6 @@
   /**
    * Loads the audio file(s) selected/dropped by the user.
    * Does nothing if the input is disabled.
-   *
    * @param file - The audio file to load.
    */
   async function handleFileInput(file: File | EditableAudioFile) {

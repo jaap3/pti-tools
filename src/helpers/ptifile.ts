@@ -11,7 +11,6 @@ const asciiEncoder: TextEncoder = new TextEncoder()
 /**
  * Creates a new Polyend Tracker Instrument file (.pti) with the given
  * audio data.
- *
  * @param audio - An Int16Array containing the audio data to encode.
  * @returns ArrayBuffer containing the PTI file.
  */
@@ -35,7 +34,6 @@ export function getPtiFile(audio: Int16Array): ArrayBuffer {
  *
  * Playback mode of the instrument is set to "Beat Slice" and slice markers are
  * set at the start of each audio clip (up to a maximum of 48 slices).
- *
  * @param audio - An Int16Array containing the audio data to encode.
  * @param slices - An array of slices, used to set the slice markers.
  * @param instrumentName - The name of the instrument, max 31 characters
