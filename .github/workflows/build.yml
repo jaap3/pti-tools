@@ -34,7 +34,7 @@ jobs:
 
       - name: Setup Pages
         id: pages
-        uses: actions/configure-pages@v4
+        uses: actions/configure-pages@v5
 
       - name: Static HTML export
         run: npm run build -- --base=${{ steps.pages.outputs.base_url }}/
