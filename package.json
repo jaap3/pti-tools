@@ -24,7 +24,7 @@
     "pinia": "^2.0.34",
     "randomuuid": "~1.0.1",
     "sanitize.css": "~13.0.0",
-    "vue": "~3.4.20",
+    "vue": "~3.5.10",
     "vue-github-button": "~3.1.0",
     "vuedraggable": "~4.1.0",
     "wavefile": "~11.0.0"
